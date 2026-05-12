@@ -1,11 +1,17 @@
+from agents import llm_client
+from agents import llm_client
+from agents import llm_client
+from agents import llm_client
 import os
 import json
+# pyrefly: ignore [missing-import]
 import pandas as pd
-from google import genai
+# pyrefly: ignore [missing-import]
 from dotenv import load_dotenv
 
+from agents.llm_client import call_cerebras, retry_with_backoff
+
 load_dotenv()
-client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
 def load_business(business_path, business_id):
     """
@@ -85,12 +91,48 @@ def profile_business(business):
     }
 
 
-def collision_analysis(persona, business_profile):
+@retry_with_backoff
+def collision_analysis(persona, business_profile, painpoints=None):
     """
     The reasoning layer.
     Finds where this user's values and this business's signals collide; 
     what they'll love, what they won't tolerate, what the business needs to fix.
+
+    When painpoints are provided, the analysis is grounded in real customer feedback
+    rather than generic observations.
     """
+    # Build painpoint context if available
+    painpoint_context = ""
+    if painpoints and (painpoints.get('complaints') or painpoints.get('praise')):
+        complaint_lines = []
+        for c in painpoints.get('complaints', [])[:5]:
+            quotes = ', '.join(f'"{q}"' for q in c.get('quotes', [])[:2])
+            complaint_lines.append(f"  - {c['theme']} (mentioned {c.get('frequency', c.get('count', '?'))}x, severity: {c.get('severity', '?')}). Customers said: {quotes}")
+
+        praise_lines = []
+        for p in painpoints.get('praise', [])[:5]:
+            quotes = ', '.join(f'"{q}"' for q in p.get('quotes', [])[:2])
+            praise_lines.append(f"  - {p['theme']} (mentioned {p.get('frequency', p.get('count', '?'))}x). Customers said: {quotes}")
+
+        painpoint_context = f"""
+
+REAL CUSTOMER FEEDBACK FROM THIS BUSINESS:
+Complaints:
+{chr(10).join(complaint_lines) if complaint_lines else '  None identified'}
+
+Praise:
+{chr(10).join(praise_lines) if praise_lines else '  None identified'}
+
+IMPORTANT: Your analysis MUST reference these real customer complaints and praise.
+Do not give generic advice. Cite specific customer language when possible.
+"""
+
+    # Build grounding quotes context if persona has them
+    grounding_context = ""
+    if persona.get('grounding_quotes'):
+        quotes = '\n'.join(f'  - "{q}"' for q in persona['grounding_quotes'][:3])
+        grounding_context = f"\nGROUNDING QUOTES (actual reviews from customers like this):\n{quotes}\n"
+
     prompt = f"""
 You are a customer behavior analyst. You have a deep profile of a real customer
 and the details of a business they have never visited.
@@ -100,7 +142,7 @@ not generically, but based on exactly WHO they are.
 
 CUSTOMER PROFILE:
 {persona['narrative']}
-
+{grounding_context}
 DRIFT OBSERVED:
 {chr(10).join(persona['structured']['drifts']) if persona['structured']['drifts'] else 'No significant drift'}
 
@@ -119,7 +161,7 @@ BUSINESS:
 - Takes reservations: {business_profile['takes_reservations']}
 - Alcohol served: {business_profile['alcohol']}
 - Noise level: {business_profile['noise_level']}
-
+{painpoint_context}
 Reason through THREE things:
 
 1. MATCH POINTS — what specifically about this business will resonate with this customer
@@ -132,10 +174,15 @@ What are the landmines given who they are and what they punish.
 to fix or emphasize to retain this type of customer. This is the actionable intelligence.
 
 Be sharp. Be on point. Be specific. Not generic observations.
+{'Reference actual customer quotes where relevant.' if painpoints else ''}
 """
 
-    response = model.generate_content(prompt)
-    return response.text
+    return call_cerebras(
+        prompt=prompt,
+        system_prompt="You are a sharp, data-driven customer behavior analyst. Be specific, not generic.",
+        temperature=0.7,
+        max_tokens=1500,
+    )
 
 def generate_review(persona, business_profile, collision, sample_reviews):
     """
@@ -227,7 +274,7 @@ in 6 months if current patterns hold]
 """
     
 
-    response = client.chat.completions.create(
+    response = client.chat.completions.create(  
         model="llama-3.3-70b-versatile",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.75,
