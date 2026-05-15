@@ -9,7 +9,6 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-# NOW you can import your agents normally
 from agents.llm_client import call_cerebras
 from agents.review_ingest import load_reviews
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'utilities'))
@@ -24,7 +23,6 @@ from rec import (
 )
 
 load_dotenv()
-client = Cerebras(api_key=os.environ.get("CEREBRAS_API_KEY"))
 
 
 def generate_business_advisory(report, business_type):

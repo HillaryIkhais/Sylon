@@ -42,6 +42,10 @@ def build_lookup(business_path, output_path='data/business_categories.csv'):
                 'business_id': b['business_id'],
                 'name': b.get('name', ''),
                 'city': b.get('city', ''),
+                'state': b.get('state', ''),
+                'stars': b.get('stars', 0),
+                'review_count':b.get('review_count', 0),
+                'categories':b.get('categories', ''),
                 'primary_category': get_primary_category(b.get('categories', ''))
             })
     

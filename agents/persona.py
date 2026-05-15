@@ -2,13 +2,18 @@ import os
 import json
 import pandas as pd
 import numpy as np
-import os
+import sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+    
 from cerebras.cloud.sdk import Cerebras
 from dotenv import load_dotenv
 from collections import defaultdict
+from agents.llm_client import call_cerebras
 
 load_dotenv()
-client = Cerebras(api_key=os.environ.get("CEREBRAS_API_KEY"))
 
 def split_into_phases(user_history):
     # Split a user's review history into three life phases: early, middle, recent.
@@ -140,14 +145,8 @@ Write a 150-200 word character portrait. Be specific. Be sharp. No fluff.
 End with one sentence that captures what this person would never forgive in a bad experience.
 """
 
-    response = client.chat.completions.create(
-      messages=[{"role": "user", "content": prompt}],
-      model="qwen-3-235b-a22b-instruct-2507",
-      max_completion_tokens=1024,
-      temperature=0.2,
-      stream=False
-      )
-    return response.choices[0].message.content
+    response = call_cerebras(prompt)
+    return response
 
 
 def excavate_user(user_id,user_history,category_filter= None):

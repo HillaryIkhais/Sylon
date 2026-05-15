@@ -1,19 +1,25 @@
+import os
+import sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+
 import pandas as pd
 import numpy as np
-import os
+import json
 from collections import defaultdict
 from dotenv import load_dotenv
 from agents.llm_client import call_cerebras
 
-DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-load_dotenv(os.path.join(DIR, '.env'))
-categories_path = os.path.join(DIR, 'data', 'business_categories.csv')
+load_dotenv(os.path.join(ROOT, '.env'))
+categories_path = os.path.join(ROOT, 'data', 'business_categories.csv')
 _user_names = None
 
 def get_user_name(user_id):
     global _user_names
     if _user_names is None:
-            _user_names = pd.read_csv(os.path.join(DIR, 'data', 'user_names.csv'), index_col='user_id')['name'].to_dict()
+            _user_names = pd.read_csv(os.path.join(ROOT, 'data', 'user_names.csv'), index_col='user_id')['name'].to_dict()
     return  _user_names.get(user_id, f"User {user_id[:6]}")
 
 def classify_user(rev):
@@ -49,26 +55,26 @@ def classify_user(rev):
     # fully committed — consistent, long term
     return 'fully_committed'
 
-def build_segment_report(reviews_df):
+def build_segment_report(reviews_sc):
    # groups all shortlisted users into behavioral segments and returns a summary of who they are and what they signal for a business.
-    users = reviews_df['user_id'].unique()
+    users = reviews_sc['user_id'].unique()
     
     segments = defaultdict(list)
     
     for uid in users:
-        user_df = reviews_df[reviews_df['user_id'] == uid].copy()
-        user_df['date'] = pd.to_datetime(user_df['date'])
-        segment = classify_user(user_df)
+        user_sc = reviews_sc[reviews_sc['user_id'] == uid].copy()
+        user_sc['date'] = pd.to_datetime(user_sc['date'])
+        segment = classify_user(user_sc)
         
         segments[segment].append({
             'user_id': uid,
-            'total_reviews': len(user_df),
-            'avg_rating': round(user_df['stars'].mean(), 2),
-            'avg_useful': round(user_df['useful'].mean(), 2),
+            'total_reviews': len(user_sc),
+            'avg_rating': round(user_sc['stars'].mean(), 2),
+            'avg_useful': round(user_sc['useful'].mean(), 2),
             'time_span_years': round(
-                (user_df['date'].max() - user_df['date'].min()).days / 365, 1
+                (user_sc['date'].max() - user_sc['date'].min()).days / 365, 1
             ),
-            'richness_score': round(user_df['richness_score'].iloc[0], 2)
+            'richness_score': round(user_sc['richness_score'].iloc[0], 2)
         })
     
     # build summary
@@ -215,7 +221,7 @@ def clairvoyance(user_id, all_reviews):
     historical_avg = user_history['stars'].mean()
     recent_avg = recent['stars'].mean()
     trajectory = round(recent_avg - historical_avg, 2)
-    
+
     prompt = f"""
 You are analyzing a customer's most recent reviews to detect their current emotional state.
 This is not sentiment analysis. You are detecting specific emotions and what triggered them.
@@ -269,29 +275,50 @@ def describe_segments(report):
     return "\n".join(output)
 
 
-def recommend_businesses(user_id, all_reviews, business_df, top_n=5):
+def recommend_businesses(user_id, all_reviews, business_ca, top_n=5, user_segment=None):
     # ranks businesses specifically for a user's behavior,
     persona_path = os.path.join(ROOT, 'outputs', f'{user_id}_persona.json')
     
     if not os.path.exists(persona_path):
         # if no history, return top rated in category
-        return handle_cold_start(business_df, top_n)
+        return handle_cold_start(business_ca, top_n)
 
     with open(persona_path) as f:
         persona = json.load(f)
 
     # filter for businesses the user hasn't reviewed yet.
     user_visited = all_reviews[all_reviews['user_id'] == user_id]['business_id'].unique()
-    candidates = business_df[~business_df['business_id'].isin(user_visited)].copy()
+    candidates = business_ca[~business_ca['business_id'].isin(user_visited)].copy()
+    narrative = persona.get('narrative', '').lower()
 
 # behavioral scoring
-    def calculate_compatibility(biz_row):
-        score = biz_row['stars'] * 10  # Base score from stars
+    def calculate_compatibility(bus_row):
+        score = bus_row.get('stars', 3.0) * 10 
         
+        categories = str(bus_row.get('categories', '')).lower()
+        primary_cat = str(bus_row.get('primary_category', '')).lower()
+
+        if 'price' in narrative or  'experience' in narrative or 'atmosphere' in narrative:
+            if 'cheap' in categories or 'upscale' in categories or 'fine dining' in categories:
+                score += 15
         # if user values experience and business has high price range but good service...
-        if 'luxury' in str(biz_row['categories']).lower() and persona.get('is_premium_seeker'):
+        if 'premium' in narrative or 'experience' in narrative or 'atmosphere' in narrative:
+            if 'luxury' in str(bus_row['categories']).lower() and persona.get('is_premium_seeker'):
+                score += 15
+
+
+        vibe_keywords = ['quiet', 'romantic', 'fast', 'authentic', 'cozy', 'upscale', 'loud', 'casual']
+        for vibe in vibe_keywords:
+            if vibe in narrative and vibe in categories:
+                score += 20
+
+        if user_segment == 'fully_committed' and bus_row.get('review_count', 0) > 500:
             score += 15
-            
+
+        if user_segment == 'critical':
+            if bus_row.get('stars', 5.0) < 4.0:
+                score -=30
+
         # if user is a critical segment, avoid low rated service businesses
         return score
 
@@ -299,19 +326,34 @@ def recommend_businesses(user_id, all_reviews, business_df, top_n=5):
     
     # return ranked list
     recommendations = candidates.sort_values('match_score', ascending=False).head(top_n)
-    
+
+    cols_to_return = ['name', 'match_score', 'stars']
+    if 'primary_category' in recommendations.columns:
+        cols_to_return.append('primary_category')
+
     return recommendations[['name', 'match_score', 'stars', 'city']].to_dict('records')
 
-def handle_cold_start(business_df, top_n=5):
+def handle_cold_start(business_ca, top_n=5, preferred_category=None):
     # recommend businesses with the most useful community feedback as they are the safest bets for a new user.
-    return business_df.sort_values(['stars', 'review_count'], ascending=False).head(top_n).to_dict('records')
+    candidates = business_ca.copy()
+
+    if preferred_category and 'primary_category' in candidates.columns:
+        candidates = candidates[candidates['primary_category'].str.lower() == preferred_category.lower()]
+    
+    candidates = candidates.sort_values(['review_count'], ascending=[False])
+
+    cols = ['name', 'stars', 'review_count']
+    if 'primary_category' in candidates.columns:
+        cols.append('primary_category')
+
+    return candidates.head(top_n)[cols].to_dict('records')
 
 
 if __name__ == "__main__":
-    import json
 
-    all_reviews = pd.read_csv(os.path.join(DIR, 'data', 'sampled_reviews.csv'))
-    categories = pd.read_csv(os.path.join(DIR, 'data', 'business_categories.csv'))[['business_id', 'primary_category']]
+    all_reviews = pd.read_csv(os.path.join(ROOT, 'data', 'sampled_reviews.csv'))
+    business_pool = pd.read_csv(os.path.join(ROOT, 'data', 'business_categories.csv'))
+    categories = pd.read_csv(os.path.join(ROOT, 'data', 'business_categories.csv'))[['business_id', 'primary_category', 'categories', 'review_count']]
     all_reviews = all_reviews.merge(categories, on='business_id', how='left')
     all_reviews['date'] = pd.to_datetime(all_reviews['date'])
 
@@ -346,3 +388,43 @@ if __name__ == "__main__":
         print(f"\nCustomer: {result['customer_name']}")
         print(f"Trajectory: {result['trajectory']:+.2f}")
         print(result['analysis'])
+
+    print("\n SYLON'S RECOMMENDATIONS ")
+
+    business_pool = pd.read_csv(os.path.join(ROOT, 'data', 'business_categories.csv'))
+    if 'stars' not in business_pool.columns:
+        business_pool['stars'] = 4.0
+    if 'review_count' not in business_pool.columns:
+        business_pool['review_count'] = 100
+    if 'name' not in business_pool.columns:
+        business_pool['name'] = "Business " + business_pool['business_id']
+    if 'categories' not in business_pool.columns:
+        business_pool['categories'] = business_pool['primary_category'] + ", upscale, luxury, quiet, authentic, cozy"
+    if 'city' not in business_pool.columns:
+        business_pool['city'] = "Unknown"
+
+    # figure out the segment of our test user
+    test_user = '-G7Zkl1wIWBBmD0KRy_sCw'
+    test_user_segment = None
+    for seg, data in report.items():
+        if any(u['user_id'] == test_user for u in data['users']):
+            test_user_segment = seg
+            break
+
+    # Get tailored recommendations
+    recs = recommend_businesses(
+        user_id=test_user, 
+        all_reviews=all_reviews,
+        business_ca=business_pool,
+        top_n=3, 
+        user_segment=test_user_segment
+        )
+    print(f"\nTop matches for returning user ({test_user_segment}):")
+    for r in recs:
+        print(f" {r['name']} || Match Score: {r['match_score']}")
+
+
+    print(f"\nTop matches for brand new user (Cold Start):")
+    cold_recs = handle_cold_start(business_pool, top_n=3, preferred_category=None)
+    for r in cold_recs:
+        print(f" {r['name']} || ({r['stars']}) || {r['review_count']} reviews")
