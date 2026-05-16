@@ -1,18 +1,11 @@
-"""
-Painpoint Extractor & Grounded Persona Excavation
-
-Map-reduce architecture:
-1. MAP: Chunk reviews into batches of 25 → extract themes per batch
-2. REDUCE: Merge all chunk outputs → deduplicate → tally frequencies → attach quotes
-3. EXCAVATE: Build grounded personas from review clusters
-
-Saves results to:
-  data/businesses/{business_id}/painpoints.json
-  data/businesses/{business_id}/personas.json
-"""
 import os
 import json
 import math
+import sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
 
 from agents.llm_client import call_cerebras_json, call_cerebras
 
