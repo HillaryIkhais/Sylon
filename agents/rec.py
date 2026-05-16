@@ -333,15 +333,83 @@ def recommend_businesses(user_id, all_reviews, business_ca, top_n=5, user_segmen
 
     return recommendations[['name', 'match_score', 'stars', 'city']].to_dict('records')
 
-def handle_cold_start(business_ca, top_n=5, preferred_category=None):
-    # recommend businesses with the most useful community feedback as they are the safest bets for a new user.
+def translate_cross_domain_persona(source_domain, source_narrative, target_domain="Yelp Restaurants"):
+    prompt = f"""
+    You are a behavioral psychologist specializing in cross-domain translation.
+    A user has the following persona in the domain of {source_domain}:
+    "{source_narrative}"
+
+    Extract their core psychological drivers (e.g., patience, need for control, aesthetic preference, introversion/extroversion).
+    Then, project those EXACT psychological drivers onto the domain of {target_domain}.
+    
+    Write a 150-word narrative describing what this specific person will value, seek out, and hate in a {target_domain}.
+    Do NOT mention {source_domain} in your output. Just describe their target domain persona.
+    """
+    return call_cerebras(prompt, temperature=0.6)
+
+def llm_behavioral_ranker(persona_narrative, candidates, top_n=5):
+    from agents.llm_client import call_cerebras_json
+    
+    business_descriptions = ""
+    for i, b in enumerate(candidates):
+        bid = b.get('business_id', str(i))
+        # Ensure business_id exists as a string for the JSON map
+        b['business_id'] = bid
+        business_descriptions += f"\n[{i}] ID: {bid} | Name: {b['name']} | Categories: {b.get('categories', b.get('primary_category', ''))} | Rating: {b.get('stars', 0)} ({b.get('review_count', 0)} reviews)"
+
+    prompt = f"""
+You are a highly analytical behavioral matching engine. 
+Rank the following businesses based on how perfectly they fit this customer persona.
+
+PERSONA NARRATIVE: {persona_narrative}
+
+CANDIDATE BUSINESSES:{business_descriptions}
+
+For each business ID, assign a match_score from 0 to 100 based on how well the business categories and vibe align with the persona's preferences and dealbreakers.
+Return ONLY a JSON object mapping the exact business_id to its score and a 1-sentence reason.
+"""
+    try:
+        llm_scores = call_cerebras_json(prompt, temperature=0.3, max_tokens=2000)
+        
+        ranked_list = []
+        for c in candidates:
+            bid = str(c.get('business_id', ''))
+            score_data = llm_scores.get(bid, {"score": 0})
+            score = float(score_data) if isinstance(score_data, (int, float)) else float(score_data.get('score', 0))
+            reason = score_data.get('reason', '') if isinstance(score_data, dict) else ''
+            
+            c_copy = c.copy()
+            c_copy['match_score'] = score
+            c_copy['match_reason'] = reason
+            ranked_list.append(c_copy)
+            
+        ranked_list.sort(key=lambda x: x['match_score'], reverse=True)
+        return ranked_list[:top_n]
+    except Exception as e:
+        print(f"Error in LLM ranking: {e}")
+        return candidates[:top_n]
+
+
+def handle_cold_start(business_ca, top_n=5, preferred_category=None, source_domain=None, source_narrative=None):
     candidates = business_ca.copy()
 
     if preferred_category and 'primary_category' in candidates.columns:
         candidates = candidates[candidates['primary_category'].str.lower() == preferred_category.lower()]
     
-    candidates = candidates.sort_values(['review_count'], ascending=[False])
+    # 1. Base Popularity Filter (get top 20 candidates so we don't send 150k to LLM)
+    candidates = candidates.sort_values(['review_count'], ascending=[False]).head(20)
+    candidate_dicts = candidates.to_dict('records')
+    
+    # 2. Cross-Domain LLM Re-Ranking
+    if source_domain and source_narrative:
+        print(f"\n[Cold Start] Translating persona from {source_domain}...")
+        target_narrative = translate_cross_domain_persona(source_domain, source_narrative)
+        print(f"[Cold Start] Translated Target Persona:\n{target_narrative}\n")
+        
+        print(f"[Cold Start] Re-ranking top 20 popularity candidates using behavioral engine...")
+        return llm_behavioral_ranker(target_narrative, candidate_dicts, top_n)
 
+    # 3. Fallback: Just return the popularity-based candidates
     cols = ['name', 'stars', 'review_count']
     if 'primary_category' in candidates.columns:
         cols.append('primary_category')
@@ -424,7 +492,15 @@ if __name__ == "__main__":
         print(f" {r['name']} || Match Score: {r['match_score']}")
 
 
-    print(f"\nTop matches for brand new user (Cold Start):")
-    cold_recs = handle_cold_start(business_pool, top_n=3, preferred_category=None)
+    print(f"\nTop matches for brand new user (Cross-Domain Cold Start):")
+    goodreads_persona = "I love dense, 1000-page historical biographies. I hate shallow beach reads and anything that feels rushed. I need time to sit and reflect on the intricate worldbuilding."
+    cold_recs = handle_cold_start(
+        business_ca=business_pool, 
+        top_n=3, 
+        source_domain="Goodreads Book Reviews", 
+        source_narrative=goodreads_persona
+    )
     for r in cold_recs:
-        print(f" {r['name']} || ({r['stars']}) || {r['review_count']} reviews")
+        print(f" {r['name']} || ({r.get('stars', 'N/A')}) || {r.get('review_count', 'N/A')} reviews")
+        if 'match_reason' in r:
+            print(f"    -> {r['match_reason']}")

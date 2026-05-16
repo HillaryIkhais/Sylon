@@ -193,7 +193,7 @@ if __name__ == "__main__":
     print("  SYLON: A Behavioral Intelligence Engine")
 
     business_type = input("\nWhat type of business are you? (e.g. restaurant, bar, hotel): ").strip()
-    business_path = OS.PATH.JOIN(ROOT, 'data', 'yelp_academic_dataset_business.json')
+    business_path = os.path.join(ROOT, 'data', 'yelp_academic_dataset_business.json')
 
     run_sylon(
         business_type=business_type,
