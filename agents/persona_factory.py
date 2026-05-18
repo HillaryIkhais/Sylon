@@ -29,7 +29,7 @@ informal feedback culture, and what "value" means in that market.
 
 For EACH archetype, provide a JSON object with these exact fields:
 - "name": A short archetype label (e.g., "The Weekend Explorer", "The Budget Loyalist")
-- "narrative": A 100-150 word sharp, specific character portrait. Write like you know this person.
+- "narrative": A 100-150 word precise, specific character portrait. Write like you know this person.
   Include their priorities, pet peeves, what they notice first, what makes them leave a bad review.
   End with one sentence about what they would never forgive.
 - "drifts": A list of 1-2 behavioral drift strings (e.g., "Rating drift: became harsher over time (4.2 → 3.1)")

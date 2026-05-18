@@ -101,7 +101,7 @@ Here are the reviews:
 {reviews_text}
 
 Based on these REAL reviews, extract distinct customer personas. For each persona:
-- "name": A short archetype label
+- "name": A respectful archetype label based on observable behavior (e.g., "The Weekend Explorer", "The Detail-Oriented Diner"). Never use judgmental labels like "detail‑oriented customer" or "budget‑conscious customer".
 - "narrative": A 100-150 word character portrait based on what the review text reveals about this person's psychology
 - "drifts": Any behavioral patterns you can infer (list of strings)
 - "avg_rating": Their average rating as a float

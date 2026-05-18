@@ -7,6 +7,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from agents.persona import excavate_user
 from agents.reviews import collision_analysis
+from agents.review_ingest import ingest_pdf, ingest_image
 from agents.persona_factory import generate_synthetic_personas
 from agents.google_places import fetch_competitor_personas
 from agents.review_ingest import ingest_text, ingest_json, ingest_csv, load_reviews
@@ -17,21 +18,30 @@ from agents.painpoint_extractor import (
     load_personas,
 )
 
-_REVIEWS_DF = None
+_REVIEWS = None
 
-def get_reviews_df():
-    global _REVIEWS_DF
-    if _REVIEWS_DF is None:
+def get_reviews():
+    global _REVIEWS
+    if _REVIEWS is None:
         try:
-            _REVIEWS_DF = pd.read_csv('data/sampled_reviews.csv')
-            _REVIEWS_DF['date'] = pd.to_datetime(_REVIEWS_DF['date'])
+            _REVIEWS = pd.read_csv('data/sampled_reviews.csv')
+            _REVIEWS['date'] = pd.to_datetime(_REVIEWS['date'])
         except FileNotFoundError:
-            print("Warning: data/sampled_reviews.csv not found.")
-            _REVIEWS_DF = pd.DataFrame()
-    return _REVIEWS_DF
+            print("Warning: data/sampled_reviews.csv not found. Using mock data for demonstration.")
+            _REVIEWS = pd.DataFrame({
+                'review_id': ['mock_1', 'mock_2', 'mock_3'],
+                'user_id': ['test_user_1', 'test_user_1', 'test_user_2'],
+                'business_id': ['biz_1', 'biz_2', 'biz_1'],
+                'stars': [5.0, 2.0, 4.0],
+                'useful': [2, 0, 1],
+                'text': ['Great food and amazing service!', 'Terrible experience, waited an hour.', 'Good attribute but a bit loud.'],
+                'date': pd.to_datetime(['2023-01-01', '2023-06-01', '2023-12-01']),
+                'primary_category': ['Restaurant', 'Restaurant', 'Restaurant']
+            })
+    return _REVIEWS
 
 def tool_excavate_persona(user_id: str) -> dict:
-    df = get_reviews_df()
+    df = get_reviews()
     if df.empty or user_id not in df['user_id'].values:
         return {"error": f"User {user_id} not found in the dataset."}
     return excavate_user(user_id, df)

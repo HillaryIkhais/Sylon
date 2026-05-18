@@ -276,7 +276,9 @@ def describe_segments(report):
 
 
 def recommend_businesses(user_id, all_reviews, business_ca, top_n=5, user_segment=None):
-    # ranks businesses specifically for a user's behavior,
+    # Two-stage recommendation: embeddings for retrieval, then behavioral scoring.
+    from agents.embeddings import find_similar_businesses, load_embeddings
+    
     persona_path = os.path.join(ROOT, 'outputs', f'{user_id}_persona.json')
     
     if not os.path.exists(persona_path):
@@ -287,29 +289,42 @@ def recommend_businesses(user_id, all_reviews, business_ca, top_n=5, user_segmen
         persona = json.load(f)
 
     # filter for businesses the user hasn't reviewed yet.
-    user_visited = all_reviews[all_reviews['user_id'] == user_id]['business_id'].unique()
-    candidates = business_ca[~business_ca['business_id'].isin(user_visited)].copy()
+    user_visited = list(all_reviews[all_reviews['user_id'] == user_id]['business_id'].unique())
     narrative = persona.get('narrative', '').lower()
 
-# behavioral scoring
+    # --- Stage 1: Embedding Retrieval (fast, free) ---
+    embedding_candidates = find_similar_businesses(user_id, top_k=50, exclude_ids=user_visited)
+    
+    if embedding_candidates:
+        # Filter to businesses in our catalog
+        emb_bids = {bid for bid, _ in embedding_candidates}
+        candidates = business_ca[business_ca['business_id'].isin(emb_bids)].copy()
+        # Add embedding similarity score
+        emb_score_map = {bid: score for bid, score in embedding_candidates}
+        candidates['embedding_score'] = candidates['business_id'].map(emb_score_map).fillna(0)
+    else:
+        # Fallback: use all unvisited businesses
+        candidates = business_ca[~business_ca['business_id'].isin(user_visited)].copy()
+        candidates['embedding_score'] = 0
+
+    # --- Stage 2: Behavioral Scoring ---
     def calculate_compatibility(bus_row):
-        score = bus_row.get('stars', 3.0) * 10 
+        # Start with embedding score (scaled to 0-50 range)
+        score = float(bus_row.get('embedding_score', 0)) * 50
+        score += bus_row.get('stars', 3.0) * 10 
         
         categories = str(bus_row.get('categories', '')).lower()
-        primary_cat = str(bus_row.get('primary_category', '')).lower()
 
-        if 'price' in narrative or  'experience' in narrative or 'atmosphere' in narrative:
+        if 'price' in narrative or 'experience' in narrative or 'atmosphere' in narrative:
             if 'cheap' in categories or 'upscale' in categories or 'fine dining' in categories:
                 score += 15
-        # if user values experience and business has high price range but good service...
         if 'premium' in narrative or 'experience' in narrative or 'atmosphere' in narrative:
             if 'luxury' in str(bus_row['categories']).lower() and persona.get('is_premium_seeker'):
                 score += 15
 
-
         vibe_keywords = ['quiet', 'romantic', 'fast', 'authentic', 'cozy', 'upscale', 'loud', 'casual']
-        for vibe in vibe_keywords:
-            if vibe in narrative and vibe in categories:
+        for attribute in vibe_keywords:
+            if attribute in narrative and attribute in categories:
                 score += 20
 
         if user_segment == 'fully_committed' and bus_row.get('review_count', 0) > 500:
@@ -317,14 +332,12 @@ def recommend_businesses(user_id, all_reviews, business_ca, top_n=5, user_segmen
 
         if user_segment == 'critical':
             if bus_row.get('stars', 5.0) < 4.0:
-                score -=30
+                score -= 30
 
-        # if user is a critical segment, avoid low rated service businesses
         return score
 
     candidates['match_score'] = candidates.apply(calculate_compatibility, axis=1)
     
-    # return ranked list
     recommendations = candidates.sort_values('match_score', ascending=False).head(top_n)
 
     cols_to_return = ['name', 'match_score', 'stars']
@@ -365,7 +378,7 @@ PERSONA NARRATIVE: {persona_narrative}
 
 CANDIDATE BUSINESSES:{business_descriptions}
 
-For each business ID, assign a match_score from 0 to 100 based on how well the business categories and vibe align with the persona's preferences and dealbreakers.
+For each business ID, assign a match_score from 0 to 100 based on how well the business categories and attribute align with the persona's preferences and dealbreakers.
 Return ONLY a JSON object mapping the exact business_id to its score and a 1-sentence reason.
 """
     try:
@@ -391,25 +404,39 @@ Return ONLY a JSON object mapping the exact business_id to its score and a 1-sen
 
 
 def handle_cold_start(business_ca, top_n=5, preferred_category=None, source_domain=None, source_narrative=None):
+    from agents.embeddings import find_businesses_for_text
+    
     candidates = business_ca.copy()
 
     if preferred_category and 'primary_category' in candidates.columns:
         candidates = candidates[candidates['primary_category'].str.lower() == preferred_category.lower()]
     
-    # 1. Base Popularity Filter (get top 20 candidates so we don't send 150k to LLM)
-    candidates = candidates.sort_values(['review_count'], ascending=[False]).head(20)
-    candidate_dicts = candidates.to_dict('records')
-    
-    # 2. Cross-Domain LLM Re-Ranking
+    # Stage 1: Embedding retrieval for cold start (if we have a source narrative)
     if source_domain and source_narrative:
-        print(f"\n[Cold Start] Translating persona from {source_domain}...")
+        print(f"\nPreparing cold‑start candidate set from {source_domain}...")
         target_narrative = translate_cross_domain_persona(source_domain, source_narrative)
         print(f"[Cold Start] Translated Target Persona:\n{target_narrative}\n")
         
-        print(f"[Cold Start] Re-ranking top 20 popularity candidates using behavioral engine...")
+        # Use embeddings to find semantically similar businesses (fast, free)
+        print(f"[Cold Start] Stage 1: Embedding retrieval from {len(candidates)} businesses...")
+        embedding_results = find_businesses_for_text(target_narrative, top_k=20)
+        
+        if embedding_results:
+            emb_bids = [bid for bid, _ in embedding_results]
+            candidate_subset = candidates[candidates['business_id'].isin(emb_bids)]
+            if len(candidate_subset) > 0:
+                candidate_dicts = candidate_subset.to_dict('records')
+            else:
+                candidate_dicts = candidates.sort_values(['review_count'], ascending=[False]).head(20).to_dict('records')
+        else:
+            candidate_dicts = candidates.sort_values(['review_count'], ascending=[False]).head(20).to_dict('records')
+        
+        # Stage 2: LLM behavioral reranking on the embedding-filtered candidates
+        print(f"[Cold Start] Stage 2: LLM reranking {len(candidate_dicts)} candidates...")
         return llm_behavioral_ranker(target_narrative, candidate_dicts, top_n)
 
-    # 3. Fallback: Just return the popularity-based candidates
+    # Fallback: popularity-based (no source narrative provided)
+    candidates = candidates.sort_values(['review_count'], ascending=[False]).head(20)
     cols = ['name', 'stars', 'review_count']
     if 'primary_category' in candidates.columns:
         cols.append('primary_category')

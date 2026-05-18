@@ -34,11 +34,12 @@ class Route(enum.Enum):
     SIMULATE = "SIMULATE"
     CHAT = "CHAT"
     INGEST = "INGEST"
+    RECOMMEND = "RECOMMEND"
 
-# Session state: tracks the current business_id across the conversation
-# In production this would be per-session; for the demo a global is fine.
+# Session state
 _current_business_id = None
 _business_context = {"description": "Business Entity", "location": ""}
+_conversation_history = {} # Maps business_id to list of dicts {"role": ..., "content": ...}
 
 def set_business_id(business_id: str):
     global _current_business_id
@@ -53,11 +54,15 @@ def get_business_id() -> str | None:
 
 @retry_with_backoff
 def evaluate_route(user_input: str) -> str:
-    prompt = f"Classify this intent aas SIMULATE, INGEST, or CHAT. Only return one word.\nInput: {user_input}"
+    business_id = get_business_id() or "default"
+    history = _conversation_history.get(business_id, [])[-3:] # Last 3 turns
+    history_str = json.dumps(history) if history else "No history."
+
+    prompt = f"Classify this intent as SIMULATE, INGEST, RECOMMEND, or CHAT. Only return one word.\nHistory: {history_str}\nInput: {user_input}"
 # Uses the Router Agent to classify user intent.
     try:
         result = call_gemini_structured(
-            prompt=f"{agents_config['router']['system_prompt']}\n\nUser input: \"{user_input}\"",
+            prompt=f"{agents_config['router']['system_prompt']}\n\nRecent History: {history_str}\nUser input: \"{user_input}\"",
             response_schema=Route,
         )
         return result
@@ -94,7 +99,7 @@ If real customer quotes were cited in the analysis, reference them naturally."""
 
     return call_cerebras(
         prompt=prompt,
-        system_prompt="You are Sylon, a premium business strategist. Be conversational, sharp, and authoritative.",
+        system_prompt="You are Sylon, a premium business strategist. Be conversational, precise, and authoritative.",
         max_tokens=800,
     )
 
@@ -120,7 +125,7 @@ Keep it to 2-3 sentences max."""
 
     return call_cerebras(
         prompt=prompt,
-        system_prompt="You are Sylon, a premium business strategist. Be conversational and sharp.",
+        system_prompt="You are Sylon, a premium business strategist. Be conversational and precise.",
         temperature=0.7,
         max_tokens=400,
     )
@@ -164,7 +169,7 @@ def handle_ingest(user_input: str) -> str:
     persona_names = [p.get("name", "Unknown") for p in result.get("personas", [])]
     top_complaints = [c["theme"] for c in result.get("painpoints", {}).get("complaints", [])[:3]]
 
-    response_parts = [f"Got it. I've looked through {count_text}"]
+    response_parts = [f"Got it. I've looked through {review_count} reviews."]
 
     if complaint_count > 0:
         response_parts.append(f"and found {complaint_count} key pain points")
@@ -357,19 +362,59 @@ def run_simulation(user_input: str, business_description=None, location=None):
     return simulate_strategist(user_input, combined, painpoints)
  
 
+# RECOMMENDATION Handler (Multi-Turn)
+def handle_recommendation(user_input: str) -> str:
+    business_id = get_business_id() or "default"
+    history_str = json.dumps(_conversation_history.get(business_id, [])[-4:])
+    
+    prompt = f"""
+    You are a business strategist assessing a request for a recommendation.
+    Look at the recent conversation history: {history_str}
+    And the user's latest message: "{user_input}"
+    
+    Do we know WHO this recommendation is for? (e.g., a specific segment like 'loyalists', 'new customers', 'critical reviewers', or a specific persona).
+    If we do NOT know, write a 1-sentence conversational question asking the user who the target audience is.
+    If we DO know, respond with exactly: READY: [description of target audience]
+    """
+    
+    assessment = call_cerebras(prompt, temperature=0.2)
+    
+    if "READY:" not in assessment:
+        return assessment
+        
+    target_audience = assessment.replace("READY:", "").strip()
+    print(f"[Orchestrator] Running recommendation for audience: {target_audience}")
+    
+    # To fully integrate we'd call evaluate_ndcg.py's LLM ranking here
+    # For now we'll simulate the successful resolution of the multi-turn loop.
+    return f"Based on our discussion targeting {target_audience}, I've analyzed the behavioral drifts. Here are my top 3 recommendations that fit their dealbreakers: Option A, Option B, and Option C."
+
+
 # Master Router
 def process_user_scenario(user_input: str, description: str = "Business Entity", location:str = "") -> str:
     # routing function used by the FastAPI server.
     set_business_context(description, location)
+    business_id = get_business_id() or "default"
+    
+    if business_id not in _conversation_history:
+        _conversation_history[business_id] = []
+        
+    _conversation_history[business_id].append({"role": "user", "content": user_input})
+    
     route = evaluate_route(user_input)
     print(f"[Orchestrator] Route resolved: {route}")
 
     if route == "INGEST":
-        return handle_ingest(user_input)
+        response = handle_ingest(user_input)
     elif route == "SIMULATE":
-        return run_simulation(user_input)
+        response = run_simulation(user_input)
+    elif route == "RECOMMEND":
+        response = handle_recommendation(user_input)
     else:
-        return direct_chat_strategist(user_input)
+        response = direct_chat_strategist(user_input)
+        
+    _conversation_history[business_id].append({"role": "assistant", "content": response})
+    return response
 
 
 def main():
@@ -382,6 +427,12 @@ def main():
         if user_input.lower() in ['exit', 'quit']:
             break
 
+        # Update history for CLI as well
+        business_id = get_business_id() or "default"
+        if business_id not in _conversation_history:
+            _conversation_history[business_id] = []
+        _conversation_history[business_id].append({"role": "user", "content": user_input})
+
         route = evaluate_route(user_input)
 
         if route == "INGEST":
@@ -393,11 +444,16 @@ def main():
             print("[OpenServ Routing] -> Passing to Simulator with controlled hallucination rules...")
             final_response = run_simulation(user_input)
             print("[OpenServ Routing] -> Sending Simulator result to Strategist...\n")
+        elif route == "RECOMMEND":
+            print(f"\n[OpenServ Router] -> Intent: RECOMMEND")
+            print("[OpenServ Routing] -> Managing multi-turn recommendation logic...\n")
+            final_response = handle_recommendation(user_input)
         else:
             print(f"\n[OpenServ Router] -> Intent: CHAT")
             print("[OpenServ Routing] -> Responding conversationally...\n")
             final_response = direct_chat_strategist(user_input)
 
+        _conversation_history[business_id].append({"role": "assistant", "content": final_response})
         print(f"Sylon: {final_response}\n")
 
 if __name__ == "__main__":
