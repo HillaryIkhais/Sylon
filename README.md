@@ -4,7 +4,7 @@ Sylon is an AI-powered, review-grounded business intelligence platform. It inges
 
 ## Core Features
 
-*   **Review Ingestion & Persona Excavation:** Upload reviews (via CSV/JSON,PDF, JPG or pasted text) to automatically identify key customer segments and their recurring pain points.
+*   **Review Ingestion & Persona Excavation:** Upload reviews via CSV/JSON or paste raw review text to automatically identify key customer segments and recurring pain points.
 *   **Multi-Persona Simulator:** Propose a business change (e.g., "I want to raise prices by 10%"). Sylon runs a collision analysis, simulating how each excavated persona will react based on their historical preferences.
 *   **Voice-Native Integration:** Designed as a FastAPI webhook for ElevenLabs, allowing business owners to talk to Sylon conversationally.
 *   **Competitor Analysis Fallback:** If you don't have reviews, Sylon generates synthetic personas and fetches real competitor reviews via the Google Places API to ground its advice.
@@ -16,6 +16,8 @@ Sylon is an AI-powered, review-grounded business intelligence platform. It inges
 *   **Google Gemini (2.0 Flash):** Handles the "Router" agent, utilizing Gemini's structured output capabilities to classify user intent (`CHAT`, `SIMULATE`, `INGEST`).
 *   **Google Places API:** Used for fetching competitor reviews when generating fallback personas.
 *   **ElevenLabs (Integration):** Acts as the frontend for real-time voice-to-voice interaction.
+*   **SQLite on QuikDB Compute:** Sylon persists businesses, ingested reviews, personas, painpoint snapshots, and collision logs in an embedded SQLite database stored on the persistent container volume. The application is designed to be deployed on QuikDB Compute, using QuikDB as the decentralized hosting layer for the backend. SQLite is used as Sylon's embedded persistence layer inside the running container. For the #BuildQuik MVP, this provides real local persistence without an external database. On blue-green deployments, the database may reset unless attached persistent storage is configured, so demo deployments can be reseeded using `scripts/seed_demo.py`.
+*   **Privy (Planned):** Intended for Web2-friendly authentication and account ownership so business records can later be tied to verified owners.
 
 ## Architecture & Data Flow
 
@@ -26,7 +28,8 @@ Sylon is an AI-powered, review-grounded business intelligence platform. It inges
     *   **Simulator:** Runs proposed changes against specific personas (Cerebras).
     *   **Strategist:** Synthesizes the multi-persona collision results into actionable, conversational advice (Cerebras).
     *   **Persona Factory & Painpoint Extractor:** Analyzes reviews to build grounded customer profiles.
-4.  **LLM Client (`agents/llm_client.py`):** Centralized client with robust retry and exponential backoff for rate limiting across both provider APIs.
+4.  **Persistence (`openserv/persistence.py`):** SQLite-backed storage for businesses, ingested review batches, normalized reviews, painpoint snapshots, personas, collision logs, and recommendation logs. Configure the database location with `SYLON_DB_PATH`.
+5.  **LLM Client (`agents/llm_client.py`):** Centralized client with robust retry and exponential backoff for rate limiting across both provider APIs.
 
 ## Getting Started
 
@@ -47,13 +50,14 @@ Sylon is an AI-powered, review-grounded business intelligence platform. It inges
     ```
 3.  Install the required dependencies:
     ```bash
-    pip install fastapi uvicorn pydantic python-multipart google-genai openai python-dotenv pyyaml
+    pip install -r requirements.txt
     ```
 4.  Create a `.env` file in the `agents/` directory (or project root) and configure your API keys:
     ```env
     CEREBRAS_API_KEY=your_cerebras_key
     GEMINI_API_KEY=your_gemini_key
     GOOGLE_PLACES_API_KEY=your_google_places_key
+    SYLON_DB_PATH=data/sylon.db
     ```
 
 ### Running the Project
@@ -62,6 +66,25 @@ Sylon is an AI-powered, review-grounded business intelligence platform. It inges
 ```bash
 uvicorn openserv.server:app --reload --port 8000
 ```
+
+**Health Check:**
+```bash
+curl http://localhost:8000/health
+```
+
+**Start the Next.js Frontend:**
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Set `SYLON_API_URL` if the FastAPI backend is not running at `http://localhost:8000`.
+
+**Inspect SQLite Persistence:**
+```bash
+python scripts/inspect_db.py
+```
+
 This is useful if you are exposing the `/chat` endpoint via ngrok to ElevenLabs.
 
 **Run the CLI Interface:**
