@@ -58,52 +58,52 @@ export default function Upload() {
   };
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', animation: "fadeIn 0.5s ease-out" }}>
-      <header style={{ marginBottom: '3rem' }}>
-        <h1 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>Ingest Data</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>Upload your customer reviews (CSV/JSON) to ground Sylon&apos;s advice.</p>
+    <div className="max-w-3xl mx-auto p-4 md:p-8 animate-in fade-in duration-500">
+      <header className="mb-8 pt-8">
+        <h1 className="page-heading text-3xl md:text-4xl font-bold mb-2">Ingest Data</h1>
+        <p className="page-subtitle font-medium">Upload your customer reviews (CSV/JSON) to ground Sylon&apos;s advice.</p>
       </header>
 
-      <div className="glass-card">
-        <form onSubmit={handleUpload} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Business ID</label>
+      <div className="glass-card rounded-3xl p-6 md:p-8">
+        <form onSubmit={handleUpload} className="flex flex-col gap-6">
+          <div className="space-y-2">
+            <label className="block text-sm font-bold text-brand-dark dark:text-white">Business ID</label>
             <input 
               type="text" 
-              className="input-field" 
+              className="w-full px-4 py-3 rounded-xl border border-brand-dark/30 dark:border-white/10 bg-white/80 dark:bg-black/30 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-brand-lightbrown text-brand-dark dark:text-white placeholder:text-brand-dark/50 dark:placeholder:text-white/40"
+              placeholder="e.g., my_business_123" 
               value={businessId}
               onChange={(e) => setBusinessId(e.target.value)}
-              required
+              disabled={loading}
             />
           </div>
-          
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Review File (CSV or JSON)</label>
-            <div style={{ 
-              border: '2px dashed var(--border-color)', 
-              borderRadius: '8px', 
-              padding: '3rem', 
-              textAlign: 'center',
-              background: 'rgba(0,0,0,0.2)'
-            }}>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-bold text-brand-dark dark:text-white">Review File (CSV or JSON)</label>
+            <div className="border-2 border-dashed border-brand-dark/30 dark:border-white/20 rounded-xl p-8 flex flex-col items-center justify-center bg-white/40 dark:bg-black/20 hover:bg-white/60 dark:hover:bg-black/40 transition-colors">
               <input 
                 type="file" 
                 accept=".csv,.json"
+                className="block w-full text-sm text-brand-dark dark:text-white/70 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-brand-lightbrown file:text-white hover:file:bg-brand-brown cursor-pointer transition-all file:mb-2 md:file:mb-0 whitespace-normal md:whitespace-nowrap overflow-hidden text-ellipsis"
                 onChange={(e) => setFile(e.target.files?.[0] || null)}
-                style={{ display: 'block', margin: '0 auto' }}
+                disabled={loading}
               />
             </div>
           </div>
 
-          <button type="submit" className="btn" disabled={!file || loading} style={{ alignSelf: 'flex-start' }}>
+          <button 
+            type="submit" 
+            className="self-start text-white bg-gradient-to-r from-brand-lightbrown to-brand-brown hover:opacity-90 px-6 py-3 rounded-full transition-opacity shadow-md font-bold disabled:opacity-50 mt-2"
+            disabled={!file || loading}
+          >
             {loading ? 'Processing...' : 'Upload & Excavate Personas'}
           </button>
         </form>
 
         {result && (
-          <div style={{ marginTop: '2rem', padding: '1.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
-            <h3 style={{ marginBottom: '1rem', color: 'var(--accent-primary)' }}>Ingestion Complete</h3>
-            <pre style={{ whiteSpace: 'pre-wrap', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+          <div className="mt-8 p-6 bg-white/40 backdrop-blur-md rounded-2xl border border-brand-dark/10">
+            <h3 className="mb-4 font-bold text-brand-brown text-lg">Ingestion Complete</h3>
+            <pre className="whitespace-pre-wrap text-[#2a1610] dark:text-white/80 text-sm overflow-x-auto">
               {JSON.stringify(result, null, 2)}
             </pre>
           </div>

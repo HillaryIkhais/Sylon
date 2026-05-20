@@ -61,50 +61,52 @@ export default function Chat() {
   };
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', animation: "fadeIn 0.5s ease-out", display: 'flex', flexDirection: 'column', height: 'calc(100vh - 150px)' }}>
-      <header style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>Strategist Oracle</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>Simulate changes, ask for recommendations, or discuss strategy.</p>
+    <div className="max-w-4xl mx-auto p-4 md:p-8 flex flex-col min-h-[calc(100dvh-120px)] md:h-[calc(100vh-80px)] animate-in fade-in duration-500">
+      <header className="mb-6 pt-4 md:pt-8">
+        <h1 className="page-heading text-3xl md:text-4xl font-bold mb-2">Strategist Oracle</h1>
+        <p className="page-subtitle font-medium">Simulate changes, ask for recommendations, or discuss strategy.</p>
       </header>
 
-      <div className="glass-card" style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <div style={{ flexGrow: 1, overflowY: 'auto', paddingRight: '1rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '1.5rem' }}>
+      <div className="glass-card rounded-3xl p-4 md:p-6 flex flex-col flex-grow overflow-hidden shadow-sm">
+        <div className="flex-grow overflow-y-auto pr-2 flex flex-col gap-4 mb-4">
           {messages.map((m, i) => (
-            <div key={i} style={{ alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start', maxWidth: '80%' }}>
-              <div style={{ 
-                background: m.role === 'user' ? 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))' : 'rgba(255,255,255,0.05)',
-                padding: '1rem 1.5rem',
-                borderRadius: '16px',
-                borderBottomRightRadius: m.role === 'user' ? '4px' : '16px',
-                borderBottomLeftRadius: m.role === 'assistant' ? '4px' : '16px',
-                color: m.role === 'user' ? 'white' : 'var(--text-primary)',
-              }}>
+            <div key={i} className={`flex flex-col max-w-[80%] ${m.role === 'user' ? 'self-end' : 'self-start'}`}>
+              <div className={`p-4 rounded-2xl ${
+                m.role === 'user' 
+                  ? 'bg-gradient-to-r from-brand-lightbrown to-brand-brown text-white rounded-br-sm shadow-md' 
+                  : 'bg-white/90 dark:bg-black/40 backdrop-blur-md border border-brand-dark/20 dark:border-white/10 dark:text-white rounded-bl-sm'
+              }`}
+            >
                 {m.content}
               </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.5rem', textAlign: m.role === 'user' ? 'right' : 'left' }}>
+              <div className={`text-xs text-brand-dark dark:text-white/50 mt-1 font-semibold ${m.role === 'user' ? 'text-right' : 'text-left'}`}>
                 {m.role === 'user' ? 'You' : 'Sylon'}
               </div>
             </div>
           ))}
           {loading && (
-            <div style={{ alignSelf: 'flex-start' }}>
-              <div style={{ padding: '1rem 1.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '16px', borderBottomLeftRadius: '4px', fontStyle: 'italic', color: 'var(--text-secondary)' }}>
+            <div className="self-start max-w-[80%]">
+              <div className="p-4 rounded-2xl bg-white/80 dark:bg-black/40 backdrop-blur-md border border-brand-dark/20 dark:border-white/10 text-brand-dark dark:text-white/60 rounded-bl-sm italic font-medium">
                 Thinking...
               </div>
             </div>
           )}
         </div>
 
-        <form onSubmit={sendMessage} style={{ display: 'flex', gap: '1rem' }}>
+        <form onSubmit={sendMessage} className="flex flex-col sm:flex-row gap-3 mt-auto">
           <input 
             type="text" 
-            className="input-field" 
+            className="flex-grow px-6 py-3 rounded-full border border-brand-dark/30 dark:border-white/10 bg-white/80 dark:bg-black/30 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-brand-lightbrown text-brand-dark dark:text-white placeholder:text-brand-dark/50 dark:placeholder:text-white/40 w-full"
             placeholder="Type your scenario here..." 
             value={input}
             onChange={(e) => setInput(e.target.value)}
             disabled={loading}
           />
-          <button type="submit" className="btn" disabled={loading}>
+          <button 
+            type="submit" 
+            className="glass-button px-6 py-3 rounded-full font-bold hover:bg-white/80 transition-all disabled:opacity-50 whitespace-nowrap w-full sm:w-auto text-center justify-center flex"
+            disabled={loading}
+          >
             Send
           </button>
         </form>
