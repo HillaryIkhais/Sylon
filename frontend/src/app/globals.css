@@ -145,5 +145,8 @@
 
 /* Ensure full viewport height */
 html, body {
-  min-height: 100vh;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  overflow: hidden;
 }
