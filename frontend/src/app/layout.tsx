@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import PrivyProviderWrapper from "@/components/PrivyProviderWrapper";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -23,12 +24,15 @@ export default function RootLayout({
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <body>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-          <Navbar />
-          <main className="bg-glow-bg min-h-screen">
-            {children}
-          </main>
+          <PrivyProviderWrapper>
+            <Navbar />
+            <main className="bg-glow-bg min-h-screen">
+              {children}
+            </main>
+          </PrivyProviderWrapper>
         </ThemeProvider>
       </body>
     </html>
   );
 }
+

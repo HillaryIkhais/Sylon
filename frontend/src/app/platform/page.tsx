@@ -21,7 +21,7 @@ export default function Platform() {
   }, { scope: containerRef });
 
   return (
-    <div ref={containerRef} className="max-w-6xl mx-auto p-4 md:p-8 flex flex-col min-h-[calc(100dvh-120px)] md:h-[calc(100vh-80px)] animate-in fade-in duration-500 overflow-hidden relative">
+    <div ref={containerRef} className="max-w-6xl mx-auto p-4 md:p-8 flex flex-col min-h-[calc(100dvh-120px)] md:min-h-[calc(100vh-80px)] animate-in fade-in duration-500 relative">
       {/* Background Glow */}
       <div className="absolute top-[10%] left-[10%] w-[80%] h-[80%] bg-brand-lightbrown/10 blur-[150px] rounded-full pointer-events-none z-[-1]" />
 

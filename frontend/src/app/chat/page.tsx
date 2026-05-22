@@ -2,6 +2,8 @@
 import { useState, useEffect, useRef } from 'react';
 import EtherealOrb from "@/components/EtherealOrb";
 import { ConversationProvider } from "@elevenlabs/react";
+import AuthGuard from "@/components/AuthGuard";
+import { usePrivy } from "@privy-io/react-auth";
 
 type ChatMessage = {
   role: string;
@@ -16,6 +18,15 @@ type ChatResponse = {
 const BUSINESS_ID_STORAGE_KEY = 'sylon_business_id';
 
 export default function Chat() {
+  return (
+    <AuthGuard>
+      <ChatContent />
+    </AuthGuard>
+  );
+}
+
+function ChatContent() {
+  const { getAccessToken } = usePrivy();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [businessId, setBusinessId] = useState<string | null>(() => {
     if (typeof window === 'undefined') {
@@ -39,7 +50,9 @@ export default function Chat() {
 
       setLoading(true);
       try {
-        const historyRes = await fetch(`/api/chat/history/${businessId}`);
+        const token = await getAccessToken();
+        const authHeaders: Record<string, string> = token ? { 'Authorization': `Bearer ${token}` } : {};
+        const historyRes = await fetch(`/api/chat/history/${businessId}`, { headers: authHeaders });
         const historyData = await historyRes.json();
         
         if (historyData.status === 'ok' && historyData.history && historyData.history.length > 0) {
@@ -48,7 +61,7 @@ export default function Chat() {
           // Proactive Greeting
           const res = await fetch('/api/chat', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', ...authHeaders },
             body: JSON.stringify({ 
               text: "I just uploaded my customer data. Please summarize the customer archetypes you found and give me one actionable recommendation based on the top pain points.", 
               business_id: businessId 
@@ -88,9 +101,10 @@ export default function Chat() {
         payload.business_id = businessId;
       }
 
+      const token = await getAccessToken();
       const res = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
         body: JSON.stringify(payload)
       });
       const data: ChatResponse = await res.json();

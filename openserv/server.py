@@ -1,6 +1,6 @@
 import asyncio
 import traceback
-from fastapi import FastAPI, UploadFile, File, Form, BackgroundTasks
+from fastapi import FastAPI, UploadFile, File, Form, BackgroundTasks, Depends
 from pydantic import BaseModel
 import sys
 import os
@@ -13,6 +13,7 @@ load_dotenv()
 
 from openserv.orchestrator import process_user_scenario
 from openserv.persistence import persistence_service
+from openserv.dependencies import get_current_user, get_optional_user
 
 app = FastAPI(title="Sylon OpenServ Webhook", description="FastAPI webhook endpoint for ElevenLabs")
 
@@ -52,7 +53,7 @@ async def health():
     }
 
 @app.post("/chat", response_model=ChatResponse)
-async def chat_endpoint(request: ChatRequest):
+async def chat_endpoint(request: ChatRequest, user: dict = Depends(get_current_user)):
     # receives spoken text from ElevenLabs, runs the Sylon multi-agent orchestrator, and returns the Strategist's response text to be spoken back to the user.
     try:
         import uuid
@@ -168,7 +169,7 @@ def process_and_persist_background(business_id: str, batch_id: str, ingestion_pa
         traceback.print_exc()
 
 @app.post("/business/upload-reviews")
-async def upload_reviews(background_tasks: BackgroundTasks, file: UploadFile = File(...), business_id: str = Form(...)):
+async def upload_reviews(background_tasks: BackgroundTasks, user: dict = Depends(get_current_user), file: UploadFile = File(...), business_id: str = Form(...)):
     # for structured review uploads (CSV/JSON files). for voice/pasted text, use the /chat endpoint with INGEST intent.
     try:
         content = await file.read()
@@ -211,7 +212,7 @@ class SampleUploadRequest(BaseModel):
     business_id: str
 
 @app.post("/business/upload-sample")
-async def upload_sample(background_tasks: BackgroundTasks, request: SampleUploadRequest):
+async def upload_sample(background_tasks: BackgroundTasks, request: SampleUploadRequest, user: dict = Depends(get_current_user)):
     try:
         business_id = request.business_id
         csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "utilities", "sampled_reviews.csv")
@@ -238,7 +239,7 @@ async def upload_sample(background_tasks: BackgroundTasks, request: SampleUpload
         return {"status": "error", "message": str(e)}
 
 @app.get("/business/{business_id}/dashboard")
-async def get_dashboard(business_id: str):
+async def get_dashboard(business_id: str, user: dict = Depends(get_current_user)):
     try:
         data = persistence_service.get_business_dashboard_data(business_id)
         if not data["archetypes"] and not data["history"]:
@@ -250,7 +251,7 @@ async def get_dashboard(business_id: str):
         return {"status": "error", "message": str(e)}
 
 @app.get("/chat/history/{business_id}")
-async def get_chat_history(business_id: str):
+async def get_chat_history(business_id: str, user: dict = Depends(get_current_user)):
     from openserv.orchestrator import sessions
     try:
         session = sessions.get_or_create(business_id)
