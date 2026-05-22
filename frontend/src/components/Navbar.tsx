@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import ThemeToggle from './ThemeToggle';
+import AuthButton from './AuthButton';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -14,7 +15,10 @@ export default function Navbar() {
           <Link href="/" className="hover:opacity-80 transition-opacity text-2xl font-bold tracking-wider text-brand-brown">
             SYLON
           </Link>
-          <div className="md:hidden"><ThemeToggle /></div>
+          <div className="md:hidden flex items-center gap-2">
+            <ThemeToggle />
+            <AuthButton />
+          </div>
         </div>
 
         {/* Center Navigation */}
@@ -39,8 +43,10 @@ export default function Navbar() {
         {/* Right CTA */}
         <div className="hidden md:flex items-center space-x-4 flex-shrink-0">
           <ThemeToggle />
+          <AuthButton />
         </div>
       </div>
     </nav>
   );
 }
+

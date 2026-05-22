@@ -12,7 +12,9 @@ We have containerized the entire application for easy evaluation.
    CEREBRAS_API_KEY=your_key
    GEMINI_API_KEY=your_key
    ELEVENLABS_API_KEY=your_key (Optional, for voice)
+   PRIVY_APP_SECRET=your_key (Required, for backend auth)
    ```
+   *Note: Frontend `.env.local` requires `NEXT_PUBLIC_PRIVY_APP_ID` for authentication.*
 
 2. Run the application using Docker Compose:
    ```bash
@@ -41,7 +43,8 @@ Please refer to the following documents for our architectural approach and ablat
 *   [Task A Solution Paper: User Modeling](docs/paper_task_A_user_modeling.md)
 *   [Task B Solution Paper: Recommendation](docs/paper_task_B_recommendation.md)
 
-## Architecture
-- **Frontend:** Next.js (App Router), TailwindCSS, React.
-- **Backend:** FastAPI, Python 3.12.
+## Architecture & Deployment
+- **Frontend:** Next.js (App Router), TailwindCSS, React. Protected via Privy Web2/Web3 Authentication.
+- **Backend:** FastAPI, Python 3.12, SQLite (Local Persistence).
 - **LLM Orchestration:** Cerebras (Llama-3/Qwen) with an automated exponential-backoff failover to Google Gemini 2.0 Flash for API rate-limit resilience.
+- **Deployment:** Fully structured for **QuikDB Compute**. The backend runs as a containerized Python service, and the frontend connects seamlessly. It utilizes QuikDB's decentralized nodes for scalable runtime execution.

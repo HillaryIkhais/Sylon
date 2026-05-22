@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import AuthGuard from "@/components/AuthGuard";
+import { usePrivy } from "@privy-io/react-auth";
 
 type UploadResult = {
   status?: string;
@@ -21,6 +23,15 @@ type UploadResult = {
 const BUSINESS_ID_STORAGE_KEY = 'sylon_business_id';
 
 export default function Upload() {
+  return (
+    <AuthGuard>
+      <UploadContent />
+    </AuthGuard>
+  );
+}
+
+function UploadContent() {
+  const { getAccessToken } = usePrivy();
   const [file, setFile] = useState<File | null>(null);
   const [businessId, setBusinessId] = useState(() => {
     if (typeof window === 'undefined') {
@@ -65,8 +76,10 @@ export default function Upload() {
     formData.append('business_id', businessId);
 
     try {
+      const token = await getAccessToken();
       const res = await fetch('/api/business/upload-reviews', {
         method: 'POST',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
         body: formData
       });
       const data: UploadResult = await res.json();
@@ -94,10 +107,12 @@ export default function Upload() {
     localStorage.setItem(BUSINESS_ID_STORAGE_KEY, newBizId);
 
     try {
+      const token = await getAccessToken();
       const res = await fetch('/api/business/upload-sample', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({ business_id: newBizId })
       });
