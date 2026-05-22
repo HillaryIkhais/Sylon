@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 PRIVY_APP_ID = os.environ.get("PRIVY_APP_ID", os.environ.get("NEXT_PUBLIC_PRIVY_APP_ID", ""))
-PRIVY_JWKS_URL = "https://auth.privy.io/.well-known/jwks.json"
+PRIVY_JWKS_URL = f"https://auth.privy.io/api/v1/apps/{PRIVY_APP_ID}/jwks.json" if PRIVY_APP_ID else "https://auth.privy.io/.well-known/jwks.json"
 
 _jwks_client = jwt.PyJWKClient(PRIVY_JWKS_URL, cache_keys=True)
 
@@ -37,6 +37,7 @@ def verify_privy_token(token: str) -> dict:
             algorithms=["ES256"],
             audience=PRIVY_APP_ID,
             issuer="privy.io",
+            leeway=60,  # Tolerate up to 60 seconds of clock skew
         )
         return decoded
     except jwt.ExpiredSignatureError:

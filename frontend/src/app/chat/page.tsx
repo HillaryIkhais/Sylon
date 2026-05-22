@@ -145,7 +145,7 @@ function ChatContent() {
               <div className={`p-4 rounded-2xl ${
                 m.role === 'user' 
                   ? 'bg-gradient-to-r from-brand-lightbrown to-brand-brown text-white rounded-br-sm shadow-md' 
-                  : 'glass-card rounded-bl-sm font-medium'
+                  : 'glass-card rounded-bl-sm font-medium text-brand-dark dark:text-white'
               }`}
             >
                 {m.content}

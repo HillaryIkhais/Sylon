@@ -4,6 +4,7 @@ import { useRef, useCallback, useEffect, useMemo } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useConversation } from "@elevenlabs/react";
+import { usePrivy } from "@privy-io/react-auth";
 
 export default function EtherealOrb({ onTranscription }: { onTranscription?: (role: string, text: string) => void }) {
   const container = useRef<HTMLDivElement>(null);
@@ -17,6 +18,8 @@ export default function EtherealOrb({ onTranscription }: { onTranscription?: (ro
   const vortexRings = useMemo(() => Array.from({ length: 4 }), []);
   const glassLayers = useMemo(() => Array.from({ length: 3 }), []);
 
+  const { getAccessToken } = usePrivy();
+
   const conversation = useConversation({
     onConnect: () => console.log("ElevenLabs Connected"),
     onDisconnect: () => console.log("ElevenLabs Disconnected"),
@@ -28,6 +31,33 @@ export default function EtherealOrb({ onTranscription }: { onTranscription?: (ro
       }
     },
     onError: (error) => console.error("ElevenLabs Error:", error),
+    clientTools: {
+      get_sylon_strategy: async (parameters: any) => {
+        try {
+          const businessId = localStorage.getItem('sylon_business_id');
+          if (!businessId) return "Tell the user they need to upload sample data first.";
+          
+          const token = await getAccessToken();
+          const authHeaders = token ? { 'Authorization': `Bearer ${token}` } : {};
+          
+          // Call our backend Sylon orchestrator!
+          const res = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...authHeaders },
+            body: JSON.stringify({ 
+              text: "I just uploaded my customer data. Please summarize the customer archetypes you found and give me one actionable recommendation based on the top pain points.", 
+              business_id: businessId 
+            })
+          });
+          const data = await res.json();
+          console.log("Sylon Response to Voice Agent:", data.response);
+          return data.response; // This string goes straight into the Voice Agent's brain!
+        } catch (err) {
+          console.error("Client tool error:", err);
+          return "Sorry, I hit a snag pulling the data. Tell the user there was a database error.";
+        }
+      }
+    }
   });
 
   const { status, isSpeaking } = conversation;

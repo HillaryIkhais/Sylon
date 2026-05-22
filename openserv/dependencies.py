@@ -32,6 +32,7 @@ async def get_current_user(authorization: Optional[str] = Header(None)) -> dict:
         claims = verify_privy_token(token)
         return claims
     except ValueError as e:
+        print(f"[Auth Error] {e}")
         raise HTTPException(status_code=401, detail=str(e))
 
 

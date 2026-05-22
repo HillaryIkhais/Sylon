@@ -29,7 +29,7 @@ export default function Platform() {
         <div className="inline-block px-5 py-1.5 rounded-full bg-brand-lightbrown/10 border border-brand-brown/20 text-brand-brown text-sm font-bold mb-6 tracking-wide uppercase">Why Sylon?</div>
         <h1 className="page-heading text-5xl md:text-6xl font-bold mb-6 leading-tight">Behavioral Intelligence<br />That Actually Works.</h1>
         <p className="text-xl text-brand-dark/70 dark:text-white/60 font-medium leading-relaxed">
-          Traditional AI gives you generic advice based on internet averages. Sylon reads the psychological fingerprints of your actual customers and simulates their reactions before you make a decision.
+          Regular AI gives you generic advice based on internet averages. Sylon reads the psychological fingerprints of your actual customers and simulates their reactions before you make a decision.
         </p>
       </header>
 

@@ -52,8 +52,12 @@ async def health():
         "database": database_status,
     }
 
+from openserv.dependencies import get_current_user, get_optional_user
+from fastapi import Request, HTTPException
+
 @app.post("/chat", response_model=ChatResponse)
-async def chat_endpoint(request: ChatRequest, user: dict = Depends(get_current_user)):
+async def chat_endpoint(request: ChatRequest, req: Request, user: dict = Depends(get_optional_user)):
+    # Webhook exception for ElevenLabs (or frontend client)
     # receives spoken text from ElevenLabs, runs the Sylon multi-agent orchestrator, and returns the Strategist's response text to be spoken back to the user.
     try:
         import uuid

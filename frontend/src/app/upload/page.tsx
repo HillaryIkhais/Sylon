@@ -50,7 +50,10 @@ function UploadContent() {
     if (result?.status === 'processing' && !isDataReady && businessId) {
       interval = setInterval(async () => {
         try {
-          const res = await fetch(`/api/business/${businessId}/dashboard`);
+          const token = await getAccessToken();
+          const res = await fetch(`/api/business/${businessId}/dashboard`, {
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+          });
           const data = await res.json();
           if (data.status === 'ok') {
             setIsDataReady(true);
@@ -62,7 +65,7 @@ function UploadContent() {
       }, 3000);
     }
     return () => clearInterval(interval);
-  }, [result, isDataReady, businessId]);
+  }, [result, isDataReady, businessId, getAccessToken]);
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();

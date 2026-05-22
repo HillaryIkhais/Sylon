@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { usePrivy } from "@privy-io/react-auth";
 
 type InsightData = {
   health_score: number;
@@ -11,6 +12,7 @@ type InsightData = {
 };
 
 export default function Insights() {
+  const { getAccessToken } = usePrivy();
   const [data, setData] = useState<InsightData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +27,10 @@ export default function Insights() {
       }
 
       try {
-        const res = await fetch(`/api/business/${businessId}/dashboard`);
+        const token = await getAccessToken();
+        const res = await fetch(`/api/business/${businessId}/dashboard`, {
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
         const json = await res.json();
         
         if (json.status === "ok") {
@@ -41,7 +46,7 @@ export default function Insights() {
     };
 
     fetchDashboard();
-  }, []);
+  }, [getAccessToken]);
 
   if (loading) {
     return (
