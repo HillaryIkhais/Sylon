@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useCallback, useEffect, useMemo } from "react";
+import { useRef, useCallback, useEffect, useMemo, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useConversation } from "@elevenlabs/react";
@@ -19,6 +19,9 @@ export default function EtherealOrb({ onTranscription, isMobile }: { onTranscrip
   const glassLayers = useMemo(() => Array.from({ length: 3 }), []);
 
   const { getAccessToken } = usePrivy();
+  const [asyncError, setAsyncError] = useState<Error | null>(null);
+
+  if (asyncError) throw asyncError;
 
   const conversation = useConversation({
     onConnect: () => console.log("ElevenLabs Connected"),
@@ -30,7 +33,10 @@ export default function EtherealOrb({ onTranscription, isMobile }: { onTranscrip
         onTranscription(role, message.message);
       }
     },
-    onError: (error) => console.error("ElevenLabs Error:", error),
+    onError: (error: any) => {
+      console.error("ElevenLabs Error:", error);
+      setAsyncError(new Error("ElevenLabs Connection Failed"));
+    },
     clientTools: {
       get_sylon_strategy: async (parameters: any) => {
         try {
