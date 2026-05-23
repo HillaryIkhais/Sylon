@@ -138,29 +138,32 @@ function ChatContent() {
   return (
     <div className="w-full max-w-[1400px] mx-auto p-4 md:p-8 flex flex-col md:flex-row flex-1 animate-in fade-in duration-500 text-brand-dark dark:text-gray-100 gap-4 md:gap-8 items-stretch min-h-0">
       
-      <ConversationProvider>
-        {/* Left Panel: The Ethereal Orb — Desktop */}
-        <div className="hidden md:flex w-full md:w-[55%] flex-col items-center justify-center">
-          <ErrorBoundary>
+      {/* Left Panel: The Ethereal Orb — Desktop */}
+      <div className="hidden md:flex w-full md:w-[55%] flex-col items-center justify-center">
+        <ErrorBoundary fallback={<div className="p-4 text-center text-red-500 font-bold bg-black/10 rounded-xl">Voice Orb Offline (Quota Exceeded). Please use Text Chat.</div>}>
+          <ConversationProvider>
             <EtherealOrb onTranscription={handleTranscription} />
-          </ErrorBoundary>
-        </div>
+          </ConversationProvider>
+        </ErrorBoundary>
+      </div>
 
-        {/* Right Panel: Text Chat */}
-        <div className="w-full md:w-[45%] flex flex-col flex-1 md:flex-initial md:h-full min-h-0">
-          <header className="mb-4 md:mb-6 pt-2 md:pt-0 flex-shrink-0">
-            <h1 className="page-heading text-2xl sm:text-3xl md:text-4xl font-bold mb-1 md:mb-2">Sylon Cognitive Core</h1>
-            <p className="page-subtitle font-medium text-sm md:text-base">Simulate changes, ask for recommendations, or discuss strategy.</p>
-          </header>
+      {/* Right Panel: Text Chat */}
+      <div className="w-full md:w-[45%] flex flex-col flex-1 md:flex-initial md:h-full min-h-0">
+        <header className="mb-4 md:mb-6 pt-2 md:pt-0 flex-shrink-0">
+          <h1 className="page-heading text-2xl sm:text-3xl md:text-4xl font-bold mb-1 md:mb-2">Sylon Cognitive Core</h1>
+          <p className="page-subtitle font-medium text-sm md:text-base">Simulate changes, ask for recommendations, or discuss strategy.</p>
+        </header>
 
-          {/* Ethereal Orb — Mobile */}
-          <div className="md:hidden flex w-full justify-center mt-2 mb-2">
-            <div className="transform scale-75 origin-top">
-              <ErrorBoundary>
+        {/* Ethereal Orb — Mobile */}
+        <div className="md:hidden flex w-full justify-center mt-2 mb-2">
+          <div className="transform scale-75 origin-top">
+            <ErrorBoundary fallback={<div className="p-4 text-center text-red-500 font-bold bg-black/10 rounded-xl">Voice Orb Offline (Quota Exceeded). Please use Text Chat.</div>}>
+              <ConversationProvider>
                 <EtherealOrb onTranscription={handleTranscription} isMobile={true} />
-              </ErrorBoundary>
-            </div>
+              </ConversationProvider>
+            </ErrorBoundary>
           </div>
+        </div>
 
         <div className="glass-card rounded-3xl p-3 sm:p-4 md:p-6 flex flex-col flex-1 overflow-hidden shadow-sm min-h-0">
           <div className="flex-1 overflow-y-auto pr-1 sm:pr-2 flex flex-col gap-3 sm:gap-4 mb-3 sm:mb-4 min-h-0">
@@ -223,7 +226,6 @@ function ChatContent() {
           </form>
         </div>
       </div>
-      </ConversationProvider>
     </div>
   );
 }
