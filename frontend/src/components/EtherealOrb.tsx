@@ -6,7 +6,7 @@ import { useGSAP } from "@gsap/react";
 import { useConversation } from "@elevenlabs/react";
 import { usePrivy } from "@privy-io/react-auth";
 
-export default function EtherealOrb({ onTranscription }: { onTranscription?: (role: string, text: string) => void }) {
+export default function EtherealOrb({ onTranscription, isMobile }: { onTranscription?: (role: string, text: string) => void, isMobile?: boolean }) {
   const container = useRef<HTMLDivElement>(null);
   const coreRef = useRef<HTMLDivElement>(null);
   const vortexRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -275,7 +275,7 @@ export default function EtherealOrb({ onTranscription }: { onTranscription?: (ro
         <div 
           ref={coreRef}
           className="absolute w-32 h-32 md:w-48 md:h-48 bg-gradient-to-tr from-brand-brown via-brand-lightbrown to-brand-glow rounded-full"
-          style={{ filter: 'blur(40px)' }}
+          style={{ filter: 'blur(40px)', willChange: 'transform, filter' }}
         />
 
         {/* The Material: Twisted Crystal / Liquid Glass inner layers */}
@@ -288,7 +288,8 @@ export default function EtherealOrb({ onTranscription }: { onTranscription?: (ro
               borderRadius: i === 0 ? '40% 60% 70% 30% / 40% 50% 60% 50%' : i === 1 ? '60% 40% 30% 70% / 60% 30% 70% 40%' : '50% 50% 50% 50% / 40% 40% 60% 60%',
               boxShadow: `inset 0 0 ${20 + i * 10}px rgba(230,157,129,0.5)`,
               background: i === 2 ? 'linear-gradient(135deg, rgba(230,157,129,0.4) 0%, transparent 100%)' : 'transparent',
-              backdropFilter: i === 0 ? 'blur(4px)' : 'none'
+              backdropFilter: i === 0 ? 'blur(4px)' : 'none',
+              willChange: 'transform'
             }}
           />
         ))}
@@ -297,6 +298,7 @@ export default function EtherealOrb({ onTranscription }: { onTranscription?: (ro
         <div 
           ref={domeRef}
           className="absolute inset-0 bg-brand-lightbrown/10 backdrop-blur-md border border-brand-lightbrown/60 rounded-full shadow-[inset_0_0_40px_rgba(230,157,129,0.6),0_20px_40px_rgba(0,0,0,0.1)] mix-blend-overlay transition-colors"
+          style={{ willChange: 'transform, box-shadow' }}
         />
         
         {/* Specular Highlight (The gleam on the glass) */}
