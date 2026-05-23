@@ -48,8 +48,13 @@ export default function EtherealOrb({ onTranscription, isMobile }: { onTranscrip
     onMessage: (message: any) => {
       console.log("Message:", message);
       if (onTranscription && message.message) {
-        const role = message.source === 'ai' ? 'assistant' : 'user';
-        onTranscription(role, message.message);
+        const text = message.message;
+        // The default greeting from the system prompt ruins the chat flow, so we filter it out if it appears
+        if (text.includes("I'm Sylon, your business strategist. Tell me what you're thinking")) return;
+
+        // Ensure robust source mapping (ElevenLabs might use 'ai', 'agent', etc.)
+        const role = message.source === 'user' ? 'user' : 'assistant';
+        onTranscription(role, text);
       }
     },
     onError: (error: any) => {

@@ -60,7 +60,11 @@ function ChatContent() {
         const historyData = await historyRes.json();
         
         if (historyData.status === 'ok' && historyData.history && historyData.history.length > 0) {
-          setMessages(historyData.history);
+          // Filter out the internal system prompt so it doesn't look like the user typed it
+          const cleanHistory = historyData.history.filter((m: ChatMessage) => 
+            !m.content.includes("I just uploaded my customer data. Please summarize the customer archetypes")
+          );
+          setMessages(cleanHistory);
         } else {
           // Proactive Greeting
           const res = await fetch('/api/chat', {
@@ -171,7 +175,7 @@ function ChatContent() {
                     : 'glass-card rounded-bl-sm font-medium text-brand-dark dark:text-white'
                 }`}
               >
-                  {m.content}
+                  <MarkdownText text={m.content} />
                 </div>
                 <div className={`text-xs text-brand-dark dark:text-white/50 mt-1 font-semibold ${m.role === 'user' ? 'text-right' : 'text-left'}`}>
                   {m.role === 'user' ? 'You' : 'Sylon'}
@@ -224,4 +228,17 @@ function ChatContent() {
       </div>
     </div>
   );
+}
+
+// Simple markdown formatter for bold, italics, and lists
+function MarkdownText({ text }: { text: string }) {
+  const formatText = (content: string) => {
+    let html = content
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/^- (.*)$/gm, '<li class="ml-4 list-disc">$1</li>')
+      .replace(/\n/g, '<br />');
+    return html;
+  };
+  return <div className="space-y-1.5 leading-relaxed" dangerouslySetInnerHTML={{ __html: formatText(text) }} />;
 }
