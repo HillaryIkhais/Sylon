@@ -50,7 +50,13 @@ function UploadContent() {
     if (result?.status === 'processing' && !isDataReady && businessId) {
       interval = setInterval(async () => {
         try {
-          const res = await fetch(`/api/business/${businessId}/dashboard`);
+          const token = await getAccessToken();
+          const res = await fetch(`/api/business/${businessId}/dashboard`, {
+            headers: {
+              'Bypass-Tunnel-Reminder': 'true',
+              ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+            }
+          });
           const data = await res.json();
           if (data.status === 'ok') {
             setIsDataReady(true);
@@ -62,7 +68,7 @@ function UploadContent() {
       }, 3000);
     }
     return () => clearInterval(interval);
-  }, [result, isDataReady, businessId]);
+  }, [result, isDataReady, businessId, getAccessToken]);
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,7 +85,10 @@ function UploadContent() {
       const token = await getAccessToken();
       const res = await fetch('/api/business/upload-reviews', {
         method: 'POST',
-        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+        headers: {
+          'Bypass-Tunnel-Reminder': 'true',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: formData
       });
       const data: UploadResult = await res.json();
@@ -112,6 +121,7 @@ function UploadContent() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Bypass-Tunnel-Reminder': 'true',
           ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({ business_id: newBizId })

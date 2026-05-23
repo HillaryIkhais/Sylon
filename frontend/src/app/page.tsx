@@ -6,9 +6,15 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ConversationProvider } from "@elevenlabs/react";
 import EtherealOrb from "@/components/EtherealOrb";
+import { usePrivy } from "@privy-io/react-auth";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Home() {
+  const { login, authenticated } = usePrivy();
+  const router = useRouter();
+
   const containerRef = useRef<HTMLDivElement>(null);
   const card1Ref = useRef<HTMLDivElement>(null);
   const card2Ref = useRef<HTMLDivElement>(null);
@@ -128,15 +134,15 @@ export default function Home() {
           >
             You see a customer. Sylon sees a person.
           </p>
-          <Link
-            href="/upload"
+          <button
+            onClick={() => authenticated ? router.push('/upload') : login()}
             className="glass-button text-brand-dark px-8 py-3 rounded-full font-bold inline-flex items-center space-x-2 hover:bg-white/80 transition-all shadow-sm"
           >
             <span>Meet Sylon</span>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" strokeLinecap="round" strokeLinejoin="round"></path>
             </svg>
-          </Link>
+          </button>
         </div>
 
         {/* Features Grid */}

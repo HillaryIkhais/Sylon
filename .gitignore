@@ -239,6 +239,6 @@ frontend/out/
 # Large datasets & Logs
 data/*.json
 data/*.csv
-utilities/*.csv
+utilities/sampled_reviews.csv
 *_logs.txt
 
