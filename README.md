@@ -2,10 +2,10 @@
 
 Sylon is an agentic behavioral intelligence platform that transforms unstructured customer feedback into psychologically grounded personas, allowing businesses to simulate operational changes before making them.
 
-**Live Platform:** [https://sylon.vercel.app/](https://sylon.vercel.app/)
+**Live Web App:** [https://sylon.vercel.app/](https://sylon.vercel.app/)
 
 ## The Problem
-Traditional business intelligence relies on aggregate star ratings (e.g., "4.3 stars"). However, static scores obscure the reality of human behavior—they ignore temporal drift and contextual friction. A business owner knows a review is negative, but they don't know *who* that customer is, *why* their expectations shifted, or how to win them back without alienating others.
+Traditional business intelligence relies on aggregate star ratings. However, static scores obscure the reality of human behavior, they ignore temporal drift and contextual friction. A business owner knows a review is negative, but they don't know *who* that customer is, *why* their expectations shifted, or how to win them back without alienating others.
 
 ## The Solution
 Sylon moves beyond collaborative filtering by treating customers as evolving psychological entities. 
@@ -16,12 +16,12 @@ Sylon is completely domain-agnostic. While the primary demo focuses on the hospi
 
 ## Agentic Workflow Architecture
 
-Sylon is built on a highly modular, multi-agent orchestration architecture to handle complex reasoning without hallucinations:
+Sylon is built on a highly modular, multi agent orchestration architecture to handle complex reasoning without hallucinations:
 
-1. **The Intent Router:** Powered by Gemini 2.0 Flash, this agent analyzes conversation history to classify user intent (`SIMULATE`, `RECOMMEND`, `INGEST`, or `CHAT`) and routes the prompt to the appropriate subsystem.
+1. **The Intent Router:** Powered by Gemini 2.0 Flash, this agent analyzes conversation history to classify user intent (SIMULATE, RECOMMEND, INGEST, or CHAT) and routes the prompt to the appropriate subsystem.
 2. **The Extraction Swarm:** During data ingestion, multiple worker agents analyze thousands of reviews in parallel, synthesizing localized pain points and personas before committing them to the database.
 3. **The Strategist Agent:** When executing a recommendation task, this agent automatically injects the active SQLite business session, the extracted personas, and the pain points into a zero-shot reasoning prompt. This grounds the LLM strictly in historical data.
-4. **The Voice Integration:** ElevenLabs Conversational AI is hooked into the Strategist Agent via a live client tool, allowing real-time vocal reasoning.
+4. **The Voice Integration:** ElevenLabs Conversational AI is hooked into the Strategist Agent via a live client tool, allowing real time vocal reasoning.
 
 ## Documentation
 
