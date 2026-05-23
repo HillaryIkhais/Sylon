@@ -1,8 +1,9 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import EtherealOrb from "@/components/EtherealOrb";
 import { ConversationProvider } from "@elevenlabs/react";
 import AuthGuard from "@/components/AuthGuard";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { usePrivy } from "@privy-io/react-auth";
 
 type ChatMessage = {
@@ -85,9 +86,15 @@ function ChatContent() {
     initChat();
   }, [businessId]);
 
-  const handleTranscription = (role: string, text: string) => {
-    setMessages(prev => [...prev, { role, content: text }]);
-  };
+  const handleTranscription = useCallback((role: string, text: string) => {
+    setMessages(prev => {
+      // Prevent double-replies from ElevenLabs event loops or React Strict Mode
+      if (prev.length > 0 && prev[prev.length - 1].content === text) {
+        return prev;
+      }
+      return [...prev, { role, content: text }];
+    });
+  }, []);
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,7 +141,9 @@ function ChatContent() {
       <ConversationProvider>
         {/* Left Panel: The Ethereal Orb — Desktop */}
         <div className="hidden md:flex w-full md:w-[55%] flex-col items-center justify-center">
-          <EtherealOrb onTranscription={handleTranscription} />
+          <ErrorBoundary>
+            <EtherealOrb onTranscription={handleTranscription} />
+          </ErrorBoundary>
         </div>
 
         {/* Right Panel: Text Chat */}
@@ -144,10 +153,12 @@ function ChatContent() {
             <p className="page-subtitle font-medium text-sm md:text-base">Simulate changes, ask for recommendations, or discuss strategy.</p>
           </header>
 
-          {/* Mobile orb — compact version */}
-          <div className="md:hidden flex justify-center mb-4 flex-shrink-0">
-            <div className="scale-[0.55] origin-center -my-16">
-              <EtherealOrb onTranscription={handleTranscription} isMobile={true} />
+          {/* Ethereal Orb — Mobile */}
+          <div className="md:hidden flex w-full justify-center mt-2 mb-2">
+            <div className="transform scale-75 origin-top">
+              <ErrorBoundary>
+                <EtherealOrb onTranscription={handleTranscription} isMobile={true} />
+              </ErrorBoundary>
             </div>
           </div>
 
