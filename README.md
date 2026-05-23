@@ -1,54 +1,54 @@
-# Sylon Behavioral Intelligence
+# Sylon
 
-Sylon is a multi-agent behavioral intelligence platform designed for the **DSN X BCT LLM Agent Challenge**. It transforms unstructured customer reviews into psychologically grounded personas and simulates how they will react to business decisions.
+Sylon is an agentic behavioral intelligence platform that transforms unstructured customer feedback into psychologically grounded personas, allowing businesses to simulate operational changes before making them.
 
-## Live Deployments
-- **Frontend (Web App):** [https://sylon.vercel.app/](https://sylon.vercel.app/)
-- **Backend (API):** [https://sylon.onrender.com/](https://sylon.onrender.com/)
+**Live Platform:** [https://sylon.vercel.app/](https://sylon.vercel.app/)
 
-## Quick Start (Judges Evaluation)
+## The Problem
+Traditional business intelligence relies on aggregate star ratings (e.g., "4.3 stars"). However, static scores obscure the reality of human behavior—they ignore temporal drift and contextual friction. A business owner knows a review is negative, but they don't know *who* that customer is, *why* their expectations shifted, or how to win them back without alienating others.
 
-We have containerized the entire application for easy evaluation. 
-**Prerequisites:** You must have Docker and Docker Compose installed.
+## The Solution
+Sylon moves beyond collaborative filtering by treating customers as evolving psychological entities. 
 
-1. Ensure your API keys are set in your environment or a `.env` file in the root directory:
+Instead of generating a static dashboard, Sylon reads raw, unstructured data and excavates distinct customer archetypes. It acts as a conversational strategist, predicting how specific personas will react to future business decisions and recommending operational pivots grounded entirely in historical frustration data.
+
+Sylon is completely domain-agnostic. While the primary demo focuses on the hospitality sector, the ingestion engine instantly adapts to extract relevant behavioral metrics for retail, real estate, SaaS, or education simply by uploading a different dataset.
+
+## Agentic Workflow Architecture
+
+Sylon is built on a highly modular, multi-agent orchestration architecture to handle complex reasoning without hallucinations:
+
+1. **The Intent Router:** Powered by Gemini 2.0 Flash, this agent analyzes conversation history to classify user intent (`SIMULATE`, `RECOMMEND`, `INGEST`, or `CHAT`) and routes the prompt to the appropriate subsystem.
+2. **The Extraction Swarm:** During data ingestion, multiple worker agents analyze thousands of reviews in parallel, synthesizing localized pain points and personas before committing them to the database.
+3. **The Strategist Agent:** When executing a recommendation task, this agent automatically injects the active SQLite business session, the extracted personas, and the pain points into a zero-shot reasoning prompt. This grounds the LLM strictly in historical data.
+4. **The Voice Integration:** ElevenLabs Conversational AI is hooked into the Strategist Agent via a live client tool, allowing real-time vocal reasoning.
+
+## Documentation
+
+For a deep dive into the underlying architecture, mathematical evaluations, and scaling roadmap, refer to the official documentation:
+
+*   [Task A Solution Paper: User Modeling](docs/paper_task_A_user_modeling.md)
+*   [Task B Solution Paper: Recommendation & Future Roadmap](docs/paper_task_B_recommendation.md)
+
+## Local Development & Contributing
+
+If you wish to run the Sylon Engine locally or contribute to the repository, the application is fully containerized.
+
+1. Clone the repository and create a `.env` file in the root directory:
    ```bash
    CEREBRAS_API_KEY=your_key
    GEMINI_API_KEY=your_key
-   ELEVENLABS_API_KEY=your_key (Optional, for voice)
-   PRIVY_APP_SECRET=your_key (Required, for backend auth)
+   ELEVENLABS_API_KEY=your_key
+   PRIVY_APP_SECRET=your_key
    ```
-   *Note: Frontend `.env.local` requires `NEXT_PUBLIC_PRIVY_APP_ID` for authentication.*
+   *Note: Frontend `.env.local` requires `NEXT_PUBLIC_PRIVY_APP_ID`.*
 
-2. Run the application using Docker Compose:
+2. Spin up the cluster using Docker Compose:
    ```bash
    docker compose up --build
    ```
 
-3. Open your browser and navigate to: **http://localhost:3000**
+3. Open your browser to: **http://localhost:3000**
 
-## Evaluating the Hackathon Tasks
-
-To preserve the immersion of a market-ready B2B platform, we did not label the primary UI buttons "Task A" and "Task B". Instead, they are integrated natively into the Sylon Chat interface.
-
-### Task A: User Modeling (Simulate Audience Reaction)
-1. Navigate to the **Upload Data** page and click "Try with Sample Data".
-2. Once the personas are excavated, click "Engage Sylon Core" to enter the Chat.
-3. Above the chat input, click the quick-action button: **"Simulate Audience Reaction"**.
-4. *Sylon will use the excavated Nigerian personas to simulate a highly contextual reaction and star rating to a hypothetical business change.*
-
-### Task B: Recommendation (Generate Persona Recommendations)
-1. In the Sylon Chat interface, click the quick-action button: **"Request Product Recommendations"**.
-2. *Sylon will dynamically analyze the specific pain points and behavioral traits of the excavated personas to recommend products/services explicitly tailored to their context.*
-
-## Solution Papers
-
-Please refer to the following documents for our architectural approach and ablation studies:
-*   [Task A Solution Paper: User Modeling](docs/paper_task_A_user_modeling.md)
-*   [Task B Solution Paper: Recommendation](docs/paper_task_B_recommendation.md)
-
-## Architecture & Deployment
-- **Frontend:** Next.js (App Router), TailwindCSS, React. Protected via Privy Web2/Web3 Authentication.
-- **Backend:** FastAPI, Python 3.12, SQLite (Local Persistence).
-- **LLM Orchestration:** Cerebras (Llama-3/Qwen) with an automated exponential-backoff failover to Google Gemini 2.0 Flash for API rate-limit resilience.
-- **Deployment:** Fully structured for **QuikDB Compute**. The backend runs as a containerized Python service, and the frontend connects seamlessly. It utilizes QuikDB's decentralized nodes for scalable runtime execution.
+---
+*Built with Python, FastAPI, Next.js, Cerebras, Google GenAI, and SQLite.*
