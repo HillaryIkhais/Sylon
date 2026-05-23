@@ -25,10 +25,10 @@ Sylon is built on a highly modular, multi agent orchestration architecture to ha
 
 ## Documentation
 
-For a deep dive into the underlying architecture, mathematical evaluations, and scaling roadmap, refer to the official documentation:
+For a deep dive into the underlying architecture, mathematical evaluations, and scaling roadmap, refer to the official solution papers:
 
-*   [Task A Solution Paper: User Modeling](docs/paper_task_A_user_modeling.md)
-*   [Task B Solution Paper: Recommendation & Future Roadmap](docs/paper_task_B_recommendation.md)
+*   [Task A Solution Paper: Deep User Modeling](task_a_solution_paper.md)
+*   [Task B Solution Paper: Conversational Recommendation](task_b_solution_paper.md)
 
 ## Local Development & Contributing
 
