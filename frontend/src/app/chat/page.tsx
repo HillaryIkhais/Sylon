@@ -51,7 +51,10 @@ function ChatContent() {
       setLoading(true);
       try {
         const token = await getAccessToken();
-        const authHeaders: Record<string, string> = token ? { 'Authorization': `Bearer ${token}` } : {};
+        const authHeaders: Record<string, string> = { 
+          'Bypass-Tunnel-Reminder': 'true',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}) 
+        };
         const historyRes = await fetch(`/api/chat/history/${businessId}`, { headers: authHeaders });
         const historyData = await historyRes.json();
         
@@ -104,7 +107,11 @@ function ChatContent() {
       const token = await getAccessToken();
       const res = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Bypass-Tunnel-Reminder': 'true',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}) 
+        },
         body: JSON.stringify(payload)
       });
       const data: ChatResponse = await res.json();

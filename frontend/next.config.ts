@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const apiUrl = process.env.SYLON_API_URL || "https://sandy-replaced-since-teams.trycloudflare.com";
+const apiUrl = process.env.SYLON_API_URL || "https://sylon-demo-2026.loca.lt";
 
 const nextConfig: NextConfig = {
   output: 'standalone',

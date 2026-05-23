@@ -38,7 +38,10 @@ export default function EtherealOrb({ onTranscription }: { onTranscription?: (ro
           if (!businessId) return "Tell the user they need to upload sample data first.";
           
           const token = await getAccessToken();
-          const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+          const headers: Record<string, string> = { 
+            'Content-Type': 'application/json',
+            'Bypass-Tunnel-Reminder': 'true'
+          };
           if (token) {
             headers['Authorization'] = `Bearer ${token}`;
           }

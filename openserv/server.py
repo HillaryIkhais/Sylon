@@ -219,7 +219,7 @@ class SampleUploadRequest(BaseModel):
 async def upload_sample(background_tasks: BackgroundTasks, request: SampleUploadRequest, user: dict = Depends(get_current_user)):
     try:
         business_id = request.business_id
-        csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "utilities", "sampled_reviews.csv")
+        csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "utilities", "mini_sample.csv")
         
         from openserv.tools import tool_ingest_reviews, tool_extract_painpoints
         import uuid

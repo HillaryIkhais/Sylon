@@ -52,7 +52,10 @@ function UploadContent() {
         try {
           const token = await getAccessToken();
           const res = await fetch(`/api/business/${businessId}/dashboard`, {
-            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+            headers: {
+              'Bypass-Tunnel-Reminder': 'true',
+              ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+            }
           });
           const data = await res.json();
           if (data.status === 'ok') {
@@ -82,7 +85,10 @@ function UploadContent() {
       const token = await getAccessToken();
       const res = await fetch('/api/business/upload-reviews', {
         method: 'POST',
-        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+        headers: {
+          'Bypass-Tunnel-Reminder': 'true',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: formData
       });
       const data: UploadResult = await res.json();
@@ -115,6 +121,7 @@ function UploadContent() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Bypass-Tunnel-Reminder': 'true',
           ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({ business_id: newBizId })

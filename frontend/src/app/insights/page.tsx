@@ -29,7 +29,10 @@ export default function Insights() {
       try {
         const token = await getAccessToken();
         const res = await fetch(`/api/business/${businessId}/dashboard`, {
-          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+          headers: {
+            'Bypass-Tunnel-Reminder': 'true',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+          }
         });
         const json = await res.json();
         

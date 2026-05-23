@@ -1,32 +1,85 @@
-# DSN X BCT LLM Agent Challenge: Task A Solution Paper
+# DSN X BCT LLM Agent Challenge — Task A Solution Paper
 **Team Name:** Cascade
-**Team/Candidate:** Ikhais Hillary
-**Project:** Sylon
+**Candidate Name:** Ikhais Hillary
+**Project Name:** Sylon
 **Task:** Task A (User Modeling)
 
-## 1. Abstract & Approach
-While traditional user modeling relies on rigid collaborative filtering or static matrix factorization, human behavior is intrinsically contextual, dynamic, and prone to "behavioral drift." Sylon solves Task A through **Grounded Generative Personas**. 
+1. Overview
 
-Instead of representing a user as a vector of preferences, Sylon's *Archaeologist Agent* ingests raw, unstructured review histories (via JSON, CSV, PDF, or text), extracts critical pain points, and clusters the data into distinct, psychologically rich behavioral archetypes. These personas are not generic "buyer profiles"; they are explicitly infused with authentic Nigerian cultural nuances, utilizing local slang (e.g., *abeg*, *omo*) and reflecting localized consumer priorities (e.g., generator noise tolerance, informal service expectations). 
+Most recommendation and user-modeling systems treat people like static data points — vectors, scores, or rows in a matrix. But real people are inconsistent. Their preferences change, emotions affect decisions, and context matters.
 
-## 2. Architecture: The Behavioral Synthesis Engine
-Sylon employs a multi-agent orchestrated architecture, designed to balance generative flexibility with strict data grounding.
+Sylon approaches this differently through what I call Grounded Generative Personas.
 
-### The Archaeologist (Ingestion & Extraction)
-When a business loads a dataset, the Archaeologist chunks the data and runs a Map-Reduce pipeline against a large LLM (Cerebras Llama-3/Qwen) to extract recurring complaints, praise, and trends. It then synthesizes these signals into JSON-formatted persona objects containing:
-- **Narrative Profile:** A character portrait grounded in actual review quotes, written with Nigerian cultural context.
-- **Behavioral Drifts:** Extracted shifts in preference over time (e.g., "Initially forgiving of wait times, now increasingly impatient").
-- **Rating Fidelity:** The user's historical `avg_rating` and `rating_variance` to inform simulated outputs.
-- **Grounding Quotes:** Exact, verifiable strings from the dataset.
+Instead of building rigid user profiles from ratings alone, Sylon analyzes raw customer reviews from datasets like JSON, CSV, PDFs, or plain text and turns them into realistic behavioral personas. The goal is not just to know what users like, but why they react the way they do.
 
-### The Simulator (Predictive Collision)
-To generate a simulated review and star rating for an unseen item/scenario, Sylon routes the input to the Simulator. The Simulator takes a generated persona and forces a "Collision Analysis" against the proposed business scenario (the "unseen item"). 
-By leveraging the persona's *Narrative Profile* and *Grounding Quotes*, the Simulator predicts exact friction points and outputs a simulated reaction, tone, and star rating that strictly adheres to the user's established psychological baseline.
+What makes this especially important is the Nigerian context. Customer behavior here is shaped by things many traditional systems completely ignore — patience for delays, expectations around service, environmental issues like generator noise, communication tone, and even local slang like abeg or omo. Sylon reflects those realities directly in the generated personas.
 
-## 3. Handling API Constraints (Cerebras-to-Gemini Failover)
-During large-scale ingestion (e.g., processing 65,000 Yelp/Amazon reviews), Token Quota Exceeded (429) errors are inevitable. To ensure uninterrupted user modeling, Sylon implements an automatic, exponential-backoff failover layer. If Cerebras exhausts its daily quota, the system seamlessly routes the prompt to Google Gemini 2.0 Flash, dynamically adjusting the `response_mime_type` to guarantee strict JSON schema compliance during the transition.
 
-## 4. Evaluation & Behavioral Fidelity
-Because Sylon's personas are mapped directly to verbatim quotes and `avg_rating` statistics from the source dataset, the generated reviews maintain exceptionally high behavioral fidelity. The Simulator refuses to hallucinate interactions; it projects the persona's known biases onto the explicitly provided parameters of the unseen item, resulting in highly realistic, Nigerian-contextualized simulated ratings.
+---
 
-*To evaluate Task A in the Sylon platform, navigate to the Chat interface and click "Simulate Audience Reaction".*
+2. System Architecture — Behavioral Synthesis Engine
+
+Sylon uses a multi-agent architecture designed to keep outputs flexible while still grounded in real customer data.
+
+The Archaeologist Agent
+
+The first stage is handled by the Archaeologist Agent.
+
+When a business uploads customer reviews, the system breaks the data into chunks and processes them through a Map-Reduce pipeline using large language models like Cerebras Llama-3 and Qwen.
+
+From this, the system extracts recurring complaints, compliments, emotional patterns, and behavioral trends. It then builds structured persona objects containing:
+
+A narrative personality profile based on real reviews
+
+Behavioral changes over time
+
+Rating behavior and consistency
+
+Direct grounding quotes pulled from the dataset
+
+
+For example, a persona might begin as someone tolerant of slow delivery but gradually become more impatient after repeated bad experiences. These shifts are captured as part of the user model instead of being ignored.
+
+
+---
+
+The Simulator Agent
+
+Once personas are generated, the Simulator Agent predicts how those personas would react to a new product, service, or business scenario.
+
+The system performs what Sylon calls a Collision Analysis — comparing the behavioral profile of the persona against the unseen scenario.
+
+Using the persona’s narrative traits and grounded review history, the Simulator predicts likely friction points, emotional tone, and star ratings while staying consistent with the user’s historical behavior.
+
+The result is a simulated review that feels realistic because it is tied directly to real patterns extracted from the dataset.
+
+
+---
+
+3. Handling API Limits and Failover
+
+Processing large datasets can easily trigger API quota errors, especially during high-volume ingestion.
+
+To avoid interruptions, Sylon includes an automatic failover system. If Cerebras reaches its token quota limit, requests are automatically rerouted to Gemini 2.0 Flash using exponential backoff and retry logic.
+
+The system also dynamically adjusts response formatting to maintain strict JSON schema consistency across providers. This allows ingestion to continue smoothly even during provider outages or rate limits.
+
+
+---
+
+4. Evaluation and Behavioral Accuracy
+
+Sylon’s personas remain highly grounded because they are directly tied to:
+
+Verbatim customer quotes
+
+Historical ratings
+
+Consistent behavioral patterns extracted from the dataset
+
+
+The system does not invent random personality traits or reactions. Instead, it projects known preferences and frustrations onto new scenarios to simulate believable customer responses.
+
+This produces outputs that feel significantly more human, culturally aware, and context-sensitive than traditional recommendation systems.
+
+To test Task A inside Sylon, open the Chat interface and select “Simulate Audience Reaction.”
