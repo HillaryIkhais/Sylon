@@ -33,4 +33,4 @@ To ensure the system is practically applicable, I focused heavily on behavioral 
 As a targeted capability, I explicitly contextualized Sylon’s generative outputs for the Nigerian market. It accurately mirrors local emotional volatility, high service standards, and unique vernacular like "wahala" and "omo", ensuring the simulated personas feel grounded and culturally authentic.
 
 ### Reproducibility and Deployment
-Transparency and verifiability were central to my architecture. The entire persona extraction pipeline is fully documented. The repository includes clean data ingestion scripts and the complete Python logic for splitting phases, detecting drift, and generating LLM personas, ensuring seamless code reproducibility for the judges.
+Transparency and verifiability were central to my architecture. The entire persona extraction pipeline is fully documented. The repository includes clean data ingestion scripts and the complete Python logic for splitting phases, detecting drift, and generating LLM personas, ensuring seamless code reproducibility.
