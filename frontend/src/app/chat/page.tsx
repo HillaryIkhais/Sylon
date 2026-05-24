@@ -1,8 +1,9 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import EtherealOrb from "@/components/EtherealOrb";
 import { ConversationProvider } from "@elevenlabs/react";
 import AuthGuard from "@/components/AuthGuard";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { usePrivy } from "@privy-io/react-auth";
 
 type ChatMessage = {
@@ -59,7 +60,11 @@ function ChatContent() {
         const historyData = await historyRes.json();
         
         if (historyData.status === 'ok' && historyData.history && historyData.history.length > 0) {
-          setMessages(historyData.history);
+          // Filter out the internal system prompt so it doesn't look like the user typed it
+          const cleanHistory = historyData.history.filter((m: ChatMessage) => 
+            !m.content.includes("I just uploaded my customer data. Please summarize the customer archetypes")
+          );
+          setMessages(cleanHistory);
         } else {
           // Proactive Greeting
           const res = await fetch('/api/chat', {
@@ -85,9 +90,15 @@ function ChatContent() {
     initChat();
   }, [businessId]);
 
-  const handleTranscription = (role: string, text: string) => {
-    setMessages(prev => [...prev, { role, content: text }]);
-  };
+  const handleTranscription = useCallback((role: string, text: string) => {
+    setMessages(prev => {
+      // Prevent double-replies from ElevenLabs event loops or React Strict Mode
+      if (prev.length > 0 && prev[prev.length - 1].content === text) {
+        return prev;
+      }
+      return [...prev, { role, content: text }];
+    });
+  }, []);
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -131,25 +142,28 @@ function ChatContent() {
   return (
     <div className="w-full max-w-[1400px] mx-auto p-4 md:p-8 flex flex-col md:flex-row flex-1 animate-in fade-in duration-500 text-brand-dark dark:text-gray-100 gap-4 md:gap-8 items-stretch min-h-0">
       
-      <ConversationProvider>
-        {/* Left Panel: The Ethereal Orb — Desktop */}
-        <div className="hidden md:flex w-full md:w-[55%] flex-col items-center justify-center">
+      {/* Left Panel: The Ethereal Orb — Desktop */}
+      <div className="hidden md:flex w-full md:w-[55%] flex-col items-center justify-center">
+        <ConversationProvider>
           <EtherealOrb onTranscription={handleTranscription} />
-        </div>
+        </ConversationProvider>
+      </div>
 
-        {/* Right Panel: Text Chat */}
-        <div className="w-full md:w-[45%] flex flex-col flex-1 md:flex-initial md:h-full min-h-0">
-          <header className="mb-4 md:mb-6 pt-2 md:pt-0 flex-shrink-0">
-            <h1 className="page-heading text-2xl sm:text-3xl md:text-4xl font-bold mb-1 md:mb-2">Sylon Cognitive Core</h1>
-            <p className="page-subtitle font-medium text-sm md:text-base">Simulate changes, ask for recommendations, or discuss strategy.</p>
-          </header>
+      {/* Right Panel: Text Chat */}
+      <div className="w-full md:w-[45%] flex flex-col flex-1 md:flex-initial md:h-full min-h-0">
+        <header className="mb-4 md:mb-6 pt-2 md:pt-0 flex-shrink-0">
+          <h1 className="page-heading text-2xl sm:text-3xl md:text-4xl font-bold mb-1 md:mb-2">Sylon Cognitive Core</h1>
+          <p className="page-subtitle font-medium text-sm md:text-base">Simulate changes, ask for recommendations, or discuss strategy.</p>
+        </header>
 
-          {/* Mobile orb — compact version */}
-          <div className="md:hidden flex justify-center mb-4 flex-shrink-0">
-            <div className="scale-[0.55] origin-center -my-16">
+        {/* Ethereal Orb — Mobile */}
+        <div className="md:hidden flex w-full justify-center mt-2 mb-2">
+          <div className="transform scale-75 origin-top">
+            <ConversationProvider>
               <EtherealOrb onTranscription={handleTranscription} isMobile={true} />
-            </div>
+            </ConversationProvider>
           </div>
+        </div>
 
         <div className="glass-card rounded-3xl p-3 sm:p-4 md:p-6 flex flex-col flex-1 overflow-hidden shadow-sm min-h-0">
           <div className="flex-1 overflow-y-auto pr-1 sm:pr-2 flex flex-col gap-3 sm:gap-4 mb-3 sm:mb-4 min-h-0">
@@ -161,7 +175,7 @@ function ChatContent() {
                     : 'glass-card rounded-bl-sm font-medium text-brand-dark dark:text-white'
                 }`}
               >
-                  {m.content}
+                  <MarkdownText text={m.content} />
                 </div>
                 <div className={`text-xs text-brand-dark dark:text-white/50 mt-1 font-semibold ${m.role === 'user' ? 'text-right' : 'text-left'}`}>
                   {m.role === 'user' ? 'You' : 'Sylon'}
@@ -212,7 +226,19 @@ function ChatContent() {
           </form>
         </div>
       </div>
-      </ConversationProvider>
     </div>
   );
+}
+
+// Simple markdown formatter for bold, italics, and lists
+function MarkdownText({ text }: { text: string }) {
+  const formatText = (content: string) => {
+    let html = content
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/^- (.*)$/gm, '<li class="ml-4 list-disc">$1</li>')
+      .replace(/\n/g, '<br />');
+    return html;
+  };
+  return <div className="space-y-1.5 leading-relaxed" dangerouslySetInnerHTML={{ __html: formatText(text) }} />;
 }

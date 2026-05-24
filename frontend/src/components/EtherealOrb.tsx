@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useCallback, useEffect, useMemo } from "react";
+import { useRef, useCallback, useEffect, useMemo, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useConversation } from "@elevenlabs/react";
@@ -19,6 +19,28 @@ export default function EtherealOrb({ onTranscription, isMobile }: { onTranscrip
   const glassLayers = useMemo(() => Array.from({ length: 3 }), []);
 
   const { getAccessToken } = usePrivy();
+  const [isVoiceOffline, setIsVoiceOffline] = useState(false);
+
+  useEffect(() => {
+    // SUPPRESS ELEVENLABS DEV OVERLAY CRASHES
+    const handleError = (e: ErrorEvent | PromiseRejectionEvent) => {
+      const msg = 'message' in e ? e.message : ('reason' in e ? String(e.reason) : '');
+      if (
+        msg.includes('error_event.error_type') || 
+        msg.includes('DataChannel error') ||
+        (e instanceof ErrorEvent && e.error && String(e.error).includes('Event'))
+      ) {
+        e.preventDefault();
+        setIsVoiceOffline(true);
+      }
+    };
+    window.addEventListener('error', handleError, true);
+    window.addEventListener('unhandledrejection', handleError, true);
+    return () => {
+      window.removeEventListener('error', handleError, true);
+      window.removeEventListener('unhandledrejection', handleError, true);
+    };
+  }, []);
 
   const conversation = useConversation({
     onConnect: () => console.log("ElevenLabs Connected"),
@@ -26,11 +48,19 @@ export default function EtherealOrb({ onTranscription, isMobile }: { onTranscrip
     onMessage: (message: any) => {
       console.log("Message:", message);
       if (onTranscription && message.message) {
-        const role = message.source === 'ai' ? 'assistant' : 'user';
-        onTranscription(role, message.message);
+        const text = message.message;
+        // The default greeting from the system prompt ruins the chat flow, so we filter it out if it appears
+        if (text.includes("I'm Sylon, your business strategist. Tell me what you're thinking")) return;
+
+        // Ensure robust source mapping (ElevenLabs might use 'ai', 'agent', etc.)
+        const role = message.source === 'user' ? 'user' : 'assistant';
+        onTranscription(role, text);
       }
     },
-    onError: (error) => console.error("ElevenLabs Error:", error),
+    onError: (error: string | Error) => {
+      console.error("ElevenLabs Error:", error);
+      // Silently handle to prevent UI crash
+    },
     clientTools: {
       get_sylon_strategy: async (parameters: any) => {
         try {
@@ -318,8 +348,13 @@ export default function EtherealOrb({ onTranscription, isMobile }: { onTranscrip
       </div>
       
       {/* Voice Connection Status */}
-      <div className="text-sm font-bold text-white bg-gradient-to-r from-brand-lightbrown to-brand-brown px-6 py-3 rounded-full shadow-lg transition-all duration-300 z-30">
-        {status === 'connected' ? (
+      <div className={`text-sm font-bold text-white px-6 py-3 rounded-full shadow-lg transition-all duration-300 z-30 ${isVoiceOffline ? 'bg-black/40 backdrop-blur-md border border-white/10' : 'bg-gradient-to-r from-brand-lightbrown to-brand-brown'}`}>
+        {isVoiceOffline ? (
+           <span className="flex items-center gap-3 text-white/80 font-semibold text-xs text-center leading-tight">
+             <span className="w-2.5 h-2.5 rounded-full bg-red-400/80 shadow-[0_0_8px_rgba(248,113,113,0.5)]"></span>
+             Voice agent offline. Please engage Sylon via Text Chat.
+           </span>
+        ) : status === 'connected' ? (
            <span className="flex items-center gap-3">
              <span className="w-3 h-3 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.8)]"></span>
              {isSpeaking ? 'Sylon is speaking...' : 'Sylon is listening...'}
