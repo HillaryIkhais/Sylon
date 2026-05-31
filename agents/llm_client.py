@@ -88,7 +88,7 @@ def call_cerebras(
             messages=messages,
             model=CEREBRAS_MODEL,
             temperature=temperature,
-            max_completion_tokens=max_tokens,
+            max_tokens=max_tokens,
         )
         return response.choices[0].message.content
     except Exception as e:
@@ -125,7 +125,7 @@ def call_cerebras_json(
             messages=messages,
             model=CEREBRAS_MODEL,
             temperature=temperature,
-            max_completion_tokens=max_tokens,
+            max_tokens=max_tokens,
             response_format={"type": "json_object"}
         )
         raw = response.choices[0].message.content

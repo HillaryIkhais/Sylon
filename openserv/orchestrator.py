@@ -385,6 +385,7 @@ def run_simulation(user_input: str, business_id: str):
     try:
         from openserv.persistence import persistence_service
         import uuid
+        persistence_service.upsert_business(business_id=business_id)
         persistence_service.create_collision_log(
             log_id=f"log_{uuid.uuid4().hex[:8]}",
             business_id=business_id,
@@ -435,6 +436,7 @@ def handle_recommendation(user_input: str, business_id: str) -> str:
     try:
         from openserv.persistence import persistence_service
         import uuid
+        persistence_service.upsert_business(business_id=business_id)
         persistence_service.create_recommendation_log(
             log_id=f"rec_{uuid.uuid4().hex[:8]}",
             business_id=business_id,
