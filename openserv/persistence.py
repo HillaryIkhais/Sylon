@@ -328,6 +328,24 @@ class PersistenceService:
                 "history": history
             }
 
+    def list_businesses(self) -> list:
+        with self.get_connection() as conn:
+            rows = conn.execute(
+                """
+                SELECT business_id, created_at
+                FROM businesses
+                ORDER BY updated_at DESC, created_at DESC
+                LIMIT 25
+                """
+            ).fetchall()
+            return [
+                {
+                    "business_id": row["business_id"],
+                    "created_at": row["created_at"],
+                }
+                for row in rows
+            ]
+
     def delete_business(self, business_id: str):
         with self.get_connection() as conn:
             # Delete in order of foreign key dependencies

@@ -7,11 +7,32 @@ import { usePrivy } from "@privy-io/react-auth";
 
 import HistorySidebar from "@/components/HistorySidebar";
 
+type ComparisonOption = {
+  rank: number;
+  label: string;
+  risk: 'low' | 'medium' | 'high' | string;
+  upside: string;
+  rationale: string;
+};
+
+type ComparisonResult = {
+  title?: string;
+  summary?: string;
+  winner?: string;
+  riskiest_option?: string;
+  persona_churn_risk?: string;
+  persona_positive_reaction?: string;
+  recommended_next_step?: string;
+  evidence_quotes?: string[];
+  options?: ComparisonOption[];
+};
+
 type ChatMessage = {
   role: string;
   content: string;
   isComparison?: boolean;
   timestamp?: string;
+  comparison?: ComparisonResult | null;
 };
 
 type ChatResponse = {
@@ -165,35 +186,10 @@ function ChatContent() {
                            userText.toLowerCase().includes('simulate') || 
                            userText.toLowerCase().includes('what if');
       const responseTime = new Date().toISOString();
-      setMessages(prev => [...prev, { role: 'assistant', content: data.response, isComparison, timestamp: responseTime }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: data.response, isComparison, timestamp: responseTime, comparison: data.comparison }]);
     } catch (err) {
       console.error(err);
       setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, there was an error processing your request.' }]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const clearSession = async () => {
-    if (!businessId) return;
-    if (!confirm("Are you sure you want to clear your current session and delete all ingested data?")) return;
-    
-    setLoading(true);
-    try {
-      const token = await getAccessToken();
-      await fetch(`/api/business/${businessId}`, {
-        method: 'DELETE',
-        headers: {
-          'Bypass-Tunnel-Reminder': 'true',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {}) 
-        }
-      });
-      setBusinessId(null);
-      localStorage.removeItem(BUSINESS_ID_STORAGE_KEY);
-      setMessages([{ role: 'assistant', content: 'I am Sylon, your premium business strategist. Session cleared. Please ingest new data to begin.' }]);
-    } catch (err) {
-      console.error("Failed to clear session:", err);
-      alert("Failed to clear session.");
     } finally {
       setLoading(false);
     }

@@ -119,9 +119,10 @@ def process_and_persist_background(business_id: str, batch_id: str, ingestion_pa
         else:
             reviews = tool_ingest_reviews(business_id=business_id, reviews_text=ingestion_payload["reviews_text"])
             
-        # VERY IMPORTANT: Hard cap to 100 reviews to protect the Cerebras daily token quota.
+        # VERY IMPORTANT: Hard cap to 20 reviews to protect the Cerebras daily token quota.
         # Processing 65,000 reviews caused a 429 Token Quota Exceeded error and crashed the local server.
-        reviews = reviews[:100]
+        # For the demo, keeping this low (20) ensures fast 8-12s response times instead of 45s+.
+        reviews = reviews[:20]
             
         print(f"[Background] Starting AI extraction for {business_id} ({len(reviews)} reviews)")
 
@@ -287,6 +288,15 @@ async def fivetran_sync(background_tasks: BackgroundTasks, request: FivetranSync
         }
     except Exception as e:
         print(f"[Server] Fivetran sync error: {e}")
+        return {"status": "error", "message": str(e)}
+
+@app.get("/business/list")
+async def list_businesses(user: dict = Depends(get_current_user)):
+    try:
+        return {"status": "ok", "businesses": persistence_service.list_businesses()}
+    except Exception as e:
+        print(f"[Server] Business list error: {e}")
+        traceback.print_exc()
         return {"status": "error", "message": str(e)}
 
 @app.get("/business/{business_id}/dashboard")
