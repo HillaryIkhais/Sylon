@@ -289,6 +289,15 @@ async def fivetran_sync(background_tasks: BackgroundTasks, request: FivetranSync
         print(f"[Server] Fivetran sync error: {e}")
         return {"status": "error", "message": str(e)}
 
+@app.get("/business/list")
+async def list_businesses(user: dict = Depends(get_current_user)):
+    try:
+        return {"status": "ok", "businesses": persistence_service.list_businesses()}
+    except Exception as e:
+        print(f"[Server] Business list error: {e}")
+        traceback.print_exc()
+        return {"status": "error", "message": str(e)}
+
 @app.get("/business/{business_id}/dashboard")
 async def get_dashboard(business_id: str, user: dict = Depends(get_current_user)):
     try:

@@ -30,6 +30,18 @@ For a deep dive into the underlying architecture, mathematical evaluations, and 
 *   [Task A Solution Paper: User Behaviour Modeling](task_a_solution_paper.md)
 *   [Task B Solution Paper: Recommendation & Reasoning](task_b_solution_paper.md)
 
+## BuildQuik Shipping Plan
+
+**Who is this for?** Sylon is built for small business owners, especially restaurants, cafes, salons, clinics, and service businesses that already receive customer reviews but do not have a data analyst.
+
+**What problem does it solve?** Sylon turns messy customer feedback into customer archetypes, recurring pain points, and decision simulations so owners can test operational changes before risking revenue.
+
+**Who are the competitors?** The closest alternatives are generic review analytics dashboards, Google Business Profile insights, sentiment analysis tools, and manually pasting reviews into ChatGPT. Sylon differs by grounding strategy in behavioral personas and comparing how customer segments react to future decisions.
+
+**How does it survive after the challenge?** Sylon can become a subscription SaaS for SMEs, with live integrations for Google Reviews, POS data, support tickets, and Fivetran-powered syncs. The long-term product is a lightweight behavioral intelligence layer that helps business owners decide what to fix, what to protect, and which changes are safest to launch.
+
+**Demo flow:** Connect or upload customer feedback, let Sylon extract personas and pain points, open the insights dashboard, then ask the Cognitive Core to compare decisions such as raising prices, closing earlier, or reducing the menu size.
+
 ## Local Development & Contributing
 
 If you wish to run the Sylon Engine locally or contribute to the repository, the application is fully containerized.

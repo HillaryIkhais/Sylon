@@ -178,7 +178,7 @@ function UploadContent() {
     <div className="w-full max-w-3xl mx-auto p-4 md:p-8 flex flex-col flex-grow animate-in fade-in duration-500">
       <header className="mb-8 pt-8">
         <h1 className="page-heading text-3xl md:text-4xl font-bold mb-2">Data Integrations</h1>
-        <p className="page-subtitle font-medium">Connect live data pipelines or manually ingest files to power Sylon's engine.</p>
+        <p className="page-subtitle font-medium">Connect live data pipelines or manually ingest files to power Sylon&apos;s engine.</p>
       </header>
 
       <div className="flex flex-col gap-8">
@@ -329,7 +329,6 @@ function UploadContent() {
              <p className="text-red-600/80 dark:text-red-300/80">{result.message}</p>
           </div>
         )}
-      </div>
     </div>
   );
 }
