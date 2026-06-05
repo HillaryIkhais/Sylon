@@ -131,8 +131,8 @@ def extract_painpoints(reviews: list, business_id: str) -> dict:
     if not reviews:
         return {"complaints": [], "praise": [], "trends": []}
 
-    # VERY IMPORTANT: Hard cap to 100 reviews to protect API quotas.
-    reviews = reviews[:100]
+    # VERY IMPORTANT: Hard cap to 20 reviews to protect API quotas and speed up demo generation.
+    reviews = reviews[:20]
 
     #chunk reviews into batches
     num_chunks = math.ceil(len(reviews) / CHUNK_SIZE)

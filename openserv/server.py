@@ -119,9 +119,10 @@ def process_and_persist_background(business_id: str, batch_id: str, ingestion_pa
         else:
             reviews = tool_ingest_reviews(business_id=business_id, reviews_text=ingestion_payload["reviews_text"])
             
-        # VERY IMPORTANT: Hard cap to 100 reviews to protect the Cerebras daily token quota.
+        # VERY IMPORTANT: Hard cap to 20 reviews to protect the Cerebras daily token quota.
         # Processing 65,000 reviews caused a 429 Token Quota Exceeded error and crashed the local server.
-        reviews = reviews[:100]
+        # For the demo, keeping this low (20) ensures fast 8-12s response times instead of 45s+.
+        reviews = reviews[:20]
             
         print(f"[Background] Starting AI extraction for {business_id} ({len(reviews)} reviews)")
 
