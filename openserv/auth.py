@@ -23,6 +23,8 @@ load_dotenv()
 PRIVY_APP_ID = os.environ.get("PRIVY_APP_ID", os.environ.get("NEXT_PUBLIC_PRIVY_APP_ID", "cmph0wa1300110cjr9eyypdv6"))
 PRIVY_JWKS_URL = f"https://auth.privy.io/api/v1/apps/{PRIVY_APP_ID}/jwks.json" if PRIVY_APP_ID else "https://auth.privy.io/.well-known/jwks.json"
 
+from jwt.exceptions import PyJWKClientError
+
 class RequestsJWKClient(jwt.PyJWKClient):
     def fetch_data(self):
         try:
@@ -30,7 +32,7 @@ class RequestsJWKClient(jwt.PyJWKClient):
             resp.raise_for_status()
             return resp.json()
         except Exception as e:
-            raise jwt.PyJWKClientConnectionError(f'Fail to fetch data from the url, err: "{e}"')
+            raise PyJWKClientError(f'Fail to fetch data from the url, err: "{e}"')
 
 _jwks_client = RequestsJWKClient(PRIVY_JWKS_URL, cache_keys=True, headers={"User-Agent": "Sylon-Backend/1.0"})
 
