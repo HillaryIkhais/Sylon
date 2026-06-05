@@ -1,18 +1,15 @@
 FROM python:3.12-slim
 
-# Install system dependencies for PDF and Image parsing (tesseract, poppler)
+# Install minimal system dependencies for runtime HTTP/SSL support.
 RUN apt-get update && apt-get install -y \
-    tesseract-ocr \
-    poppler-utils \
-    libgl1 \
-    libglib2.0-0 \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 # Install Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.deploy.txt .
+RUN pip install --no-cache-dir -r requirements.deploy.txt
 
 # Copy application code
 COPY . .
