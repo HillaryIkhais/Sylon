@@ -201,25 +201,37 @@ def simulate_strategist(user_input: str, collision_result: str, painpoints: dict
     logger.info("[MULTI-AGENT] Spawning CFO, CX, OPS agents (concurrent threads)")
     
     def call_cfo():
+        t = time.time()
+        logger.info("[CFO] Thread spawned. Analyzing financial impact & margin safety...")
         prompt = f"""You are the CFO. Evaluate the financial impact and margin safety of this scenario: {user_input}
 Context: {collision_result}
 {painpoint_context}
 Limit your answer to 2 concise sentences."""
-        return call_llm(prompt, system_prompt="You are a strict, numbers-focused CFO.")
+        res = call_llm(prompt, system_prompt="You are a strict, numbers-focused CFO.")
+        logger.info(f"[CFO] Analysis complete ({time.time() - t:.1f}s)")
+        return res
         
     def call_cx():
+        t = time.time()
+        logger.info("[CX] Thread spawned. Simulating persona collision and churn risk...")
         prompt = f"""You are the VP of Customer Experience. Evaluate how the customer personas will react to this scenario, focusing on churn risk: {user_input}
 Context: {collision_result}
 {painpoint_context}
 Limit your answer to 2 concise sentences."""
-        return call_llm(prompt, system_prompt="You are a fiercely protective VP of Customer Experience.")
+        res = call_llm(prompt, system_prompt="You are a fiercely protective VP of Customer Experience.")
+        logger.info(f"[CX] Analysis complete ({time.time() - t:.1f}s)")
+        return res
         
     def call_ops():
+        t = time.time()
+        logger.info("[OPS] Thread spawned. Evaluating supply chain and execution friction...")
         prompt = f"""You are the COO. Evaluate the operational friction (staff training, supply chain) of this scenario: {user_input}
 Context: {collision_result}
 {painpoint_context}
 Limit your answer to 2 concise sentences."""
-        return call_llm(prompt, system_prompt="You are a pragmatic, execution-focused COO.")
+        res = call_llm(prompt, system_prompt="You are a pragmatic, execution-focused COO.")
+        logger.info(f"[OPS] Analysis complete ({time.time() - t:.1f}s)")
+        return res
 
     t0 = time.time()
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
