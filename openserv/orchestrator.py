@@ -206,8 +206,8 @@ def simulate_strategist(user_input: str, collision_result: str, painpoints: dict
         prompt = f"""You are the CFO. Evaluate the financial impact and margin safety of this scenario: {user_input}
 Context: {collision_result}
 {painpoint_context}
-Limit your answer to 2 concise sentences."""
-        res = call_llm(prompt, system_prompt="You are a strict, numbers-focused CFO.")
+Limit your answer to 2 concise sentences. Focus strictly on economic survival, cost coverage, and revenue retention in a highly volatile market."""
+        res = call_llm(prompt, system_prompt="You are a ruthless, numbers-focused CFO fighting for business survival in a volatile emerging market.")
         logger.info(f"[CFO] Analysis complete ({time.time() - t:.1f}s)")
         return res
         
@@ -217,8 +217,8 @@ Limit your answer to 2 concise sentences."""
         prompt = f"""You are the VP of Customer Experience. Evaluate how the customer personas will react to this scenario, focusing on churn risk: {user_input}
 Context: {collision_result}
 {painpoint_context}
-Limit your answer to 2 concise sentences."""
-        res = call_llm(prompt, system_prompt="You are a fiercely protective VP of Customer Experience.")
+Limit your answer to 2 concise sentences. Focus on whether the core demographic will abandon the business if pricing or quality changes."""
+        res = call_llm(prompt, system_prompt="You are a fiercely protective VP of Customer Experience, highly attuned to the breaking point of local customer loyalty.")
         logger.info(f"[CX] Analysis complete ({time.time() - t:.1f}s)")
         return res
         
@@ -228,8 +228,8 @@ Limit your answer to 2 concise sentences."""
         prompt = f"""You are the COO. Evaluate the operational friction (staff training, supply chain) of this scenario: {user_input}
 Context: {collision_result}
 {painpoint_context}
-Limit your answer to 2 concise sentences."""
-        res = call_llm(prompt, system_prompt="You are a pragmatic, execution-focused COO.")
+Limit your answer to 2 concise sentences. Focus on execution under pressure, grid instability, and supply chain shocks."""
+        res = call_llm(prompt, system_prompt="You are a pragmatic, execution-focused COO who understands the harsh physical realities of operating in an emerging market.")
         logger.info(f"[OPS] Analysis complete ({time.time() - t:.1f}s)")
         return res
 

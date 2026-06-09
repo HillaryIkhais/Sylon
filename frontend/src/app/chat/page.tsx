@@ -293,7 +293,7 @@ function ChatContent() {
             </button>
             <button
               type="button"
-              onClick={() => setInput("Compare these options: raise prices by 15%, close 2 hours earlier, or reduce menu size. Which is safest for my customer base?")}
+              onClick={() => setInput("Generator diesel costs just spiked 20% overnight. Compare these survival options: raise prices by 15%, close the kitchen 2 hours earlier, or reduce menu size. Which is safest?")}
               className="text-xs font-bold bg-brand-lightbrown/10 hover:bg-brand-lightbrown/20 border border-brand-lightbrown/30 text-brand-brown dark:text-brand-lightbrown px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full transition-colors"
             >
               Compare Decisions

@@ -20,7 +20,7 @@ type UploadResult = {
 };
 
 const BUSINESS_ID_STORAGE_KEY = 'sylon_business_id';
-const COMPARISON_DEMO_PROMPT = 'Compare these options: raise prices by 15%, close 2 hours earlier, or reduce menu size. Which is safest for my customer base?';
+const COMPARISON_DEMO_PROMPT = 'Generator diesel costs just spiked 20% overnight. Compare these survival options: raise prices by 15%, close the kitchen 2 hours earlier, or reduce menu size. Which is safest?';
 
 export default function Upload() {
   return (
