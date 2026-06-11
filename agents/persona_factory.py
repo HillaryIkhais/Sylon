@@ -109,7 +109,7 @@ def get_personas_for_business(
             personas = load_personas(business_id)
 
             # Re-generate if not cached
-            if not personas or not painpoints.get("complaints"):
+            if not personas:
                 result = generate_grounded_personas(business_id, persona_count)
                 personas = result['personas']
                 painpoints = result['painpoints']

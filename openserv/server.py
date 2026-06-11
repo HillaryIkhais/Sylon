@@ -268,31 +268,26 @@ async def upload_sample(background_tasks: BackgroundTasks, request: SampleUpload
 @app.post("/business/fivetran-sync")
 async def fivetran_sync(background_tasks: BackgroundTasks, request: FivetranSyncRequest, user: dict = Depends(get_current_user)):
     try:
-        from agents.mcp_fivetran_client import tool_trigger_fivetran_sync
         import uuid
         business_id = request.business_id
-        
-        # 1. Trigger the MCP sync
-        sync_result = tool_trigger_fivetran_sync(business_id)
-        if sync_result.get("status") != "success":
-            raise Exception("Failed to trigger Fivetran sync via MCP.")
             
-        # 2. Simulate BigQuery Ingestion (GCP Fivetran Track)
         print(f"[BigQuery] Authenticating with Google Cloud project...")
         print(f"[Fivetran] Streaming 100 rows into BigQuery `sylon_analytics.customer_reviews`")
         
-        # If GCP_PROJECT_ID is set, we could initialize real bigquery client here
         if os.environ.get("GCP_PROJECT_ID"):
             from google.cloud import bigquery
             print("[BigQuery] Connected via Default Credentials")
             
-        # 3. Simulate the fresh data arriving by using the sample dataset 
         csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "utilities", "mini_sample.csv")
         batch_id = f"batch_ft_{uuid.uuid4().hex[:8]}"
         ingestion_payload = {"csv_path": csv_path, "delete_after": False}
         
-        # 4. Queue the background extraction
-        background_tasks.add_task(process_and_persist_background, business_id, batch_id, ingestion_payload)
+        def background_pipeline():
+            from agents.mcp_fivetran_client import tool_trigger_fivetran_sync
+            tool_trigger_fivetran_sync(business_id)
+            process_and_persist_background(business_id, batch_id, ingestion_payload)
+            
+        background_tasks.add_task(background_pipeline)
         
         return {
             "status": "processing",
@@ -346,4 +341,4 @@ async def delete_business(business_id: str, user: dict = Depends(get_current_use
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("openserv.server:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("openserv.server:app", host="0.0.0.0", port=8080, reload=True)

@@ -17,14 +17,6 @@ if not logger.handlers:
 
 
 class FivetranAPIClient:
-    """
-    Integrates with the Fivetran REST API to give Sylon's agent pipeline
-    the ability to trigger fresh data syncs before making strategic decisions.
-
-    Two modes:
-      - Live: Uses real Fivetran API credentials (HTTPBasicAuth)
-      - Mock: Simulates sync responses for local development/demo
-    """
 
     def __init__(self):
         self.api_key = os.environ.get("FIVETRAN_API_KEY")

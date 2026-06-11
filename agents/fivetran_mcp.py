@@ -25,7 +25,7 @@ async def call_fivetran_mcp(connector_id: str) -> dict:
             async with ClientSession(read, write) as session:
                 await session.initialize()
                 
-                # Call the Fivetran sync tool exposed by the MCP server
+                # call the Fivetran sync tool exposed by the MCP server
                 result = await session.call_tool("sync_connector", arguments={"connector_id": connector_id})
                 
                 logger.info(f"[MCP] Fivetran Sync Triggered via MCP: {result}")

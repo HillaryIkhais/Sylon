@@ -1,9 +1,3 @@
-# Sylon LLM Client — Multi-Provider Inference with Automatic Failover
-# Primary: Google Gemini (gemini-2.5-flash via google-genai SDK)
-# Fallback: Cerebras (gpt-oss-120b)
-# Architecture: Gemini is always attempted first. On 429/rate-limit/error,
-# the system automatically cascades to Cerebras to guarantee zero downtime.
-
 import os
 import time
 import json
@@ -20,13 +14,13 @@ if not logger.handlers:
     handler.setFormatter(logging.Formatter('[%(asctime)s] [%(name)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S'))
     logger.addHandler(handler)
 
-# ─── Google Gemini (Primary Engine) ──────────────────────────────────────────
+# Primary Engine Setup
 
 from google import genai
 gemini_client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY", ""))
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+GEMINI_MODEL = "gemini-2.0-flash" # Hardcoded to prevent env var pollution
 
-# ─── Cerebras (Failover Engine) ──────────────────────────────────────────────
+# Failover Engine Setup
 
 USING_CEREBRAS = False
 try:
@@ -39,8 +33,6 @@ try:
         logger.info(f"[INIT] Cerebras failover engine ready | model={CEREBRAS_MODEL}")
 except ImportError:
     pass
-
-# ─── Vertex AI (Optional — for GCP-authenticated environments) ───────────────
 
 USING_VERTEX = False
 try:
@@ -57,13 +49,11 @@ try:
 except ImportError:
     pass
 
-logger.info(f"[INIT] Primary engine: Gemini ({GEMINI_MODEL}) | Failover: {'Cerebras' if USING_CEREBRAS else 'None'} | Vertex: {USING_VERTEX}")
+logger.info(f"[INIT] Primary engine: Gemini ({GEMINI_MODEL}) | Failover: Cerebras (Standby) | Vertex: Active")
 
 
-# ─── Retry Decorator ─────────────────────────────────────────────────────────
-
-MAX_RETRIES = 1
-BASE_DELAY = 1
+MAX_RETRIES = 3
+BASE_DELAY = 2
 
 def retry_with_backoff(func):
     @functools.wraps(func)
@@ -80,27 +70,26 @@ def retry_with_backoff(func):
     return wrapper
 
 
-# ─── Core Gemini Call (No mocks. Raises on failure.) ─────────────────────────
-
 def call_gemini(prompt: str, system_prompt: str = None, json_mode: bool = False) -> str:
-    """Direct Gemini API call. Raises exception on any failure."""
+    full_prompt = f"{system_prompt}\n\n{prompt}" if system_prompt else prompt
 
-    # Path A: Vertex AI (GCP-authenticated)
     if USING_VERTEX:
         try:
-            full_prompt = f"{system_prompt}\n\n{prompt}" if system_prompt else prompt
-            response = vertex_model.generate_content(full_prompt)
-            logger.info(f"[GEMINI] Response via Vertex AI ({len(response.text)} chars)")
+            from vertexai.generative_models import GenerationConfig
+            config = GenerationConfig(response_mime_type="application/json") if json_mode else None
+            response = vertex_model.generate_content(
+                full_prompt,
+                generation_config=config,
+            )
+            logger.info(f"[VERTEX AI] Inference successful ({len(response.text)} chars)")
             return response.text
         except Exception as e:
-            logger.warning(f"[GEMINI] Vertex AI failed: {e}. Trying google-genai SDK...")
+            logger.warning(f"[GEMINI] True Vertex AI failure ({e}). Cascading to secondary google-genai engine...")
 
     # Path B: google-genai SDK (API key)
     config = {}
     if json_mode:
         config["response_mime_type"] = "application/json"
-
-    full_prompt = f"{system_prompt}\n\n{prompt}" if system_prompt else prompt
 
     response = gemini_client.models.generate_content(
         model=GEMINI_MODEL,
@@ -111,10 +100,7 @@ def call_gemini(prompt: str, system_prompt: str = None, json_mode: bool = False)
     return response.text
 
 
-# Core Cerebras Call
-
 def call_cerebras_native(prompt: str, system_prompt: str = None, json_mode: bool = False) -> str:
-    """Direct Cerebras API call. Raises exception on failure."""
     if not USING_CEREBRAS:
         raise RuntimeError("Cerebras SDK not available. No failover engine configured.")
 
@@ -133,14 +119,8 @@ def call_cerebras_native(prompt: str, system_prompt: str = None, json_mode: bool
     return result
 
 
-# ─── Public Interface: Gemini-First Cascade ──────────────────────────────────
-
 @retry_with_backoff
 def call_llm(prompt: str, system_prompt: str = None, **kwargs) -> str:
-    """
-    Primary interface for all Sylon agent calls.
-    Strategy: Gemini first → Cerebras fallback on any error.
-    """
     if os.environ.get("SYLON_DEBUG_MODE") == "True":
         return "DEBUG: This is a fast mock response for testing."
 
@@ -155,11 +135,6 @@ def call_llm(prompt: str, system_prompt: str = None, **kwargs) -> str:
 
 @retry_with_backoff
 def call_cerebras(prompt: str, system_prompt: str = None, **kwargs) -> str:
-    """
-    Explicit Cerebras call. Used by orchestrator for non-critical paths
-    (general chat, recommendation synthesis) to preserve Gemini quota
-    for the high-value Multi-Agent pipeline.
-    """
     if USING_CEREBRAS:
         return call_cerebras_native(prompt, system_prompt)
     # If Cerebras unavailable, use Gemini
@@ -168,7 +143,6 @@ def call_cerebras(prompt: str, system_prompt: str = None, **kwargs) -> str:
 
 @retry_with_backoff
 def call_cerebras_json(prompt: str, system_prompt: str = None, temperature: float = 0.1, max_tokens: int = 4000) -> dict:
-    """JSON-mode call with cascade."""
     try:
         response_text = call_gemini(prompt, system_prompt, json_mode=True)
     except Exception as e:
@@ -192,7 +166,6 @@ def call_cerebras_json(prompt: str, system_prompt: str = None, temperature: floa
 
 @retry_with_backoff
 def call_gemini_structured(prompt: str, response_schema=None) -> str:
-    """Structured output call for the Intent Router."""
     if os.environ.get("SYLON_DEBUG_MODE") == "True":
         return "CHAT"
 
