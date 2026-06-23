@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import EtherealOrb from "@/components/EtherealOrb";
 import { ConversationProvider } from "@elevenlabs/react";
 import AuthGuard from "@/components/AuthGuard";
-import { usePrivy } from "@privy-io/react-auth";
+import { usePrivy } from "@/hooks/useMockPrivy";
 
 import HistorySidebar from "@/components/HistorySidebar";
 
@@ -168,7 +168,7 @@ function ChatContent() {
                            userText.toLowerCase().includes('simulate') || 
                            userText.toLowerCase().includes('what if');
       const responseTime = new Date().toISOString();
-      setMessages(prev => [...prev, { role: 'assistant', content: data.response, isComparison, timestamp: responseTime }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: data.response, isComparison, board_debate: data.board_debate, timestamp: responseTime }]);
     } catch (err) {
       console.error(err);
       setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, there was an error processing your request.' }]);

@@ -109,3 +109,29 @@ def tool_extract_painpoints(business_id):
         json.dump({"complaints": [], "praise": [], "trends": []}, f, indent=2)
         
     return {"painpoints": {"complaints": [], "praise": [], "trends": []}, "personas": fallback_persona, "review_count": len(reviews)}
+
+# ==============================================================================
+# TRACK 4: AUTOPILOT AGENT TOOLS
+# ==============================================================================
+
+def tool_draft_social_post(decision: str, audience_persona: str) -> dict:
+    from agents.llm_client import call_llm
+    prompt = f"""Draft a social media post explaining this business decision: '{decision}'.
+The target audience is '{audience_persona}'.
+Keep it authentic, engaging, and under 280 characters."""
+    
+    post = call_llm(prompt, system_prompt="You are an expert Social Media Manager.")
+    return {
+        "action": "draft_social_post",
+        "platform": "Twitter/Instagram",
+        "content": post,
+        "status": "pending_approval"
+    }
+
+def tool_update_business_hours(new_hours: str) -> dict:
+    return {
+        "action": "update_business_hours",
+        "platform": "Google Business Profile",
+        "content": f"Update operating hours to: {new_hours}",
+        "status": "pending_approval"
+    }

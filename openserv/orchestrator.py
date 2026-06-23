@@ -20,7 +20,7 @@ sys.path.insert(0, ROOT)
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-from agents.llm_client import call_llm, call_cerebras, call_cerebras_json, call_gemini_structured, retry_with_backoff
+from agents.llm_client import call_llm, call_cerebras, call_cerebras_json, call_gemini_structured, retry_with_backoff, QWEN_FAST_MODEL, QWEN_REASONING_MODEL
 from agents.persona_factory import get_personas_for_business
 from agents.review_ingest import get_review_count
 from agents.rec import generate_recommendations
@@ -193,43 +193,79 @@ def simulate_strategist(user_input: str, collision_result: str, painpoints: dict
     def call_cfo():
         t = time.time()
         log_demo("CFO", "Thread started")
-        prompt = f"""You are the CFO. Evaluate the financial impact and margin safety of this scenario: {user_input}
+        prompt = f"""You are the numbers operator. Evaluate the math of this scenario: {user_input}
 Context: {collision_result}
 {painpoint_context}
-Limit your answer to 2 concise sentences. Focus strictly on economic survival, cost coverage, and revenue retention in a highly volatile market."""
-        res = call_llm(prompt, system_prompt="You are a ruthless, numbers-focused CFO fighting for business survival in a volatile emerging market.")
+Limit your answer to 2 short, direct sentences. Speak in plain English. No MBA jargon like 'margin safety' or 'contribution margin'."""
+        res = call_llm(prompt, system_prompt="You are a blunt, practical business operator who cares only about cash, costs, and profit. Do not use corporate jargon.", model_override=QWEN_REASONING_MODEL)
         log_demo("CFO", f"Response received ({time.time() - t:.1f}s)")
         return res
         
     def call_cx():
         t = time.time()
         log_demo("CX", "Thread started")
-        prompt = f"""You are the VP of Customer Experience. Evaluate how the customer personas will react to this scenario, focusing on churn risk: {user_input}
+        prompt = f"""You are the customer manager. Evaluate how real people will react to this scenario: {user_input}
 Context: {collision_result}
 {painpoint_context}
-Limit your answer to 2 concise sentences. Focus on whether the core demographic will abandon the business if pricing or quality changes."""
-        res = call_llm(prompt, system_prompt="You are a fiercely protective VP of Customer Experience, highly attuned to the breaking point of local customer loyalty.")
+Limit your answer to 2 short, direct sentences. Speak in plain English. No MBA jargon like 'churn risk' or 'hyper-vigilant segment'."""
+        res = call_llm(prompt, system_prompt="You are a blunt, practical manager who knows exactly why customers get angry and leave. Do not use corporate jargon.", model_override=QWEN_REASONING_MODEL)
         log_demo("CX", f"Response received ({time.time() - t:.1f}s)")
         return res
         
     def call_ops():
         t = time.time()
         log_demo("OPS", "Thread started")
-        prompt = f"""You are the COO. Evaluate the operational friction (staff training, supply chain) of this scenario: {user_input}
+        prompt = f"""You are the floor manager. Evaluate the physical reality of doing this: {user_input}
 Context: {collision_result}
 {painpoint_context}
-Limit your answer to 2 concise sentences. Focus on execution under pressure, grid instability, and supply chain shocks."""
-        res = call_llm(prompt, system_prompt="You are a pragmatic, execution-focused COO who understands the harsh physical realities of operating in an emerging market.")
+Limit your answer to 2 short, direct sentences. Speak in plain English. No MBA jargon like 'operational friction'."""
+        res = call_llm(prompt, system_prompt="You are a blunt, practical operator who actually has to run the shop floor. Do not use corporate jargon.", model_override=QWEN_REASONING_MODEL)
         log_demo("OPS", f"Response received ({time.time() - t:.1f}s)")
         return res
 
-    # [HACKATHON HOTFIX] Bypass the 4 sequential LLM calls which cause rate-limit timeouts.
-    # Return a brilliant, pre-calculated strategic response instantly.
+    import concurrent.futures
+
+    log_demo("MULTI-AGENT", "Spawning CFO, CX, OPS concurrently for initial analysis")
+    
+    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+        future_cfo = executor.submit(call_cfo)
+        future_cx = executor.submit(call_cx)
+        future_ops = executor.submit(call_ops)
+        
+        cfo_res = future_cfo.result()
+        cx_res = future_cx.result()
+        ops_res = future_ops.result()
+
+    log_demo("MULTI-AGENT", "Synthesizing consensus and resolving conflicts")
+    
+    consensus_prompt = f"""You are the business owner. You must synthesize the advice from your team and make a final call.
+Scenario: {user_input}
+
+Numbers take: {cfo_res}
+Customer take: {cx_res}
+Floor take: {ops_res}
+
+Write a final, 1-paragraph plain-English decision. No bullet points, no numbered lists, no em dashes, no jargon. Tell me exactly what we are going to do and why you chose one risk over the other.
+"""
+    final_res = call_llm(consensus_prompt, system_prompt="You are a blunt, practical business owner making the final call. Write like a real person, not a consultant.", model_override=QWEN_REASONING_MODEL)
+    log_demo("CEO", "Final consensus reached")
+
+    # [TRACK 4] Generate Autopilot Actions based on the decision
+    from openserv.tools import tool_draft_social_post, tool_update_business_hours
+    
+    autopilot_actions = []
+    
+    # Heuristic trigger: if the decision involves changing hours
+    if "hours" in final_res.lower() or "close" in final_res.lower() or "open" in final_res.lower():
+        autopilot_actions.append(tool_update_business_hours("Adjusted based on board consensus"))
+        autopilot_actions.append(tool_draft_social_post(final_res, "Late Night Eaters / Budget Loyalists"))
+
     return {
-        "cfo": "Closing 2 hours early cuts daily operational costs by 18%, primarily reducing diesel consumption during peak generator load times. The revenue lost during those late hours is historically low margin.",
-        "cx": "Our 'Budget Loyalist' archetype won't notice, but the 'Late Night Eaters' will be deeply frustrated. We must communicate this clearly on social media and update our Google Business hours immediately to prevent friction.",
-        "ops": "This simplifies our shift scheduling and reduces generator strain. However, kitchen staff must adapt to a tighter closing procedure. We need a strict 30-minute breakdown protocol to maximize the diesel savings.",
-        "final": "The Board agrees: closing 2 hours early is the safest immediate play. It directly addresses the 20% diesel spike without alienating your core daytime customers. Pilot this on weekdays first, communicate the change loudly, and monitor Yelp reviews for 'Late Night' friction."
+        "cfo": cfo_res,
+        "cx": cx_res,
+        "ops": ops_res,
+        "final": final_res,
+        "autopilot_actions": autopilot_actions
     }
 
 
@@ -256,6 +292,7 @@ Keep it to 2-3 sentences max."""
         system_prompt="You are Sylon, a premium business strategist. Be conversational and precise.",
         temperature=0.7,
         max_tokens=400,
+        model_override=QWEN_FAST_MODEL,
     )
 
 
@@ -281,26 +318,13 @@ Keep it practical and specific. 3-5 concise sentences."""
         system_prompt="You are Sylon, a premium business strategist. Be conversational, practical, and specific.",
         temperature=0.6,
         max_tokens=700,
+        model_override=QWEN_FAST_MODEL,
     )
 
-
-from agents.fivetran_mcp import call_fivetran_mcp
-import asyncio
 
 def handle_ingest(user_input: str, business_id: str) -> str:
     import uuid
     session = sessions.get_or_create(business_id)
-
-    # Trigger MCP at runtime to comply with hackathon rules (Offloaded to background thread so it doesn't block UI)
-    connector_id = os.environ.get("FIVETRAN_CONNECTOR_ID", "default_connector")
-    import threading
-    def fire_mcp():
-        try:
-            asyncio.run(call_fivetran_mcp(connector_id))
-        except Exception as e:
-            print(f"[MCP] Warning: {e}")
-            
-    threading.Thread(target=fire_mcp, daemon=True).start()
 
     print(f"[Ingest] Parsing pasted reviews for {business_id}...")
     reviews = tool_ingest_reviews(business_id=business_id, reviews_text=user_input)
@@ -618,6 +642,7 @@ Return strictly valid JSON with this exact shape:
         system_prompt="You are Sylon's decision comparison engine. Output valid JSON only, grounded in the supplied simulation results.",
         temperature=0.3,
         max_tokens=1800,
+        model_override=QWEN_REASONING_MODEL,
     )
     if not isinstance(result, dict) or not result.get("options"):
         raise ValueError("Comparison JSON was missing required options")
@@ -750,11 +775,7 @@ def handle_recommendation(user_input: str, business_id: str) -> str:
     
     return final_response
 
-from agents.agent_builder_client import call_agent_builder
-
 def process_user_scenario(user_input: str, business_id: str = "default", description: str = "Business Entity", location:str = "") -> str:
-    # Trigger Google Cloud Agent Builder at runtime
-    call_agent_builder(query=user_input)
     
     session = sessions.get_or_create(business_id)
     if description != "Business Entity":
@@ -779,8 +800,21 @@ def process_user_scenario(user_input: str, business_id: str = "default", descrip
     else:
         response = direct_chat_strategist(user_input, business_id)
 
-    response_text = response.get("response", "") if isinstance(response, dict) else response
-    session.history.append({"role": "assistant", "content": response_text})
+    if isinstance(response, dict):
+        response_text = response.get("response", "") or response.get("final", "")
+        history_entry = {"role": "assistant", "content": response_text}
+        if "cfo" in response:
+            history_entry["board_debate"] = {
+                "cfo": response.get("cfo"),
+                "cx": response.get("cx"),
+                "ops": response.get("ops")
+            }
+        elif "comparison" in response:
+            history_entry["comparison"] = response.get("comparison")
+            history_entry["isComparison"] = True
+        session.history.append(history_entry)
+    else:
+        session.history.append({"role": "assistant", "content": response})
     return response
 
 

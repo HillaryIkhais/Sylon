@@ -19,7 +19,17 @@ from openserv.orchestrator import process_user_scenario
 from openserv.persistence import persistence_service
 from openserv.dependencies import get_current_user, get_optional_user
 
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI(title="Sylon OpenServ Webhook", description="FastAPI webhook endpoint for ElevenLabs")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 RATELIMIT_FALLBACK = (
     "I'm getting a lot of questions right now and need a moment to catch my breath. "
@@ -40,6 +50,11 @@ class ChatResponse(BaseModel):
     business_id: str | None = None
     comparison: dict | None = None
     board_debate: dict | None = None
+    autopilot_actions: list | None = None
+
+@app.get("/")
+async def root():
+    return {"message": "Sylon API is running successfully."}
 
 @app.get("/health")
 async def health():
@@ -70,15 +85,20 @@ async def chat_endpoint(request: ChatRequest, req: Request, user: dict = Depends
         strategist_result = await asyncio.to_thread(
             process_user_scenario, request.text, business_id
         )
+
+        autopilot_actions = None
+
         if isinstance(strategist_result, dict):
             if "cfo" in strategist_result:
                 strategist_response = str(strategist_result.get("final", ""))
                 comparison = None
                 board_debate = strategist_result
+                autopilot_actions = strategist_result.get("autopilot_actions")
             else:
                 strategist_response = str(strategist_result.get("response", ""))
                 comparison = strategist_result.get("comparison")
                 board_debate = None
+                autopilot_actions = strategist_result.get("autopilot_actions")
         else:
             strategist_response = str(strategist_result)
             comparison = None
@@ -89,6 +109,7 @@ async def chat_endpoint(request: ChatRequest, req: Request, user: dict = Depends
             business_id=business_id,
             comparison=comparison,
             board_debate=board_debate,
+            autopilot_actions=autopilot_actions
         )
 
     except Exception as e:
@@ -101,6 +122,9 @@ async def chat_endpoint(request: ChatRequest, req: Request, user: dict = Depends
         if "429" in err_msg or ("resource" in err_msg and "exhausted" in err_msg):
             print("[Server] → Rate-limited. Returning graceful fallback.")
             return ChatResponse(response=RATELIMIT_FALLBACK)
+
+        if "api key is missing" in err_msg:
+            return ChatResponse(response="It looks like your Qwen Cloud API key is missing. Please add DASHSCOPE_API_KEY to your .env file.")
 
         print("[Server] → Unknown error. Returning generic fallback.")
         return ChatResponse(response=GENERIC_FALLBACK)
@@ -234,9 +258,7 @@ async def upload_reviews(background_tasks: BackgroundTasks, user: dict = Depends
 class SampleUploadRequest(BaseModel):
     business_id: str
 
-class FivetranSyncRequest(BaseModel):
-    business_id: str
-    connector_id: Optional[str] = None
+
 
 @app.post("/business/upload-sample")
 async def upload_sample(background_tasks: BackgroundTasks, request: SampleUploadRequest, user: dict = Depends(get_current_user)):
@@ -265,38 +287,7 @@ async def upload_sample(background_tasks: BackgroundTasks, request: SampleUpload
         traceback.print_exc()
         return {"status": "error", "message": str(e)}
 
-@app.post("/business/fivetran-sync")
-async def fivetran_sync(background_tasks: BackgroundTasks, request: FivetranSyncRequest, user: dict = Depends(get_current_user)):
-    try:
-        import uuid
-        business_id = request.business_id
-            
-        print(f"[BigQuery] Authenticating with Google Cloud project...")
-        print(f"[Fivetran] Streaming 100 rows into BigQuery `sylon_analytics.customer_reviews`")
-        
-        if os.environ.get("GCP_PROJECT_ID"):
-            from google.cloud import bigquery
-            print("[BigQuery] Connected via Default Credentials")
-            
-        csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "utilities", "mini_sample.csv")
-        batch_id = f"batch_ft_{uuid.uuid4().hex[:8]}"
-        ingestion_payload = {"csv_path": csv_path, "delete_after": False}
-        
-        def background_pipeline():
-            from agents.mcp_fivetran_client import tool_trigger_fivetran_sync
-            tool_trigger_fivetran_sync(business_id)
-            process_and_persist_background(business_id, batch_id, ingestion_payload)
-            
-        background_tasks.add_task(background_pipeline)
-        
-        return {
-            "status": "processing",
-            "message": "Fivetran sync completed. Live data ingested into BigQuery and Vertex AI extraction is running.",
-            "business_id": business_id
-        }
-    except Exception as e:
-        print(f"[Server] Fivetran sync error: {e}")
-        return {"status": "error", "message": str(e)}
+
 @app.get("/business/{business_id}/dashboard")
 async def get_dashboard(business_id: str, user: dict = Depends(get_current_user)):
     try:
@@ -341,4 +332,6 @@ async def delete_business(business_id: str, user: dict = Depends(get_current_use
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("openserv.server:app", host="0.0.0.0", port=8080, reload=True)
+    import os
+    port = int(os.environ.get("PORT", 8080))
+    uvicorn.run("openserv.server:app", host="0.0.0.0", port=port, reload=False)

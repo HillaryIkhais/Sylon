@@ -1,6 +1,6 @@
 "use client";
 
-import { PrivyProvider } from "@privy-io/react-auth";
+import { PrivyProvider } from "@/hooks/useMockPrivy";
 
 export default function PrivyProviderWrapper({
   children,

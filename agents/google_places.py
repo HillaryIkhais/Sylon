@@ -1,7 +1,7 @@
 import os
 import json
 import requests
-from agents.llm_client import call_gemini
+from agents.llm_client import call_llm_json
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -108,8 +108,16 @@ Return ONLY a valid JSON array. No markdown, no explanation.
 """
 
     try:
-        response_text = call_gemini(prompt, json_mode=True)
-        personas = json.loads(response_text)
+        personas = call_llm_json(prompt)
+        if isinstance(personas, dict) and "error" in personas:
+            return []
+            
+        if not isinstance(personas, list):
+            # Sometimes LLMs wrap the array in a dict like {"personas": [...]}
+            if isinstance(personas, dict) and len(personas) == 1:
+                personas = list(personas.values())[0]
+            else:
+                personas = [personas]
 
         normalized = []
         for p in personas:

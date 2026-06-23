@@ -1,6 +1,6 @@
 "use client";
 
-import { usePrivy } from "@privy-io/react-auth";
+import { usePrivy } from "@/hooks/useMockPrivy";
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const { ready, authenticated, login } = usePrivy();

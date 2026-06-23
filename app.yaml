@@ -1,0 +1,25 @@
+# Alibaba Cloud Serverless App Engine (SAE) Configuration
+apiVersion: sae.alibabacloud.com/v1alpha1
+kind: Application
+metadata:
+  name: sylon-orchestrator
+  namespace: default
+spec:
+  image: registry.cn-hangzhou.aliyuncs.com/sylon/sylon-orchestrator:latest
+  cpu: 2000
+  memory: 4096
+  replicas: 2
+  env:
+    - name: DASHSCOPE_API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: qwen-secrets
+          key: dashscope-api-key
+    - name: QWEN_MODEL
+      value: "qwen-max"
+    - name: ALIBABA_CLOUD_REGION
+      value: "cn-hangzhou"
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP

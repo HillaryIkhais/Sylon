@@ -1,6 +1,6 @@
 "use client";
 
-import { usePrivy } from "@privy-io/react-auth";
+import { usePrivy } from "@/hooks/useMockPrivy";
 
 export default function AuthButton() {
   const { ready, authenticated, login, logout, user } = usePrivy();

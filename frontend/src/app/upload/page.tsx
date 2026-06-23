@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AuthGuard from "@/components/AuthGuard";
-import { usePrivy } from "@privy-io/react-auth";
+import { usePrivy } from "@/hooks/useMockPrivy";
 
 type UploadResult = {
   status?: string;
@@ -140,39 +140,7 @@ function UploadContent() {
     }
   };
 
-  const handleFivetranSync = async () => {
-    setLoading(true);
-    setResult(null);
-    setIsDataReady(false);
-    
-    const newBizId = "demo_ft_" + Math.random().toString(36).substring(2, 9);
-    setBusinessId(newBizId);
-    localStorage.setItem(BUSINESS_ID_STORAGE_KEY, newBizId);
 
-    try {
-      const token = await getAccessToken();
-      const res = await fetch('/api/business/fivetran-sync', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Bypass-Tunnel-Reminder': 'true',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ business_id: newBizId, connector_id: 'mock_yelp' })
-      });
-      const data: UploadResult = await res.json();
-      setResult(data);
-      if (data.business_id) {
-        setBusinessId(data.business_id);
-        localStorage.setItem(BUSINESS_ID_STORAGE_KEY, data.business_id);
-      }
-    } catch (err) {
-      console.error(err);
-      setResult({ status: 'error', message: 'Fivetran connection failed' });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="w-full max-w-3xl mx-auto p-4 md:p-8 flex flex-col flex-grow animate-in fade-in duration-500">
@@ -182,38 +150,7 @@ function UploadContent() {
       </header>
 
       <div className="flex flex-col gap-8">
-        {/* Fivetran Live Integration Card */}
-        <div className="glass-card rounded-3xl p-6 md:p-8 border-2 border-brand-lightbrown/40 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-brand-lightbrown/10 rounded-bl-full -z-10" />
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
-              {/* Fivetran Logo Mock */}
-              <svg className="w-8 h-8 text-brand-brown" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-brand-dark dark:text-white">Live Data Pipeline</h2>
-              <p className="text-sm font-medium text-brand-dark/70 dark:text-white/60">Powered by Fivetran</p>
-            </div>
-          </div>
-          <p className="text-brand-dark/80 dark:text-white/80 mb-6 leading-relaxed">
-            Connect your platforms once, and we'll keep everything updated automatically. Sylon will pull in your latest reviews and sales data right before it gives you advice, so you're never acting on stale information.
-          </p>
-          <button
-            type="button"
-            onClick={handleFivetranSync}
-            disabled={loading}
-            className="w-full sm:w-auto text-white bg-gradient-to-r from-brand-lightbrown to-brand-brown hover:shadow-lg hover:scale-[1.02] px-8 py-3.5 rounded-full transition-all shadow-md font-bold disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2"
-          >
-            {loading ? 'Syncing via Fivetran API...' : 'Sync via Fivetran'}
-            {!loading && (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-              </svg>
-            )}
-          </button>
-        </div>
+
 
         {/* Manual Fallback Card */}
         <div className="glass-card rounded-3xl p-6 md:p-8 opacity-80 hover:opacity-100 transition-opacity">
