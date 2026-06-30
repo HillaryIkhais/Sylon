@@ -14,7 +14,7 @@ export default function AuthButton() {
   if (authenticated) {
     const displayName =
       user?.email?.address?.split("@")[0] ||
-      user?.google?.name ||
+      (user as any)?.google?.name ||
       "User";
 
     return (

@@ -323,7 +323,7 @@ function ChatContent() {
   );
 }
 
-function ComparisonCard({ comparison }: { comparison: ComparisonResult }) {
+function ComparisonCard({ comparison }: { comparison: any }) {
   const options = comparison.options || [];
   const riskClass = (risk: string) => {
     const normalized = risk.toLowerCase();
@@ -348,7 +348,7 @@ function ComparisonCard({ comparison }: { comparison: ComparisonResult }) {
       </div>
 
       <div className="grid grid-cols-1 gap-3">
-        {options.map((option) => (
+        {options.map((option: any) => (
           <div key={`${option.rank}-${option.label}`} className="rounded-xl border border-brand-dark/10 dark:border-white/10 bg-white/70 dark:bg-white/5 p-3">
             <div className="flex items-start justify-between gap-3 mb-2">
               <div className="font-bold text-brand-dark dark:text-white">
@@ -385,7 +385,7 @@ function ComparisonCard({ comparison }: { comparison: ComparisonResult }) {
         <div className="mt-4">
           <div className="text-xs font-bold uppercase tracking-wide text-brand-dark/60 dark:text-white/50 mb-2">Evidence</div>
           <div className="space-y-2">
-            {comparison.evidence_quotes.slice(0, 3).map((quote, index) => (
+            {comparison.evidence_quotes.slice(0, 3).map((quote: any, index: number) => (
               <blockquote key={`${quote}-${index}`} className="border-l-2 border-brand-lightbrown pl-3 text-sm italic text-brand-dark/80 dark:text-white/75">
                 &quot;{quote}&quot;
               </blockquote>

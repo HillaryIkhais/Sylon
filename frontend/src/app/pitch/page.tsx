@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { 
-  MessageSquare, ShoppingCart, Store, Instagram, Facebook, MessageCircle,
+  MessageSquare, ShoppingCart, Store, Camera, Globe, MessageCircle,
   Database, BrainCircuit, Users, Navigation, UserCheck, ShieldCheck, TrendingUp,
   Brain, FileText, ChevronRight, Play
 } from 'lucide-react';
@@ -120,12 +120,12 @@ export default function PitchDeck() {
                   <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md"><MessageCircle className="w-8 h-8 text-[#25D366]"/></div>
                   <span className="text-sm font-semibold text-white/60">WhatsApp</span>
                 </div>
-                <div className="absolute bottom-[25%] right-[-10%] flex flex-col items-center gap-2">
-                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md"><Instagram className="w-8 h-8 text-[#E1306C]"/></div>
+                <div className="absolute bottom-[25%] right-[-10%] flex flex-col items-center gap-3 stagger-item">
+                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md"><Camera className="w-8 h-8 text-[#E1306C]"/></div>
                   <span className="text-sm font-semibold text-white/60">Instagram</span>
                 </div>
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 flex flex-col items-center gap-2">
-                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md"><Facebook className="w-8 h-8 text-[#1877F2]"/></div>
+                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md"><Globe className="w-8 h-8 text-[#1877F2]"/></div>
                   <span className="text-sm font-semibold text-white/60">Facebook</span>
                 </div>
                 <div className="absolute bottom-[25%] left-[-10%] flex flex-col items-center gap-2">
