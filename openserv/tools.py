@@ -18,6 +18,15 @@ from agents.painpoint_extractor import (
     load_personas,
 )
 
+from openserv.integrations import send_meta_message, reply_to_google_review
+
+def tool_send_meta_message(platform: str, to_number: str, message_text: str) -> dict:
+    return send_meta_message(platform, to_number, message_text)
+
+def tool_reply_google_review(review_name: str, reply_text: str) -> dict:
+    return reply_to_google_review(review_name, reply_text)
+
+
 _REVIEWS = None
 
 def get_reviews():

@@ -406,7 +406,9 @@ function ComparisonCard({ comparison }: { comparison: any }) {
 
 // Simple markdown formatter for bold, italics, and lists
 function MarkdownText({ text }: { text: string }) {
+  if (!text) return null;
   const formatText = (content: string) => {
+    if (!content) return '';
     const html = content
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
