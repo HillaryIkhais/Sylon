@@ -227,6 +227,11 @@ data/*.sqlite
 data/*.sqlite3
 outputs/
 .vscode/
+test_omnichannel.py/
+test_qwen_alibaba.py/
+test_eval.py/
+task_a_solution_paper.md/
+task_b_solution_paper.md/
 
 # Node / frontend
 frontend/node_modules/
