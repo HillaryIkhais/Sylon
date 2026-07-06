@@ -17,7 +17,7 @@
 1. **Architectural Quality (Track 3 Core):** Sylon is not a chatbot; it is a highly concurrent Multi-Agent Decision Engine. The Qwen Orchestrator routes tasks to isolated Sales and Inventory agents via a custom `Promise.all()` parallel state machine.
 2. **Conflict Resolution & Autonomy:** When the Sales Agent and Inventory Agent disagree on a customer request, Sylon utilizes a strict Conflict Resolution tie-breaker to reach a consensus without human intervention.
 3. **Sophisticated API Usage (MCP):** Sylon natively bypasses manual integrations by strictly adhering to the **Model Context Protocol (MCP)**. Our MCP Executor securely translates Qwen Cloud's consensus into a direct API execution back to the user.
-4. **Proof of Deployment:** The entire backend is orchestrated on **Alibaba Cloud Serverless App Engine (SAE)** with our Business Memory Graph physically hosted on **Alibaba Cloud RDS**.
+4. **Alibaba Cloud Integration:** Sylon's intelligence relies exclusively on the **Alibaba Cloud Qwen API (DashScope)**. Furthermore, the backend is explicitly engineered to connect to **Alibaba Cloud RDS (PostgreSQL)** for production. *(Note: Due to standard KYC ID-verification delays for international accounts during the hackathon submission window, the live demo is temporarily utilizing the built-in SQLite fallback. The codebase natively supports RDS once KYC clears).*
 
 ## The Problem: The Death of the Dashboard
 Modern business intelligence is fundamentally broken. Traditional platforms ingest millions of data points only to spit out static star ratings and sterile dashboards. They tell a business owner *what* happened, but they fail to explain *who* is angry, *why* their expectations shifted, and *how* a specific operational pivot will impact churn. 
