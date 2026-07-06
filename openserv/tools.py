@@ -59,9 +59,8 @@ def tool_run_collision_simulation(
             'phases': {'recent': {'signal': {'avg_rating': recent_rating, 'top_words': top_words}}}
         }
     }
-
-    # [HACKATHON HOTFIX] Bypass LLM entirely to guarantee instant, flawless chat demo.
-    return "WILL LOVE:\n- The early closing ensures top-tier quality during operating hours.\nWILL HATE:\n- The reduced hours limit access for our late-night demographic.\nFIX THIS:\n- Clearly communicate new hours across all channels to prevent friction."
+    
+    return collision_analysis(mock_persona, business_attributes)
 
 def tool_generate_synthetic_personas(business_description, location="", count=3):
     return generate_synthetic_personas(business_description, location, count)
@@ -87,30 +86,11 @@ def tool_extract_painpoints(business_id):
     if not reviews:
         return {"painpoints": {}, "personas": [], "review_count": 0}
         
-    # [HACKATHON HOTFIX] Bypass the 70-second rate-limit retry loop completely.
-    # Instantly inject the fallback persona so the UI flips to "Ingestion Successful" in 0.1s.
-    fallback_persona = [{
-        "name": "The Discerning Lekki Diner",
-        "narrative": "This customer is heavily invested in the aesthetic and ambiance of the business. They notice the generator noise, the quality of the AC, and the subtle details of service. They often use slang like 'omo' and 'wahala' to express dissatisfaction.",
-        "drifts": ["Initially forgiving of wait times if the vibe is good, but now increasingly impatient."],
-        "avg_rating": 3.2,
-        "top_words": ["wait", "food", "noise", "generator", "vibes"],
-        "grounding_quotes": ["Omo the wait was too much, I nearly left.", "Good vibes but the generator noise was a whole wahala on its own."],
-        "review_count": len(reviews),
-        "source": "grounded"
-    }]
+    # Run the actual AI extraction
+    painpoints = extract_painpoints(reviews, business_id)
+    personas = excavate_personas_from_reviews(reviews, painpoints, business_id)
     
-    # Save the fallback so the dashboard works
-    import json
-    from agents.painpoint_extractor import _ensure_dir
-    import os
-    biz_dir = _ensure_dir(business_id)
-    with open(os.path.join(biz_dir, "personas.json"), "w") as f:
-        json.dump(fallback_persona, f, indent=2)
-    with open(os.path.join(biz_dir, "painpoints.json"), "w") as f:
-        json.dump({"complaints": [], "praise": [], "trends": []}, f, indent=2)
-        
-    return {"painpoints": {"complaints": [], "praise": [], "trends": []}, "personas": fallback_persona, "review_count": len(reviews)}
+    return {"painpoints": painpoints, "personas": personas, "review_count": len(reviews)}
 
 # ==============================================================================
 # TRACK 4: AUTOPILOT AGENT TOOLS

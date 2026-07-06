@@ -104,34 +104,35 @@ export default function Insights() {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        {/* Left Column: Signals & Timeline */}
-        <div className="lg:col-span-2 flex flex-col gap-8">
+      <div className="w-full">
+        <div className="grid grid-cols-3 gap-3 md:gap-8">
           
-          {/* Customer Signals */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="glass-card p-5 rounded-2xl flex flex-col justify-center border border-brand-dark/10 shadow-sm">
-              <div className="text-xs font-bold text-brand-dark/60 uppercase tracking-wider mb-2 flex items-center gap-2"><span>📈</span> Demand Signals</div>
-              <div className="text-3xl font-bold text-brand-dark">{data.signals.demand}</div>
+          {/* Left Column: Signals & Timeline */}
+          <div className="col-span-2 flex flex-col gap-3 md:gap-8">
+            
+            {/* Customer Signals */}
+            <div className="grid grid-cols-4 gap-2 md:gap-4">
+              <div className="glass-card p-2 md:p-5 rounded-xl md:rounded-2xl flex flex-col justify-center border border-brand-dark/10 shadow-sm">
+              <div className="text-[8px] md:text-xs font-bold text-brand-dark/60 uppercase tracking-wider mb-1 md:mb-2 flex flex-col xl:flex-row items-center md:items-start gap-1 md:gap-2 text-center md:text-left"><span className="text-sm md:text-base">📈</span> <span className="leading-tight">Demand Signals</span></div>
+              <div className="text-lg md:text-3xl font-bold text-brand-dark text-center md:text-left">{data.signals.demand}</div>
             </div>
-            <div className="glass-card p-5 rounded-2xl flex flex-col justify-center border border-brand-dark/10 shadow-sm bg-red-50/50">
-              <div className="text-xs font-bold text-red-600/70 uppercase tracking-wider mb-2 flex items-center gap-2"><span>💸</span> Lost Sales</div>
-              <div className="text-3xl font-bold text-red-700">{data.signals.lost_sales}</div>
+            <div className="glass-card p-2 md:p-5 rounded-xl md:rounded-2xl flex flex-col justify-center border border-brand-dark/10 shadow-sm bg-red-50/50">
+              <div className="text-[8px] md:text-xs font-bold text-red-600/70 uppercase tracking-wider mb-1 md:mb-2 flex flex-col xl:flex-row items-center md:items-start gap-1 md:gap-2 text-center md:text-left"><span className="text-sm md:text-base">💸</span> <span className="leading-tight">Lost Sales</span></div>
+              <div className="text-lg md:text-3xl font-bold text-red-700 text-center md:text-left">{data.signals.lost_sales}</div>
             </div>
-            <div className="glass-card p-5 rounded-2xl flex flex-col justify-center border border-brand-dark/10 shadow-sm bg-amber-50/50">
-              <div className="text-xs font-bold text-amber-600/70 uppercase tracking-wider mb-2 flex items-center gap-2"><span>⚠️</span> Complaints</div>
-              <div className="text-3xl font-bold text-amber-700">{data.signals.complaints}</div>
+            <div className="glass-card p-2 md:p-5 rounded-xl md:rounded-2xl flex flex-col justify-center border border-brand-dark/10 shadow-sm bg-amber-50/50">
+              <div className="text-[8px] md:text-xs font-bold text-amber-600/70 uppercase tracking-wider mb-1 md:mb-2 flex flex-col xl:flex-row items-center md:items-start gap-1 md:gap-2 text-center md:text-left"><span className="text-sm md:text-base">⚠️</span> <span className="leading-tight">Complaints</span></div>
+              <div className="text-lg md:text-3xl font-bold text-amber-700 text-center md:text-left">{data.signals.complaints}</div>
             </div>
-            <div className="glass-card p-5 rounded-2xl flex flex-col justify-center border border-brand-dark/10 shadow-sm bg-green-50/50">
-              <div className="text-xs font-bold text-green-600/70 uppercase tracking-wider mb-2 flex items-center gap-2"><span>🛒</span> Purchase Intent</div>
-              <div className="text-3xl font-bold text-green-700">{data.signals.purchase_intent}</div>
+            <div className="glass-card p-2 md:p-5 rounded-xl md:rounded-2xl flex flex-col justify-center border border-brand-dark/10 shadow-sm bg-green-50/50">
+              <div className="text-[8px] md:text-xs font-bold text-green-600/70 uppercase tracking-wider mb-1 md:mb-2 flex flex-col xl:flex-row items-center md:items-start gap-1 md:gap-2 text-center md:text-left"><span className="text-sm md:text-base">🛒</span> <span className="leading-tight">Purchase Intent</span></div>
+              <div className="text-lg md:text-3xl font-bold text-green-700 text-center md:text-left">{data.signals.purchase_intent}</div>
             </div>
           </div>
 
           {/* Business Memory Timeline */}
-          <div className="glass-card rounded-3xl p-6 md:p-8 border border-brand-dark/10 shadow-sm">
-            <h2 className="text-xl font-bold text-brand-dark mb-6 flex items-center gap-2">
+          <div className="glass-card rounded-xl md:rounded-3xl p-4 md:p-8 border border-brand-dark/10 shadow-sm">
+            <h2 className="text-sm md:text-xl font-bold text-brand-dark mb-4 md:mb-6 flex items-center gap-2">
               <span>🧠</span> Business Memory Timeline
             </h2>
             <div className="flex flex-col gap-6 relative">
@@ -157,75 +158,75 @@ export default function Insights() {
                 const dateStr = new Date(m.created_at).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit' });
 
                 return (
-                  <div key={i} className="relative pl-10">
-                    <div className={`absolute left-0 top-1 w-8 h-8 rounded-full ${iconBg} flex items-center justify-center border-2 border-white shadow-sm text-xs`}>{icon}</div>
-                    <div className="text-xs font-bold text-brand-dark/50 mb-1">{dateStr}</div>
-                    <div className="font-semibold text-brand-dark text-lg">{m.text}</div>
-                    <div className={`mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${colorClass}`}>{m.intent}</div>
+                  <div key={i} className="relative pl-6 md:pl-10">
+                    <div className={`absolute left-0 top-0.5 md:top-1 w-5 h-5 md:w-8 md:h-8 rounded-full ${iconBg} flex items-center justify-center border-2 border-white shadow-sm text-[8px] md:text-xs`}>{icon}</div>
+                    <div className="text-[10px] md:text-xs font-bold text-brand-dark/50 mb-0.5 md:mb-1">{dateStr}</div>
+                    <div className="font-semibold text-brand-dark text-xs md:text-lg leading-tight md:leading-normal">{m.text}</div>
+                    <div className={`mt-1 md:mt-2 inline-flex items-center px-1.5 md:px-2.5 py-0.5 rounded-full text-[8px] md:text-xs font-bold ${colorClass}`}>{m.intent}</div>
                   </div>
                 );
               })}
-            </div>
           </div>
+        </div>
         </div>
 
         {/* Right Column: Patterns & Daily Summary */}
-        <div className="lg:col-span-1 flex flex-col gap-6">
+        <div className="col-span-1 flex flex-col gap-3 md:gap-6">
           
           {/* Daily Summary */}
-          <div className="bg-brand-dark rounded-3xl p-6 text-white shadow-lg relative overflow-hidden">
-            <div className="absolute -right-10 -top-10 w-32 h-32 bg-brand-brown/30 rounded-full blur-2xl"></div>
-            <h2 className="text-sm font-bold uppercase tracking-wider text-white/60 mb-4">Latest Summary</h2>
-            <div className="text-3xl font-bold mb-1">Today</div>
-            <div className="text-white/80 mb-6 border-b border-white/10 pb-4">
-              <ul className="space-y-2 text-sm font-medium">
+          <div className="bg-brand-dark rounded-xl md:rounded-3xl p-4 md:p-6 text-white shadow-lg relative overflow-hidden">
+            <div className="absolute -right-5 -top-5 md:-right-10 md:-top-10 w-16 h-16 md:w-32 md:h-32 bg-brand-brown/30 rounded-full blur-xl md:blur-2xl"></div>
+            <h2 className="text-[9px] md:text-sm font-bold uppercase tracking-wider text-white/60 mb-2 md:mb-4">Latest Summary</h2>
+            <div className="text-xl md:text-3xl font-bold mb-1">Today</div>
+            <div className="text-white/80 mb-3 md:mb-6 border-b border-white/10 pb-2 md:pb-4">
+              <ul className="space-y-1 md:space-y-2 text-[10px] md:text-sm font-medium">
                 <li className="flex justify-between"><span>Total Enquiries:</span> <span className="font-bold text-white">{data.signals.total_enquiries}</span></li>
                 <li className="flex justify-between"><span>Purchase-Ready:</span> <span className="font-bold text-green-400">{data.signals.purchase_intent}</span></li>
                 <li className="flex justify-between"><span>Complaints:</span> <span className="font-bold text-red-400">{data.signals.complaints}</span></li>
               </ul>
-            </div>
-            <div className="mb-4">
-              <div className="text-xs text-white/50 uppercase font-bold mb-1">Top Archetype</div>
-              <div className="font-semibold">{data.archetypes?.[0]?.name || "Not enough data"}</div>
-            </div>
-            <div className="bg-white/10 rounded-xl p-4 border border-white/10">
-              <div className="text-xs text-brand-lightbrown uppercase font-bold mb-1 flex items-center gap-2"><span>✨</span> Recommendation</div>
-              <div className="text-sm font-medium leading-relaxed">{data.archetypes?.[0]?.drift || "Collect more customer interactions to unlock recommendations."}</div>
+              <div className="mb-2 md:mb-4">
+                <div className="text-[9px] md:text-xs text-white/50 uppercase font-bold mb-1">Top Archetype</div>
+                <div className="font-semibold text-xs md:text-base leading-tight">{data.archetypes?.[0]?.name || "Not enough data"}</div>
+              </div>
+              <div className="bg-white/10 rounded-lg md:rounded-xl p-2 md:p-4 border border-white/10">
+                <div className="text-[9px] md:text-xs text-brand-lightbrown uppercase font-bold mb-1 flex items-center gap-1 md:gap-2"><span>✨</span> Recommendation</div>
+                <div className="text-[10px] md:text-sm font-medium leading-tight md:leading-relaxed">{data.archetypes?.[0]?.drift || "Collect more customer interactions to unlock recommendations."}</div>
+              </div>
             </div>
           </div>
 
           {/* Pattern Discovery */}
-          <div className="glass-card rounded-3xl p-6 border border-brand-dark/10 shadow-sm">
-            <h2 className="text-lg font-bold text-brand-dark mb-4 flex items-center gap-2">
+          <div className="glass-card rounded-xl md:rounded-3xl p-4 md:p-6 border border-brand-dark/10 shadow-sm">
+            <h2 className="text-sm md:text-lg font-bold text-brand-dark mb-2 md:mb-4 flex items-center gap-1 md:gap-2">
               <span>🔮</span> Pattern Discovery
             </h2>
-            <p className="text-xs font-bold text-brand-dark/50 uppercase mb-4">Sylon Noticed...</p>
-            <ul className="space-y-4">
-              <li className="flex items-start gap-3">
-                <div className="mt-0.5 text-lg">⚠️</div>
-                <div className="text-sm font-medium text-brand-dark"><strong className="text-brand-brown">Key Complaint:</strong> {data.top_complaint || "None"}</div>
+            <p className="text-[9px] md:text-xs font-bold text-brand-dark/50 uppercase mb-2 md:mb-4">Sylon Noticed...</p>
+            <ul className="space-y-2 md:space-y-4">
+              <li className="flex items-start gap-1.5 md:gap-3">
+                <div className="text-xs md:text-lg mt-0.5">⚠️</div>
+                <div className="text-[10px] md:text-sm font-medium text-brand-dark leading-tight"><strong className="text-brand-brown block md:inline">Key Complaint:</strong> {data.top_complaint || "None"}</div>
               </li>
-              <li className="flex items-start gap-3">
-                <div className="mt-0.5 text-lg">⭐</div>
-                <div className="text-sm font-medium text-brand-dark"><strong className="text-green-700">Top Praise:</strong> {data.top_praise || "None"}</div>
+              <li className="flex items-start gap-1.5 md:gap-3">
+                <div className="text-xs md:text-lg mt-0.5">⭐</div>
+                <div className="text-[10px] md:text-sm font-medium text-brand-dark leading-tight"><strong className="text-green-700 block md:inline">Top Praise:</strong> {data.top_praise || "None"}</div>
               </li>
             </ul>
           </div>
 
           {/* Intelligence Score */}
-          <div className="glass-card rounded-3xl p-6 border border-brand-dark/10 shadow-sm flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full border-4 border-green-500 flex items-center justify-center text-xl font-bold text-green-600 flex-shrink-0">
+          <div className="glass-card rounded-xl md:rounded-3xl p-3 md:p-6 border border-brand-dark/10 shadow-sm flex items-center gap-2 md:gap-4">
+            <div className="w-10 h-10 md:w-16 md:h-16 rounded-full border-2 md:border-4 border-green-500 flex items-center justify-center text-xs md:text-xl font-bold text-green-600 flex-shrink-0">
               72%
             </div>
             <div>
-              <div className="font-bold text-brand-dark">Business Intelligence</div>
-              <div className="text-xs text-brand-dark/60 font-semibold text-green-600 flex items-center gap-1"><span>↑</span> Growing</div>
-              <div className="text-[10px] text-brand-dark/40 mt-1">Based on 218 interactions</div>
+              <div className="font-bold text-brand-dark text-xs md:text-base leading-tight">Business Intelligence</div>
+              <div className="text-[9px] md:text-xs text-brand-dark/60 font-semibold text-green-600 flex items-center gap-1"><span>↑</span> Growing</div>
+              <div className="text-[8px] md:text-[10px] text-brand-dark/40 mt-0.5 md:mt-1">Based on 218 interactions</div>
             </div>
           </div>
-
         </div>
       </div>
+    </div>
     </div>
   );
 }

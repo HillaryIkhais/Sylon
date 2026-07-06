@@ -5,10 +5,8 @@ import { usePrivy } from '@privy-io/react-auth';
 import { CheckCircle2, MessageSquareWarning, Pencil, Send, Check } from 'lucide-react';
 import AuthGuard from '@/components/AuthGuard';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
-
 // For local testing without full multi-tenant DB setup, we hardcode the business ID
-const TEST_BUSINESS_ID = "225139034024220"; 
+const DEFAULT_BUSINESS_ID = "225139034024220"; 
 
 interface ActionItem {
   id: number;
@@ -17,6 +15,7 @@ interface ActionItem {
   insight: string; // The draft text or escalation reason
   timestamp: string;
   source: string; // 'draft_reply' or 'escalation'
+  reasoning_trace?: string; // The multi-agent debate trace JSON
 }
 
 export default function Inbox() {
@@ -28,12 +27,21 @@ export default function Inbox() {
   const [processingId, setProcessingId] = useState<number | null>(null);
 
   useEffect(() => {
-    fetchItems();
+    let isDemoMode = false;
+    if (typeof window !== "undefined") {
+      isDemoMode = localStorage.getItem("sylon_demo_mode") === "true";
+    }
+    if (authenticated || isDemoMode) {
+      fetchItems();
+    } else {
+      setLoading(false);
+    }
   }, [authenticated]);
 
   const fetchItems = async () => {
     try {
-      const res = await fetch(`${API_URL}/business/action-items?business_id=${TEST_BUSINESS_ID}`);
+      const bizId = localStorage.getItem('sylon_business_id') || DEFAULT_BUSINESS_ID;
+      const res = await fetch(`/api/business/action-items?business_id=${bizId}`);
       const data = await res.json();
       if (data.status === 'success') {
         setItems(data.items);
@@ -55,7 +63,7 @@ export default function Inbox() {
     const toNumber = phoneMatch ? phoneMatch[1] : null;
 
     try {
-      const res = await fetch(`${API_URL}/business/action-items/${id}/approve`, {
+      const res = await fetch(`/api/business/action-items/${id}/approve`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -85,8 +93,8 @@ export default function Inbox() {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-brand-dark text-white p-6 pt-24 pb-32">
-        <div className="max-w-4xl mx-auto space-y-8">
+      <div className="min-h-screen bg-brand-dark text-white p-4 md:p-6 lg:p-8 pt-20 md:pt-24 pb-32">
+        <div className="max-w-4xl mx-auto space-y-6 md:space-y-8">
           
           <div className="space-y-2">
             <h1 className="text-4xl md:text-5xl font-light text-brand-lightbrown tracking-tight">Action Inbox</h1>
@@ -105,7 +113,7 @@ export default function Inbox() {
               {items.map((item) => (
                 <div 
                   key={item.id} 
-                  className={`rounded-2xl border p-6 backdrop-blur-md shadow-xl flex flex-col space-y-4 ${
+                  className={`rounded-2xl border p-4 sm:p-5 md:p-6 backdrop-blur-md shadow-xl flex flex-col space-y-4 ${
                     item.source === 'escalation' ? 'bg-red-900/10 border-red-500/30' : 'bg-white/5 border-white/10'
                   }`}
                 >
@@ -141,24 +149,56 @@ export default function Inbox() {
                         onChange={(e) => setEditBuffer(e.target.value)}
                       />
                     ) : (
-                      <p className="text-white/80 text-lg leading-relaxed">{item.insight}</p>
+                      <div className="space-y-4">
+                        <p className="text-white/80 text-lg leading-relaxed">{item.insight}</p>
+                        
+                        {item.reasoning_trace && (
+                          <div className="mt-4 border-t border-white/10 pt-4">
+                            <p className="text-xs text-white/40 uppercase tracking-widest mb-3 font-semibold flex items-center gap-2">
+                              <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                              Agent Debate Log
+                            </p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {(() => {
+                                try {
+                                  const trace = JSON.parse(item.reasoning_trace);
+                                  return (
+                                    <>
+                                      <div className="bg-blue-900/10 border border-blue-500/20 rounded-lg p-3">
+                                        <p className="text-[10px] text-blue-400 font-mono mb-1 uppercase">CX Agent (Retention Focus)</p>
+                                        <p className="text-sm text-white/70">{trace.cx_agent}</p>
+                                      </div>
+                                      <div className="bg-red-900/10 border border-red-500/20 rounded-lg p-3">
+                                        <p className="text-[10px] text-red-400 font-mono mb-1 uppercase">CFO Agent (Risk/Cost Focus)</p>
+                                        <p className="text-sm text-white/70">{trace.cfo_agent}</p>
+                                      </div>
+                                    </>
+                                  );
+                                } catch (e) {
+                                  return null;
+                                }
+                              })()}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
 
-                  <div className="flex justify-end gap-3 pt-2">
+                  <div className="flex flex-col sm:flex-row justify-end gap-3 pt-2 w-full">
                     {item.source === 'draft_reply' && (
                       <>
                         {editingId === item.id ? (
                           <button 
                             onClick={() => setEditingId(null)}
-                            className="px-4 py-2 rounded-xl bg-white/5 text-white/70 hover:bg-white/10 hover:text-white transition-colors text-sm font-medium"
+                            className="w-full sm:w-auto px-4 py-2.5 sm:py-2 rounded-xl bg-white/5 text-white/70 hover:bg-white/10 hover:text-white transition-colors text-sm font-medium"
                           >
                             Cancel Edit
                           </button>
                         ) : (
                           <button 
                             onClick={() => { setEditingId(item.id); setEditBuffer(item.insight); }}
-                            className="px-4 py-2 rounded-xl bg-white/5 text-white/70 hover:bg-white/10 hover:text-white transition-colors text-sm font-medium flex items-center gap-2"
+                            className="w-full sm:w-auto px-4 py-2.5 sm:py-2 rounded-xl bg-white/5 text-white/70 hover:bg-white/10 hover:text-white transition-colors text-sm font-medium flex items-center justify-center gap-2"
                           >
                             <Pencil className="w-4 h-4" /> Edit
                           </button>
@@ -166,7 +206,7 @@ export default function Inbox() {
                         <button 
                           disabled={processingId === item.id}
                           onClick={() => handleApprove(item.id, item.insight)}
-                          className="px-6 py-2 rounded-xl bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30 transition-colors font-medium flex items-center gap-2 disabled:opacity-50"
+                          className="w-full sm:w-auto px-6 py-2.5 sm:py-2 rounded-xl bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30 transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50"
                         >
                           {processingId === item.id ? (
                             <div className="w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full animate-spin"></div>
@@ -182,7 +222,7 @@ export default function Inbox() {
                       <button 
                         disabled={processingId === item.id}
                         onClick={() => handleApprove(item.id, item.insight)}
-                        className="px-6 py-2 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 transition-colors font-medium flex items-center gap-2 disabled:opacity-50"
+                        className="w-full sm:w-auto px-6 py-2.5 sm:py-2 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50"
                       >
                          {processingId === item.id ? (
                             <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin"></div>

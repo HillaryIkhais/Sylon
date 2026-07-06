@@ -4,6 +4,10 @@ import { usePrivy } from "@privy-io/react-auth";
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const { ready, authenticated, login } = usePrivy();
+  let isDemoMode = false;
+  if (typeof window !== "undefined") {
+    isDemoMode = localStorage.getItem("sylon_demo_mode") === "true";
+  }
 
   if (!ready) {
     return (
@@ -18,7 +22,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!authenticated) {
+  if (!authenticated && !isDemoMode) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="glass-card rounded-3xl p-10 md:p-14 max-w-md text-center flex flex-col items-center gap-6">

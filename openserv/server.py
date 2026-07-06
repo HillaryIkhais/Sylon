@@ -228,11 +228,91 @@ async def chat_endpoint(request: ChatRequest, req: Request, user: dict = Depends
             board_debate={
                 "cfo": "A 10% discount is within our safe margin threshold for a repeat customer.",
                 "cx": "This customer has bought from us 3 times. We should prioritize this sale.",
-                "ops": "We have 4 units left in the Warri warehouse. Ready for dispatch.",
-                "final": "Approve the discount and secure the payment."
+                "ops": "Inventory for this item is healthy."
             }
         )
 
+class DemoChatRequest(BaseModel):
+    session_id: str # Unique ID for the web browser session
+    text: str
+    mode: str = "onboarding" # "onboarding" or "customer"
+
+@app.post("/demo/chat")
+async def demo_chat_endpoint(request: DemoChatRequest):
+    """
+    Frictionless Web Chat Demo endpoint.
+    Handles both the conversational onboarding and the customer simulation.
+    """
+    try:
+        if request.mode == "onboarding":
+            # Conversational Onboarding Flow
+            # Check if business already exists
+            profile = persistence_service.get_business_profile(request.session_id)
+            if not profile:
+                # First message!
+                persistence_service.upsert_business(request.session_id, name="Pending Demo Business", description="")
+                return {
+                    "response": "👋 Welcome to Sylon! I'm your AI Business Operator. To set up your workspace, what is the name of your business?",
+                    "status": "onboarding"
+                }
+            
+            # Simple stateless onboarding logic based on keywords
+            text = request.text.lower()
+            if "name is" in text or "called" in text or len(text.split()) <= 3:
+                # Assume they provided the name
+                persistence_service.upsert_business(request.session_id, name=request.text, description="A business")
+                return {
+                    "response": f"Got it, {request.text}. What kind of products or services do you sell?",
+                    "status": "onboarding"
+                }
+            elif "sell" in text or "provide" in text or "we do" in text:
+                persistence_service.upsert_business(request.session_id, name=profile.get("name"), description=request.text)
+                return {
+                    "response": "Excellent. I've updated your Business Memory with your product catalog. Do you offer delivery, and if so, what are your rates?",
+                    "status": "onboarding"
+                }
+            elif "delivery" in text or "fee" in text or "free" in text or "charge" in text:
+                policies = f"Delivery Policy: {request.text}"
+                with persistence_service.get_connection() as conn:
+                    conn.execute("UPDATE businesses SET policies = ? WHERE id = ?", (policies, request.session_id))
+                return {
+                    "response": "Perfect! Your workspace is ready. ✅\n\nNow, let's switch gears. I am now acting as Sylon answering your customers. You can pretend to be a customer messaging your business right now!",
+                    "status": "ready"
+                }
+            else:
+                return {
+                    "response": "Thanks! Tell me a bit more about your policies, or type 'Done' to finish setup.",
+                    "status": "onboarding"
+                }
+                
+        elif request.mode == "customer":
+            # Process as a customer messaging the business
+            from openserv.decision_engine import process_customer_message
+            import uuid
+            
+            # Generate a random customer ID for this session
+            customer_id = f"cust_{request.session_id[-6:]}"
+            
+            # process_customer_message expects: text_content, business_id, sender_id, sender_name, channel
+            result = process_customer_message(
+                text_content=request.text,
+                business_id=request.session_id,
+                sender_id=customer_id,
+                sender_name="Web Demo Customer",
+                channel="web"
+            )
+            
+            return {
+                "response": result.get("reply", "No reply generated."),
+                "board_debate": result.get("debate_trace"),
+                "decision": result.get("decision"),
+                "status": "customer"
+            }
+            
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return {"error": str(e), "status": "error"}
 
 def process_and_persist_background(business_id: str, batch_id: str, ingestion_payload: dict):
     from openserv.tools import tool_ingest_reviews, tool_extract_painpoints
@@ -260,7 +340,48 @@ def process_and_persist_background(business_id: str, batch_id: str, ingestion_pa
         print(f"[Background] Starting AI extraction for {business_id} ({len(reviews)} reviews)")
 
         # 2. Extract painpoints
-        result = tool_extract_painpoints(business_id=business_id)
+        if ingestion_payload.get("is_demo"):
+            print(f"[Background] Demo mode active for {business_id}. Generating instant mock insights...")
+            # Generate rich mock data to avoid 60s LLM wait
+            mock_painpoints = {
+                "complaints": [
+                    {"theme": "High pricing and hidden fees", "count": 4, "severity": "high", "quotes": ["Prices are ridiculous", "Hidden fees at checkout"]},
+                    {"theme": "Slow customer service response", "count": 3, "severity": "medium", "quotes": ["Waited 30 minutes on hold", "Nobody replied to my email"]}
+                ],
+                "praise": [
+                    {"theme": "Excellent product quality", "count": 5, "quotes": ["The material is top notch", "Lasts forever and looks great"]}
+                ],
+                "trends": [
+                    {"pattern": "Increasing complaints about shipping delays", "direction": "worsening"}
+                ]
+            }
+            mock_personas = [
+                {
+                    "name": "The Value Seeker",
+                    "description": "Customers who appreciate quality but feel alienated by recent price hikes and hidden fees.",
+                    "pain_points": ["High prices", "Unexpected fees at checkout"],
+                    "goals": ["Find affordable quality", "Transparent pricing"]
+                },
+                {
+                    "name": "The Impatient Buyer",
+                    "description": "Customers who expect fast shipping and immediate, personalized customer service responses.",
+                    "pain_points": ["Slow shipping", "Automated unhelpful support"],
+                    "goals": ["Get items quickly", "Speak to a real human"]
+                }
+            ]
+            
+            # Save mocks to disk
+            import os, json
+            biz_dir = os.path.join(os.path.dirname(__file__), "..", "data", "businesses", business_id)
+            os.makedirs(biz_dir, exist_ok=True)
+            with open(os.path.join(biz_dir, "painpoints.json"), "w") as f:
+                json.dump(mock_painpoints, f, indent=2)
+            with open(os.path.join(biz_dir, "personas.json"), "w") as f:
+                json.dump(mock_personas, f, indent=2)
+                
+            result = {"painpoints": mock_painpoints, "personas": mock_personas, "review_count": len(reviews)}
+        else:
+            result = tool_extract_painpoints(business_id=business_id)
         
         # Persistence Layer 
         persistence_service.upsert_business(business_id=business_id)
@@ -419,11 +540,14 @@ class SampleUploadRequest(BaseModel):
     business_id: str
 
 
-
 @app.post("/business/upload-sample")
-async def upload_sample(background_tasks: BackgroundTasks, request: SampleUploadRequest, user: dict = Depends(get_current_user)):
+async def upload_sample(background_tasks: BackgroundTasks, request: SampleUploadRequest):
     try:
         business_id = request.business_id
+        
+        # Clear out any old demo data so the dashboard is fresh!
+        persistence_service.delete_business(business_id)
+        
         csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "utilities", "mini_sample.csv")
         
         from openserv.tools import tool_ingest_reviews, tool_extract_painpoints
@@ -431,7 +555,7 @@ async def upload_sample(background_tasks: BackgroundTasks, request: SampleUpload
         
         batch_id = f"batch_{uuid.uuid4().hex[:8]}"
         
-        ingestion_payload = {"csv_path": csv_path, "delete_after": False}
+        ingestion_payload = {"csv_path": csv_path, "delete_after": False, "is_demo": True}
         
         # heavy AI processing to background task
         background_tasks.add_task(process_and_persist_background, business_id, batch_id, ingestion_payload)
@@ -449,7 +573,7 @@ async def upload_sample(background_tasks: BackgroundTasks, request: SampleUpload
 
 
 @app.get("/business/{business_id}/dashboard")
-async def get_dashboard(business_id: str, user: dict = Depends(get_current_user)):
+async def get_dashboard(business_id: str, user: dict = Depends(get_optional_user)):
     try:
         data = persistence_service.get_business_dashboard_data(business_id)
         if not data["archetypes"] and not data["history"]:
@@ -461,7 +585,7 @@ async def get_dashboard(business_id: str, user: dict = Depends(get_current_user)
         return {"status": "error", "message": str(e)}
 
 @app.get("/chat/history/{business_id}")
-async def get_chat_history(business_id: str, user: dict = Depends(get_current_user)):
+async def get_chat_history(business_id: str, user: dict = Depends(get_optional_user)):
     from openserv.orchestrator import sessions
     try:
         session = sessions.get_or_create(business_id)
@@ -532,6 +656,70 @@ async def save_meta_oauth_tokens(request: MetaOAuthRequest, user: dict = Depends
         return {"status": "ok", "message": "Successfully linked WhatsApp to Sylon!"}
     except Exception as e:
         print(f"[Server] OAuth saving error: {e}")
+        return {"status": "error", "message": str(e)}
+
+class WaitlistRequest(BaseModel):
+    name: str
+    business_name: str
+    email: str
+    whatsapp: str
+    category: str
+    channels: list
+    challenge: str
+    volume: str
+
+@app.post("/api/waitlist")
+async def join_waitlist(req: WaitlistRequest, background_tasks: BackgroundTasks):
+    try:
+        import uuid
+        entry_id = f"wl_{uuid.uuid4().hex[:8]}"
+        persistence_service.insert_waitlist_entry(
+            entry_id=entry_id,
+            name=req.name,
+            business_name=req.business_name,
+            email=req.email,
+            whatsapp=req.whatsapp,
+            category=req.category,
+            channels=req.channels,
+            challenge=req.challenge,
+            volume=req.volume
+        )
+        
+        # Send Email Notification in the background
+        def send_email_notification():
+            resend_api_key = os.environ.get("RESEND_API_KEY")
+            notification_email = os.environ.get("WAITLIST_NOTIFICATION_EMAIL", "hello@sylon.ai")
+            if resend_api_key:
+                import requests
+                try:
+                    requests.post(
+                        "https://api.resend.com/emails",
+                        headers={"Authorization": f"Bearer {resend_api_key}", "Content-Type": "application/json"},
+                        json={
+                            "from": "Sylon Waitlist <onboarding@resend.dev>",
+                            "to": [notification_email],
+                            "subject": f"🚀 New Waitlist Signup: {req.business_name}",
+                            "html": f"""
+                            <h2>New Waitlist Signup!</h2>
+                            <p><strong>Name:</strong> {req.name}</p>
+                            <p><strong>Business:</strong> {req.business_name}</p>
+                            <p><strong>Email:</strong> {req.email}</p>
+                            <p><strong>WhatsApp:</strong> {req.whatsapp}</p>
+                            <p><strong>Category:</strong> {req.category}</p>
+                            <p><strong>Channels:</strong> {', '.join(req.channels)}</p>
+                            <p><strong>Challenge:</strong> {req.challenge}</p>
+                            <p><strong>Volume:</strong> {req.volume}</p>
+                            """
+                        }
+                    )
+                except Exception as e:
+                    print(f"[Waitlist Email] Failed to send email: {e}")
+
+        background_tasks.add_task(send_email_notification)
+
+        return {"status": "success", "message": "Successfully joined the waitlist.", "position": 146}
+    except Exception as e:
+        print(f"[Server] Waitlist error: {e}")
         return {"status": "error", "message": str(e)}
 
 if __name__ == "__main__":

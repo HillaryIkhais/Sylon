@@ -83,55 +83,91 @@ Output valid JSON exactly matching the schema.
         return {"intent": "unknown", "risk_score": 10, "confidence": 0, "decision": "ESCALATE", "reasoning": "Fallback due to LLM failure"}
 
 
-def process_customer_message(text_content: str, business_id: str, sender_id: str, sender_name: str = "Unknown"):
+def process_customer_message(text_content: str, business_id: str, sender_id: str, sender_name: str = "Unknown", channel: str = "whatsapp"):
     """
-    The Core Pipeline for Customer Messages.
-    Replaces the old process_user_scenario which was designed for the Business Owner.
+    The Core Pipeline for Customer Messages (Qwen Multi-Agent Debate).
+    Track 3 (Agent Society) Implementation: CX Agent and CFO Agent debate the response,
+    then the Operations Router makes the final decision based on their conflict resolution.
     """
-    print(f"[Decision Engine] Processing message from {sender_name} ({sender_id}) for business {business_id}...")
+    print(f"[Decision Engine] Processing message from {sender_name} ({sender_id}) for business {business_id} via {channel}...")
     
     # 1. Build Context
     context = build_context(business_id, sender_id)
     
-    # 2. Analyze
-    analysis = analyze_intent_and_risk(text_content, context)
-    decision = str(analysis.get("decision", "ESCALATE")).upper()
+    # 2. Multi-Agent Debate
+    cx_prompt = f"{context}\n\nCUSTOMER MESSAGE:\n\"{text_content}\"\n\nYou are the Customer Experience (CX) Agent. Your goal is to maximize customer satisfaction and retention. How should we respond?"
+    cfo_prompt = f"{context}\n\nCUSTOMER MESSAGE:\n\"{text_content}\"\n\nYou are the Chief Financial Officer (CFO) Agent. Your goal is to minimize risk, reduce costs, and strictly enforce business policies. How should we respond?"
     
+    # In a real async environment we would Promise.all these
+    try:
+        cx_perspective = call_llm(prompt=cx_prompt, system_prompt="You are a CX Agent. Focus on empathy, retention, and satisfaction. Keep it to 2 sentences.")
+        cfo_perspective = call_llm(prompt=cfo_prompt, system_prompt="You are a CFO Agent. Focus on policy, cost reduction, and risk mitigation. Keep it to 2 sentences.")
+    except Exception as e:
+        logger.error(f"[Decision Engine] Agent debate failed: {e}")
+        cx_perspective = "Provide immediate assistance to the customer."
+        cfo_perspective = "Ensure no financial commitments are made without owner approval."
+        
+    debate_trace = {
+        "cx": cx_perspective,
+        "cfo": cfo_perspective,
+        "ops": ""
+    }
+    
+    # 3. Router Analysis (Takes the debate into account)
+    analysis = analyze_intent_and_risk(
+        f"Customer Message: {text_content}\n\nCX Agent Suggestion: {cx_perspective}\n\nCFO Agent Suggestion: {cfo_perspective}", 
+        context
+    )
+    decision = str(analysis.get("decision", "ESCALATE")).upper()
+    debate_trace["ops"] = analysis.get("reasoning", "")
+    
+    print(f"[Decision Engine] Agent Debate Trace: {json.dumps(debate_trace)}")
     print(f"[Decision Engine] Analysis Complete: {analysis}")
     print(f"[Decision Engine] Selected Route: {decision}")
     
-    # 3. Execute Decision
+    result_payload = {
+        "decision": decision,
+        "debate_trace": debate_trace,
+        "reply": ""
+    }
+    
+    # 4. Execute Decision
     if decision == "REPLY":
-        # Generate the actual reply
-        reply_prompt = f"{context}\n\nCustomer: {text_content}\n\nWrite a short, polite, helpful response acting as the business."
+        # Generate the actual reply based on the resolved debate
+        reply_prompt = f"{context}\n\nCustomer: {text_content}\nCX Agent: {cx_perspective}\nCFO Agent: {cfo_perspective}\n\nWrite a short, polite, helpful response acting as the business, taking both agent perspectives into account."
         final_reply = call_llm(prompt=reply_prompt, system_prompt="You are a helpful customer service AI representing the business. Keep it concise.")
         
-        # Send it via Meta
-        tool_send_meta_message("whatsapp", sender_id, final_reply, business_id=business_id)
-        print(f"[Decision Engine] Sent AUTOMATIC REPLY to {sender_id}.")
+        result_payload["reply"] = final_reply
+        
+        # Send it via Meta if channel is whatsapp
+        if channel == "whatsapp":
+            tool_send_meta_message("whatsapp", sender_id, final_reply, business_id=business_id)
+            print(f"[Decision Engine] Sent AUTOMATIC REPLY to {sender_id}.")
         
     elif decision == "DRAFT":
         # Generate a draft but do NOT send it
-        draft_prompt = f"{context}\n\nCustomer: {text_content}\n\nDraft a suggested response for the business owner to review. Do not send."
+        draft_prompt = f"{context}\n\nCustomer: {text_content}\nCX Agent: {cx_perspective}\nCFO Agent: {cfo_perspective}\n\nDraft a suggested response for the business owner to review. Do not send."
         draft_reply = call_llm(prompt=draft_prompt, system_prompt="You are an assistant drafting a reply for your boss. Keep it concise.")
         
-        # Save as a draft memory
+        # Save as a draft memory with the debate trace
         memory_id = f"wm_draft_{uuid.uuid4().hex[:12]}"
         created_at = str(int(time.time()))
         formatted = f"[DRAFT REPLY to {sender_name} ({sender_id})]: {draft_reply}"
         with persistence_service.get_connection() as conn:
             conn.execute("""
-                INSERT INTO business_memories (memory_id, business_id, source, text_content, created_at, intent)
-                VALUES (?, ?, ?, ?, ?, ?)
-            """, (memory_id, business_id, "draft_reply", formatted, created_at, analysis.get("intent", "draft")))
+                INSERT INTO business_memories (memory_id, business_id, source, text_content, created_at, intent, reasoning_trace)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (memory_id, business_id, "draft_reply", formatted, created_at, analysis.get("intent", "draft"), json.dumps(debate_trace)))
         
         print(f"[Decision Engine] Saved DRAFT REPLY for owner approval.")
         
-        # PROXY LOOP: Alert the owner on their personal WhatsApp
+        # PROXY LOOP: Alert the owner on their personal WhatsApp (Owner always gets this on WhatsApp if available)
         owner_phone = persistence_service.get_owner_phone(business_id)
         if owner_phone:
             proxy_msg = f"📝 *DRAFT READY*\nCustomer: {sender_name} (+{sender_id})\n\nSylon suggests:\n\"{draft_reply}\"\n\n_Reply 'approve' to send, or type your own response to rewrite._"
             tool_send_meta_message("whatsapp", owner_phone, proxy_msg, business_id=business_id)
+            
+        result_payload["reply"] = "I need to check with the team on this. One moment."
         
     elif decision == "ESCALATE":
         # Flag immediately in the database
@@ -140,9 +176,9 @@ def process_customer_message(text_content: str, business_id: str, sender_id: str
         formatted = f"[ESCALATED from {sender_name} ({sender_id})]: {text_content}\nReason: {analysis.get('reasoning')}"
         with persistence_service.get_connection() as conn:
             conn.execute("""
-                INSERT INTO business_memories (memory_id, business_id, source, text_content, created_at, intent)
-                VALUES (?, ?, ?, ?, ?, ?)
-            """, (memory_id, business_id, "escalation", formatted, created_at, "urgent"))
+                INSERT INTO business_memories (memory_id, business_id, source, text_content, created_at, intent, reasoning_trace)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (memory_id, business_id, "escalation", formatted, created_at, "urgent", json.dumps(debate_trace)))
         
         print(f"[Decision Engine] ESCALATED message to business owner.")
         
@@ -151,13 +187,19 @@ def process_customer_message(text_content: str, business_id: str, sender_id: str
         if owner_phone:
             proxy_msg = f"🚨 *ESCALATION REQUIRED*\nCustomer: {sender_name} (+{sender_id})\nMessage: \"{text_content}\"\n\n_Reason: {analysis.get('reasoning')}_\n\n_Reply to this message with your instructions to the customer._"
             tool_send_meta_message("whatsapp", owner_phone, proxy_msg, business_id=business_id)
+            
+        result_payload["reply"] = "I have escalated this to the manager. They will get back to you shortly."
         
     elif decision == "WAIT":
         # Do nothing immediately, could trigger a QStash delayed job here later
         print(f"[Decision Engine] Decision is WAIT. No immediate action taken.")
+        result_payload["reply"] = "..."
         
     else:
         print(f"[Decision Engine] Unknown decision state: {decision}")
+        result_payload["reply"] = "I'm not sure how to respond to that right now."
+
+    return result_payload
 
 def handle_owner_message(business_id: str, text_content: str):
     """

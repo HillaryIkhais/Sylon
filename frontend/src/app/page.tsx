@@ -108,51 +108,62 @@ export default function Home() {
 
 
       {/* Main Content */}
-      <main className="flex-grow flex flex-col items-center justify-start pt-32 md:pt-40 pb-32 px-4 md:px-8 z-10 relative">
+      <main className="flex-grow flex flex-col items-center justify-start pt-24 sm:pt-32 md:pt-40 pb-24 sm:pb-32 px-4 md:px-8 z-10 relative">
         {/* Hero Text */}
-        <div className="text-center max-w-4xl mx-auto mb-auto perspective-1000">
+        <div className="text-center max-w-4xl mx-auto mb-auto perspective-1000 px-2">
           <h1
             ref={heroTextRef}
-            className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-brand-dark leading-tight drop-shadow-sm opacity-0"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-brand-dark leading-tight drop-shadow-sm opacity-0"
           >
             Every customer interaction is a business signal.
           </h1>
         </div>
 
         {/* The GSAP Ethereal Orb */}
-        <div className="w-full flex items-center justify-center my-8 md:my-12">
+        <div className="w-full flex items-center justify-center my-6 md:my-12 transform scale-[0.7] sm:scale-90 md:scale-100">
           <ConversationProvider>
             <EtherealOrb />
           </ConversationProvider>
         </div>
 
         {/* Subheadline and CTA */}
-        <div className="text-center mt-auto mb-16 flex flex-col items-center">
+        <div className="text-center mt-auto mb-16 flex flex-col items-center px-4 w-full">
           <p
             ref={subTextRef}
-            className="text-xl md:text-2xl text-brand-dark mb-4 font-semibold opacity-0"
+            className="text-lg sm:text-xl md:text-2xl text-brand-dark mb-4 font-semibold opacity-0"
           >
             You see a customer. Sylon sees a person.
           </p>
-          <p className="text-brand-dark/80 max-w-2xl mb-8">
+          <p className="text-brand-dark/80 max-w-2xl mb-8 text-sm sm:text-base">
             Sylon learns from customer reviews, conversations and business data to help you make smarter decisions before they become expensive mistakes.
           </p>
-          <div className="flex flex-col sm:flex-row items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto px-4 sm:px-0">
             <button
-              onClick={() => authenticated ? router.push('/upload') : login()}
-              className="glass-button text-brand-dark px-8 py-3 rounded-full font-bold inline-flex items-center space-x-2 hover:bg-white/80 transition-all shadow-sm"
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  localStorage.setItem('sylon_demo_mode', 'true');
+                  localStorage.setItem('sylon_business_id', 'demo_fvv203o');
+                }
+                router.push('/upload');
+              }}
+              className="glass-button text-brand-dark px-8 py-3.5 sm:py-3 rounded-full font-bold w-full sm:w-auto inline-flex items-center justify-center space-x-2 hover:bg-white/80 transition-all shadow-sm"
             >
-              <span>Try the Demo</span>
+              <span>Try Live Demo</span>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" strokeLinecap="round" strokeLinejoin="round"></path>
               </svg>
             </button>
-            <Link 
-              href="/chat" 
-              className="glass-button text-brand-dark px-8 py-3 rounded-full font-bold inline-flex items-center space-x-2 hover:bg-white/80 transition-all shadow-sm"
+            <button
+              onClick={() => {
+                // Dispatch a custom event that AuthButton can listen to, OR just let them use the navbar button. 
+                // Better yet, just render WaitlistModal locally in page.tsx too for the hero button!
+                const event = new CustomEvent('openWaitlist');
+                window.dispatchEvent(event);
+              }}
+              className="text-white bg-brand-brown px-8 py-3.5 sm:py-3 rounded-full font-bold w-full sm:w-auto inline-flex items-center justify-center space-x-2 hover:opacity-90 transition-all shadow-sm"
             >
-              Watch Sylon Think
-            </Link>
+              Join the Waitlist
+            </button>
           </div>
         </div>
 

@@ -77,10 +77,16 @@ class PersistenceService:
                 source TEXT NOT NULL,
                 text_content TEXT NOT NULL,
                 intent TEXT,
+                reasoning_trace TEXT,
                 created_at TEXT NOT NULL,
                 FOREIGN KEY (business_id) REFERENCES businesses(business_id)
             )
             """)
+
+            try:
+                conn.execute("ALTER TABLE business_memories ADD COLUMN reasoning_trace TEXT")
+            except Exception:
+                pass
 
             conn.execute("""
             CREATE TABLE IF NOT EXISTS review_batches (
@@ -345,12 +351,12 @@ class PersistenceService:
                 painpoint_snapshot_id, metadata.get("model", "unknown") if metadata else "unknown", self._now(), json.dumps(metadata) if metadata else None
             ))
 
-    def insert_memory(self, memory_id: str, business_id: str, source: str, text_content: str, intent: str = None):
+    def insert_memory(self, memory_id: str, business_id: str, source: str, text_content: str, intent: str = None, reasoning_trace: str = None):
         with self.get_connection() as conn:
             conn.execute("""
-                INSERT INTO business_memories (memory_id, business_id, source, text_content, intent, created_at)
-                VALUES (?, ?, ?, ?, ?, ?)
-            """, (memory_id, business_id, source, text_content, intent, self._now()))
+                INSERT INTO business_memories (memory_id, business_id, source, text_content, intent, reasoning_trace, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (memory_id, business_id, source, text_content, intent, reasoning_trace, self._now()))
 
     def get_recent_memories(self, business_id: str, limit: int = 50) -> list:
         with self.get_connection() as conn:
@@ -363,12 +369,12 @@ class PersistenceService:
         conn = self.get_connection()
         cursor = conn.cursor()
         cursor.execute('''
-            SELECT memory_id as id, business_id, text_content as interaction_text, intent as insight, created_at as timestamp, source 
+            SELECT memory_id as id, business_id, text_content as interaction_text, intent as insight, created_at as timestamp, source, reasoning_trace 
             FROM business_memories 
             WHERE business_id = ? AND source IN ('draft_reply', 'escalation')
             ORDER BY created_at DESC
         ''', (business_id,))
-        items = [{"id": row[0], "business_id": row[1], "interaction_text": row[2], "insight": row[3], "timestamp": row[4], "source": row[5]} for row in cursor.fetchall()]
+        items = [{"id": row[0], "business_id": row[1], "interaction_text": row[2], "insight": row[3], "timestamp": row[4], "source": row[5], "reasoning_trace": row[6]} for row in cursor.fetchall()]
         conn.close()
         return items
 
@@ -524,5 +530,15 @@ class PersistenceService:
             conn.execute("DELETE FROM reviews WHERE business_id = ?", (business_id,))
             conn.execute("DELETE FROM review_batches WHERE business_id = ?", (business_id,))
             conn.execute("DELETE FROM businesses WHERE business_id = ?", (business_id,))
+
+    def insert_waitlist_entry(self, entry_id: str, name: str, business_name: str, email: str, whatsapp: str, category: str, channels: list, challenge: str, volume: str):
+        now = datetime.utcnow().isoformat() + "Z"
+        channels_json = json.dumps(channels) if channels else "[]"
+        with self.get_connection() as conn:
+            conn.execute("""
+                INSERT INTO waitlist (
+                    id, name, business_name, email, whatsapp, category, channels_json, challenge, volume, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (entry_id, name, business_name, email, whatsapp, category, channels_json, challenge, volume, now))
 
 persistence_service = PersistenceService()

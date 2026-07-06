@@ -22,8 +22,8 @@ export default function Dashboard() {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-brand-dark text-white p-6 pt-24 pb-32">
-        <div className="max-w-4xl mx-auto space-y-8">
+      <div className="min-h-screen bg-brand-dark text-white p-4 md:p-6 lg:p-8 pt-20 md:pt-24 pb-32">
+        <div className="max-w-4xl mx-auto space-y-6 md:space-y-8">
           
           <div className="space-y-2">
             <h1 className="text-4xl md:text-5xl font-light text-brand-lightbrown tracking-tight">Your Memory Core</h1>
@@ -64,7 +64,7 @@ export default function Dashboard() {
             <div className="col-span-1 md:col-span-2 space-y-6">
               
               {/* Linked Accounts */}
-              <div className="rounded-3xl bg-white/5 border border-white/10 p-8 backdrop-blur-md shadow-xl">
+              <div className="rounded-3xl bg-white/5 border border-white/10 p-5 sm:p-6 md:p-8 backdrop-blur-md shadow-xl">
                 <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-6">
                   <Link2 className="w-5 h-5 text-brand-lightbrown" /> Connected Identities
                 </h3>
@@ -112,7 +112,7 @@ export default function Dashboard() {
               </div>
 
               {/* Data Integrations Snapshot */}
-              <div className="rounded-3xl bg-white/5 border border-white/10 p-8 backdrop-blur-md shadow-xl">
+              <div className="rounded-3xl bg-white/5 border border-white/10 p-5 sm:p-6 md:p-8 backdrop-blur-md shadow-xl">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-bold text-white flex items-center gap-2">
                     <CreditCard className="w-5 h-5 text-brand-lightbrown" /> Memory Sources
@@ -122,16 +122,16 @@ export default function Dashboard() {
                   </a>
                 </div>
                 
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="p-4 rounded-2xl bg-white/5 border border-white/5 flex flex-col items-center gap-2 text-center">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="p-4 rounded-2xl bg-white/5 border border-white/5 flex sm:flex-col items-center sm:justify-center gap-3 sm:gap-2 text-left sm:text-center">
                     <MessageCircle className="w-6 h-6 text-[#25D366]" />
                     <span className="text-xs font-semibold text-white/70">WhatsApp</span>
                   </div>
-                  <div className="p-4 rounded-2xl bg-white/5 border border-white/5 flex flex-col items-center gap-2 text-center">
+                  <div className="p-4 rounded-2xl bg-white/5 border border-white/5 flex sm:flex-col items-center sm:justify-center gap-3 sm:gap-2 text-left sm:text-center">
                     <Camera className="w-6 h-6 text-[#E1306C]" />
                     <span className="text-xs font-semibold text-white/70">Instagram</span>
                   </div>
-                  <div className="p-4 rounded-2xl bg-white/5 border border-white/5 flex flex-col items-center gap-2 text-center opacity-50">
+                  <div className="p-4 rounded-2xl bg-white/5 border border-white/5 flex sm:flex-col items-center sm:justify-center gap-3 sm:gap-2 text-left sm:text-center opacity-50">
                     <Globe className="w-6 h-6 text-[#1877F2]" />
                     <span className="text-xs font-semibold text-white/70">Facebook</span>
                   </div>

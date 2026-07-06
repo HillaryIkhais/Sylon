@@ -4,6 +4,7 @@ import EtherealOrb from "@/components/EtherealOrb";
 import { ConversationProvider } from "@elevenlabs/react";
 import AuthGuard from "@/components/AuthGuard";
 import { usePrivy } from "@privy-io/react-auth";
+import { Send } from 'lucide-react';
 
 import HistorySidebar from "@/components/HistorySidebar";
 
@@ -277,25 +278,25 @@ function ChatContent() {
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-2 sm:mb-3 flex-shrink-0">
+          <div className="flex overflow-x-auto scrollbar-hide gap-2 mb-3 pb-1 flex-shrink-0 w-full">
             <button
               type="button"
               onClick={() => setInput("Simulate Business Pivot: If I start closing at 6 PM instead of 10 PM to cut generator costs, how will my 'Loyalty Skeptics' react?")}
-              className="text-xs font-bold bg-brand-lightbrown/10 hover:bg-brand-lightbrown/20 border border-brand-lightbrown/30 text-brand-brown dark:text-brand-lightbrown px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full transition-colors"
+              className="text-xs font-bold bg-brand-lightbrown/10 hover:bg-brand-lightbrown/20 border border-brand-lightbrown/30 text-brand-brown dark:text-brand-lightbrown px-3 sm:px-4 py-1.5 sm:py-2 rounded-full transition-colors whitespace-nowrap flex-shrink-0"
             >
               Simulate Pivot
             </button>
             <button
               type="button"
               onClick={() => setInput("Request Service Optimization: My 'Experience Driven' archetype hates wait times. What are 3 zero-cost tweaks I can deploy tomorrow?")}
-              className="text-xs font-bold bg-brand-lightbrown/10 hover:bg-brand-lightbrown/20 border border-brand-lightbrown/30 text-brand-brown dark:text-brand-lightbrown px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full transition-colors"
+              className="text-xs font-bold bg-brand-lightbrown/10 hover:bg-brand-lightbrown/20 border border-brand-lightbrown/30 text-brand-brown dark:text-brand-lightbrown px-3 sm:px-4 py-1.5 sm:py-2 rounded-full transition-colors whitespace-nowrap flex-shrink-0"
             >
               Service Optimization
             </button>
             <button
               type="button"
               onClick={() => setInput("Generator diesel costs just spiked 20% overnight. Compare these survival options: raise prices by 15%, close the kitchen 2 hours earlier, or reduce menu size. Which is safest?")}
-              className="text-xs font-bold bg-brand-lightbrown/10 hover:bg-brand-lightbrown/20 border border-brand-lightbrown/30 text-brand-brown dark:text-brand-lightbrown px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full transition-colors"
+              className="text-xs font-bold bg-brand-lightbrown/10 hover:bg-brand-lightbrown/20 border border-brand-lightbrown/30 text-brand-brown dark:text-brand-lightbrown px-3 sm:px-4 py-1.5 sm:py-2 rounded-full transition-colors whitespace-nowrap flex-shrink-0"
             >
               Compare Decisions
             </button>
@@ -303,7 +304,7 @@ function ChatContent() {
 
           <form onSubmit={sendMessage} className="flex gap-2 sm:gap-3 mt-auto flex-shrink-0">
             <input 
-              className="flex-grow px-4 sm:px-6 py-2.5 sm:py-3 rounded-full border border-brand-dark/30 dark:border-brand-brown/40 glass-card focus:outline-none focus:ring-2 focus:ring-brand-lightbrown w-full shadow-inner text-sm sm:text-base min-w-0"
+              className="flex-grow px-4 sm:px-6 py-3 sm:py-3.5 rounded-full border border-brand-dark/30 dark:border-brand-brown/40 glass-card focus:outline-none focus:ring-2 focus:ring-brand-lightbrown w-full shadow-inner text-sm sm:text-base min-w-0"
               placeholder="Type your scenario here..." 
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -311,10 +312,12 @@ function ChatContent() {
             />
             <button 
               type="submit" 
-              className="glass-button px-4 sm:px-6 py-2.5 sm:py-3 rounded-full font-bold hover:bg-white/80 transition-all disabled:opacity-50 whitespace-nowrap text-sm sm:text-base flex-shrink-0"
+              className="glass-button px-4 sm:px-6 py-3 sm:py-3.5 rounded-full font-bold hover:bg-white/80 transition-all disabled:opacity-50 whitespace-nowrap text-sm sm:text-base flex-shrink-0 flex items-center justify-center gap-2 min-w-[50px] sm:min-w-0"
               disabled={loading}
+              aria-label="Send Message"
             >
-              Send
+              <span className="hidden sm:inline">Send</span>
+              <Send className="w-5 h-5 sm:hidden" />
             </button>
           </form>
         </div>
