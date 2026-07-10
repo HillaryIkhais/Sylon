@@ -33,6 +33,42 @@ export default function Insights() {
 
   useEffect(() => {
     const fetchDashboard = async () => {
+      let isDemoMode = false;
+      if (typeof window !== "undefined") {
+        isDemoMode = localStorage.getItem("morlen_demo_mode") === "true";
+      }
+      
+      if (isDemoMode) {
+        setData({
+          health_score: 92,
+          top_complaint: "Delivery took longer than 24 hours (Lekki axis)",
+          top_praise: "Material quality is exceptional and true to size",
+          archetypes: [
+            { name: "Impulse Shoppers", drift: "Recommend flash sales via WhatsApp Status. High conversion probability.", rating: 4.8 },
+            { name: "Deal Hunters", drift: "Sensitive to delivery fees. Bundle items to absorb shipping cost.", rating: 3.9 }
+          ],
+          history: [
+            { date: "Today", source: "WhatsApp", review_count: 84 },
+            { date: "Yesterday", source: "Instagram", review_count: 112 }
+          ],
+          signals: {
+            demand: 145,
+            lost_sales: 12,
+            complaints: 4,
+            purchase_intent: 89,
+            total_enquiries: 250
+          },
+          memories: [
+            { intent: "Purchase Intent", text: "I need 2 of the velvet dresses in medium", created_at: new Date().toISOString() },
+            { intent: "Inquiry", text: "Do you deliver to Abuja?", created_at: new Date(Date.now() - 3600000).toISOString() },
+            { intent: "Lost Sale", text: "15k is my last price, let me know", created_at: new Date(Date.now() - 7200000).toISOString() },
+            { intent: "Purchase Intent", text: "Can I pay on delivery?", created_at: new Date(Date.now() - 10800000).toISOString() }
+          ]
+        });
+        setLoading(false);
+        return;
+      }
+
       const businessId = localStorage.getItem("morlen_business_id");
       if (!businessId) {
         setError("No business data found. Please ingest data first.");

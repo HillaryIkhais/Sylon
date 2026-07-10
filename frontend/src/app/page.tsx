@@ -12,8 +12,16 @@ import { useEffect } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Home() {
-  const { login, authenticated } = usePrivy();
+  const { login, authenticated, ready } = usePrivy();
   const router = useRouter();
+
+  useEffect(() => {
+    if (ready && authenticated && typeof window !== 'undefined') {
+      if (!localStorage.getItem('morlen_onboarded')) {
+        router.push('/onboarding');
+      }
+    }
+  }, [authenticated, ready, router]);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const card1Ref = useRef<HTMLDivElement>(null);
@@ -155,14 +163,19 @@ export default function Home() {
             </button>
             <button
               onClick={() => {
-                // Dispatch a custom event that AuthButton can listen to, OR just let them use the navbar button. 
-                // Better yet, just render WaitlistModal locally in page.tsx too for the hero button!
-                const event = new CustomEvent('openWaitlist');
-                window.dispatchEvent(event);
+                if (authenticated) {
+                  if (typeof window !== 'undefined' && !localStorage.getItem('morlen_onboarded')) {
+                    router.push('/onboarding');
+                  } else {
+                    router.push('/dashboard');
+                  }
+                } else {
+                  login();
+                }
               }}
               className="text-white bg-brand-brown px-8 py-3.5 sm:py-3 rounded-full font-bold w-full sm:w-auto inline-flex items-center justify-center space-x-2 hover:opacity-90 transition-all shadow-sm"
             >
-              Join the Waitlist
+              {authenticated ? 'Go to Dashboard' : 'Sign In / Get Started'}
             </button>
           </div>
         </div>

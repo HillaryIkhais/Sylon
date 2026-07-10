@@ -39,6 +39,27 @@ export default function Inbox() {
   }, [authenticated]);
 
   const fetchItems = async () => {
+    if (typeof window !== 'undefined' && localStorage.getItem('morlen_demo_mode') === 'true') {
+      setTimeout(() => {
+        setItems([
+          {
+            id: 1,
+            business_id: 'demo_123',
+            interaction_text: 'Customer (08123456789): I want to order the black velvet dress. Can you deliver to Lekki today? How much total?',
+            insight: "Yes! We can deliver to Lekki today. The dress is ₦17,000 and same-day dispatch is ₦2,000. Total is ₦19,000. I've sent a secure checkout link: https://paystack.com/pay/inv-9824",
+            timestamp: new Date().toISOString(),
+            source: 'draft_reply',
+            reasoning_trace: JSON.stringify({
+              cx_agent: "Customer wants immediate delivery to Lekki. We must confirm same-day delivery to close the sale.",
+              cfo_agent: "The dress is ₦17,000 + ₦2,000 Lekki dispatch fee. Total ₦19,000. Margin is fully protected."
+            })
+          }
+        ]);
+        setLoading(false);
+      }, 800);
+      return;
+    }
+
     try {
       const bizId = localStorage.getItem('morlen_business_id') || DEFAULT_BUSINESS_ID;
       const res = await fetch(`/api/business/action-items?business_id=${bizId}`);
@@ -85,7 +106,7 @@ export default function Inbox() {
 
   if (!authenticated) {
     return (
-      <div className="min-h-screen bg-brand-dark flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-brand-lightbrown border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
@@ -93,20 +114,20 @@ export default function Inbox() {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-brand-dark text-white p-4 md:p-6 lg:p-8 pt-20 md:pt-24 pb-32">
+      <div className="min-h-screen text-brand-dark dark:text-white p-4 md:p-6 lg:p-8 pt-20 md:pt-24 pb-32">
         <div className="max-w-4xl mx-auto space-y-6 md:space-y-8">
           
           <div className="space-y-2">
             <h1 className="text-4xl md:text-5xl font-light text-brand-lightbrown tracking-tight">Action Inbox</h1>
-            <p className="text-white/60 text-lg">Review and approve AI decisions before they reach your customers.</p>
+            <p className="text-brand-dark/60 dark:text-white/60 text-lg">Review and approve AI decisions before they reach your customers.</p>
           </div>
 
           {loading ? (
-            <div className="text-white/50 text-center py-12 animate-pulse">Loading action items...</div>
+            <div className="text-brand-dark/50 dark:text-white/50 text-center py-12 animate-pulse">Loading action items...</div>
           ) : items.length === 0 ? (
-            <div className="rounded-3xl border border-dashed border-white/20 p-12 text-center space-y-4">
+            <div className="rounded-3xl border border-dashed border-brand-dark/20 dark:border-white/20 p-12 text-center space-y-4">
               <CheckCircle2 className="w-12 h-12 text-green-500/50 mx-auto" />
-              <p className="text-white/60 text-lg">Inbox Zero. Morlen is handling everything else automatically.</p>
+              <p className="text-brand-dark/60 dark:text-white/60 text-lg">Inbox Zero. Morlen is handling everything else automatically.</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -114,7 +135,7 @@ export default function Inbox() {
                 <div 
                   key={item.id} 
                   className={`rounded-2xl border p-4 sm:p-5 md:p-6 backdrop-blur-md shadow-xl flex flex-col space-y-4 ${
-                    item.source === 'escalation' ? 'bg-red-900/10 border-red-500/30' : 'bg-white/5 border-white/10'
+                    item.source === 'escalation' ? 'bg-red-900/10 border-red-500/30' : 'bg-black/5 dark:bg-white/5 border-brand-dark/10 dark:border-white/10'
                   }`}
                 >
                   <div className="flex justify-between items-start">
@@ -132,9 +153,9 @@ export default function Inbox() {
                     </div>
                   </div>
 
-                  <div className="bg-black/30 rounded-xl p-4 border border-white/5">
-                    <p className="text-white/60 text-sm font-mono mb-2 border-b border-white/10 pb-2">Original Customer Message:</p>
-                    <p className="text-white text-lg">{item.interaction_text}</p>
+                  <div className="bg-black/5 dark:bg-black/30 rounded-xl p-4 border border-brand-dark/10 dark:border-white/5">
+                    <p className="text-brand-dark/60 dark:text-white/60 text-sm font-mono mb-2 border-b border-brand-dark/10 dark:border-white/10 pb-2">Original Customer Message:</p>
+                    <p className="text-brand-dark dark:text-white text-lg">{item.interaction_text}</p>
                   </div>
 
                   <div className="space-y-2">
@@ -150,11 +171,11 @@ export default function Inbox() {
                       />
                     ) : (
                       <div className="space-y-4">
-                        <p className="text-white/80 text-lg leading-relaxed">{item.insight}</p>
+                        <p className="text-brand-dark/80 dark:text-white/80 text-lg leading-relaxed">{item.insight}</p>
                         
                         {item.reasoning_trace && (
-                          <div className="mt-4 border-t border-white/10 pt-4">
-                            <p className="text-xs text-white/40 uppercase tracking-widest mb-3 font-semibold flex items-center gap-2">
+                          <div className="mt-4 border-t border-brand-dark/10 dark:border-white/10 pt-4">
+                            <p className="text-xs text-brand-dark/40 dark:text-white/40 uppercase tracking-widest mb-3 font-semibold flex items-center gap-2">
                               <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
                               Agent Debate Log
                             </p>

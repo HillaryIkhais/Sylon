@@ -30,6 +30,8 @@ class PsycopgWrapper:
         return cursor
     def commit(self):
         self.conn.commit()
+    def rollback(self):
+        self.conn.rollback()
     def close(self):
         self.conn.close()
 
@@ -118,21 +120,16 @@ class PersistenceService:
             )
             """)
 
-            # Safe migrations for existing demo data
-            try:
-                conn.execute("ALTER TABLE businesses ADD COLUMN whatsapp_phone_id TEXT")
-            except Exception:
-                pass
-                
-            try:
-                conn.execute("ALTER TABLE businesses ADD COLUMN meta_access_token TEXT")
-            except Exception:
-                pass
+            if hasattr(conn, 'commit'):
+                conn.commit()
 
-            try:
-                conn.execute("ALTER TABLE businesses ADD COLUMN owner_phone TEXT")
-            except Exception:
-                pass
+            # Safe migrations for existing demo data
+            for col in ["whatsapp_phone_id", "meta_access_token", "owner_phone"]:
+                try:
+                    conn.execute(f"ALTER TABLE businesses ADD COLUMN {col} TEXT")
+                    if hasattr(conn, 'commit'): conn.commit()
+                except Exception:
+                    if hasattr(conn, 'rollback'): conn.rollback()
 
             conn.execute("""
             CREATE TABLE IF NOT EXISTS business_memories (
@@ -146,11 +143,13 @@ class PersistenceService:
                 FOREIGN KEY (business_id) REFERENCES businesses(business_id)
             )
             """)
+            if hasattr(conn, 'commit'): conn.commit()
 
             try:
                 conn.execute("ALTER TABLE business_memories ADD COLUMN reasoning_trace TEXT")
+                if hasattr(conn, 'commit'): conn.commit()
             except Exception:
-                pass
+                if hasattr(conn, 'rollback'): conn.rollback()
 
             conn.execute("""
             CREATE TABLE IF NOT EXISTS review_batches (
