@@ -35,9 +35,6 @@ export default function Navbar() {
                 <Link href="/platform" className={`whitespace-nowrap text-brand-dark dark:text-white/90 hover:text-brand-lightbrown transition-colors ${pathname === '/platform' ? 'font-bold !text-brand-brown' : ''}`}>
                   Platform
                 </Link>
-                <Link href="/dashboard" className={`whitespace-nowrap text-brand-dark dark:text-white/90 hover:text-brand-lightbrown transition-colors ${pathname === '/dashboard' ? 'font-bold !text-brand-brown' : ''}`}>
-                  Dashboard
-                </Link>
               </>
             ) : (
               <>
@@ -64,7 +61,7 @@ export default function Navbar() {
         {/* Right CTA & Mobile Toggle */}
         <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
           <ThemeToggle />
-          <AuthButton />
+          {process.env.NEXT_PUBLIC_SITE_MODE !== 'public' && <AuthButton />}
           
           {/* Mobile Menu Toggle Button */}
           <button 
@@ -89,9 +86,6 @@ export default function Navbar() {
               <>
                 <Link href="/platform" className={`text-brand-dark dark:text-white/90 ${pathname === '/platform' ? 'text-brand-brown' : ''}`}>
                   Platform
-                </Link>
-                <Link href="/dashboard" className={`text-brand-dark dark:text-white/90 ${pathname === '/dashboard' ? 'text-brand-brown' : ''}`}>
-                  Dashboard
                 </Link>
               </>
             ) : (
