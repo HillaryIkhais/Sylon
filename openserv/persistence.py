@@ -81,7 +81,7 @@ class PersistenceService:
                 ORDER BY created_at DESC
             ''')
             rows = cursor.fetchall()
-            return [{"business_id": row[0], "created_at": row[1]} for row in rows]
+            return [{"business_id": row["business_id"], "created_at": row["created_at"]} for row in rows]
 
     def _safe_ddl(self, conn, query):
         try:
@@ -295,9 +295,9 @@ class PersistenceService:
                 except:
                     metadata = {}
                 return {
-                    "name": row[0],
-                    "description": row[1],
-                    "categories": row[2],
+                    "name": row["name"],
+                    "description": row["description"],
+                    "categories": row["categories"],
                     "policies": metadata.get("policies", "No specific policies defined.")
                 }
             return None
@@ -307,7 +307,7 @@ class PersistenceService:
         with self.get_connection() as conn:
             cursor = conn.execute("SELECT business_id FROM businesses WHERE whatsapp_phone_id = ?", (phone_id,))
             row = cursor.fetchone()
-            return row[0] if row else None
+            return row["business_id"] if row else None
 
     def get_business_meta_tokens(self, business_id: str):
         """Retrieve meta_access_token and whatsapp_phone_id for outbound APIs"""
@@ -315,7 +315,7 @@ class PersistenceService:
             cursor = conn.execute("SELECT whatsapp_phone_id, meta_access_token FROM businesses WHERE business_id = ?", (business_id,))
             row = cursor.fetchone()
             if row:
-                return {"whatsapp_phone_id": row[0], "meta_access_token": row[1]}
+                return {"whatsapp_phone_id": row["whatsapp_phone_id"], "meta_access_token": row["meta_access_token"]}
             return None
 
     def save_meta_tokens(self, business_id: str, phone_id: str, access_token: str):
@@ -339,7 +339,7 @@ class PersistenceService:
         with self.get_connection() as conn:
             cursor = conn.execute("SELECT owner_phone FROM businesses WHERE business_id = ?", (business_id,))
             row = cursor.fetchone()
-            return row[0] if row else None
+            return row["owner_phone"] if row else None
     def create_review_batch(self, batch_id: str, business_id: str, source_type: str, review_count: int, checksum: str = None, metadata: dict = None):
         with self.get_connection() as conn:
             conn.execute("""
@@ -431,7 +431,7 @@ class PersistenceService:
                 WHERE business_id = ? AND source IN ('draft_reply', 'escalation')
                 ORDER BY created_at DESC
             ''', (business_id,))
-            items = [{"id": row[0], "business_id": row[1], "interaction_text": row[2], "insight": row[3], "timestamp": row[4], "source": row[5], "reasoning_trace": row[6]} for row in cursor.fetchall()]
+            items = [{"id": row["id"], "business_id": row["business_id"], "interaction_text": row["interaction_text"], "insight": row["insight"], "timestamp": row["timestamp"], "source": row["source"], "reasoning_trace": row["reasoning_trace"]} for row in cursor.fetchall()]
             return items
 
     def resolve_action_item(self, memory_id: str):
