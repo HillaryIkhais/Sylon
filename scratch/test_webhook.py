@@ -1,4 +1,7 @@
 import asyncio
+from dotenv import load_dotenv
+load_dotenv()
+
 from openserv.routers.meta import process_whatsapp_message
 
 mock_payload = {

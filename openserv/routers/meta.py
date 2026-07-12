@@ -78,8 +78,18 @@ def process_whatsapp_message(entry: dict):
             if all_businesses:
                 business_id = all_businesses[0]["business_id"]
             else:
-                print("[Webhook Dropped] No businesses registered in the database.")
-                return
+                print("[Webhook Routing] No businesses found! Auto-creating 'demo_business' for Hackathon.")
+                business_id = "demo_business"
+                try:
+                    with persistence_service.get_connection() as conn:
+                        query = "INSERT INTO businesses (business_id) VALUES (?) ON CONFLICT (business_id) DO NOTHING"
+                        # Handle the sqlite vs postgres parameter issue just in case
+                        from openserv.persistence import PsycopgWrapper
+                        if isinstance(conn, PsycopgWrapper):
+                            query = query.replace("?", "%s")
+                        conn.execute(query, (business_id,))
+                except Exception as e:
+                    print(f"Failed to auto-create demo business: {e}")
 
         contact_map = {c.get("wa_id"): c.get("profile", {}).get("name", "Unknown") for c in contacts}
         owner_phone = persistence_service.get_owner_phone(business_id)
