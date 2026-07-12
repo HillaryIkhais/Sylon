@@ -23,10 +23,21 @@ async def receive_whatsapp_internal(request: Request):
         
         obj_type = body.get("object")
         import asyncio
+        
+        # Handle Meta-wrapped payloads
         if obj_type in ["whatsapp_business_account", "instagram", "page"]:
             for entry in body.get("entry", []):
                 if obj_type == "whatsapp_business_account":
                     asyncio.create_task(asyncio.to_thread(process_whatsapp_message, entry))
+        
+        # Handle 360dialog direct unwrapped payloads
+        elif "messages" in body or ("changes" in body and isinstance(body["changes"], list)):
+            print("[Python AI] Detected 360dialog direct payload.")
+            asyncio.create_task(asyncio.to_thread(process_whatsapp_message, body))
+        else:
+            # Maybe it's wrapped in an array?
+            if isinstance(body, list) and len(body) > 0 and "messages" in body[0]:
+                asyncio.create_task(asyncio.to_thread(process_whatsapp_message, body[0]))
                     
         return {"status": "accepted_for_processing"}
     except Exception as e:
@@ -43,20 +54,32 @@ def process_whatsapp_message(entry: dict):
     import time
     import uuid
 
-    for change in entry.get("changes", []):
+    # Normalize payload structure (Meta vs 360dialog)
+    changes = entry.get("changes", [])
+    if not changes and ("messages" in entry or "contacts" in entry):
+        # It's a 360dialog direct payload, mock the 'change' structure
+        changes = [{"value": entry}]
+
+    for change in changes:
         value = change.get("value", {})
         messages = value.get("messages", [])
         contacts = value.get("contacts", [])
         
         metadata = value.get("metadata", {})
-        phone_number_id = metadata.get("phone_number_id")
+        phone_number_id = metadata.get("phone_number_id", "unknown_360_number")
         
-        # Multi-Tenant Routing: Lookup the specific business that owns this WhatsApp number
+        # Multi-Tenant Routing
         business_id = persistence_service.get_business_by_phone_id(phone_number_id)
         
         if not business_id:
-            print(f"[Webhook Dropped] Received message for unregistered phone number: {phone_number_id}. Ignoring.")
-            return
+            # HACKATHON DEMO BYPASS: If unregistered, just use the first business in the DB
+            print(f"[Webhook Routing] Unregistered phone {phone_number_id}. Defaulting to primary business.")
+            all_businesses = persistence_service.get_all_businesses()
+            if all_businesses:
+                business_id = all_businesses[0]["business_id"]
+            else:
+                print("[Webhook Dropped] No businesses registered in the database.")
+                return
 
         contact_map = {c.get("wa_id"): c.get("profile", {}).get("name", "Unknown") for c in contacts}
         owner_phone = persistence_service.get_owner_phone(business_id)
