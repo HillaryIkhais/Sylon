@@ -82,14 +82,15 @@ def process_whatsapp_message(entry: dict):
                 business_id = "demo_business"
                 try:
                     with persistence_service.get_connection() as conn:
-                        query = "INSERT INTO businesses (business_id, created_at) VALUES (?, ?) ON CONFLICT (business_id) DO NOTHING"
+                        query = "INSERT INTO businesses (business_id, created_at, updated_at) VALUES (?, ?, ?) ON CONFLICT (business_id) DO NOTHING"
                         # Handle the sqlite vs postgres parameter issue just in case
                         from openserv.persistence import PsycopgWrapper
                         if isinstance(conn, PsycopgWrapper):
                             query = query.replace("?", "%s")
                         
                         import time
-                        conn.execute(query, (business_id, str(int(time.time()))))
+                        now = str(int(time.time()))
+                        conn.execute(query, (business_id, now, now))
                 except Exception as e:
                     print(f"Failed to auto-create demo business: {e}")
 
