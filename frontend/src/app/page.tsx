@@ -125,9 +125,9 @@ export default function Home() {
             ref={heroTextRef}
             className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8 text-brand-dark leading-tight drop-shadow-sm opacity-0"
           >
-            <span className="block mb-2">Every conversation is</span>
+            <span className="block mb-2">Know exactly what</span>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-lightbrown to-brand-brown block">
-              a business decision.
+              deserves your attention today.
             </span>
           </h1>
         </div>
@@ -145,7 +145,7 @@ export default function Home() {
             ref={subTextRef}
             className="text-lg sm:text-xl md:text-2xl text-brand-dark/70 max-w-2xl text-center mx-auto mb-12 font-medium opacity-0"
           >
-            Run your business knowing nothing important slips through the cracks. Morlen analyzes every customer signal to tell you exactly where your revenue is hiding.
+            The intelligence layer for conversational commerce. Morlen gathers clues from every customer interaction to tell you exactly where your next opportunity is.
           </p>
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto px-4 sm:px-0">
             {process.env.NEXT_PUBLIC_SITE_MODE === 'public' ? (
@@ -189,9 +189,9 @@ export default function Home() {
             {/* Card 1 */}
           <div ref={card1Ref} className="glass-card rounded-3xl p-8 flex flex-col h-full min-h-[300px] relative overflow-hidden group opacity-0">
             <div className="text-sm text-brand-dark font-mono mb-4 font-semibold">/01</div>
-            <h3 className="text-2xl font-bold mb-4 leading-tight text-brand-dark">Decision<br />Forecasting</h3>
+            <h3 className="text-2xl font-bold mb-4 leading-tight text-brand-dark">Gather<br />Clues</h3>
             <p className="text-base text-brand-dark/90 leading-relaxed font-medium">
-              Test every move against the people it affects before it costs you.
+              Automatically detect recurring objections, requests, and opportunities hiding in your chats.
             </p>
             <div className="mt-auto pt-8 text-brand-dark">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -204,9 +204,9 @@ export default function Home() {
           {/* Card 2 */}
           <div ref={card2Ref} className="glass-card rounded-3xl p-8 flex flex-col h-full min-h-[300px] relative overflow-hidden group opacity-0">
             <div className="text-sm text-brand-dark font-mono mb-4 font-semibold">/02</div>
-            <h3 className="text-2xl font-bold mb-4 leading-tight text-brand-dark">Know Your<br />Customer</h3>
+            <h3 className="text-2xl font-bold mb-4 leading-tight text-brand-dark">Focus<br />Attention</h3>
             <p className="text-base text-brand-dark/90 leading-relaxed font-medium">
-              Build from how they've changed, not just what they said.
+              Every morning, see exactly what deserves your attention and the evidence backing it up.
             </p>
             <div className="mt-auto pt-8 text-brand-dark">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -219,9 +219,9 @@ export default function Home() {
           {/* Card 3 */}
           <div ref={card3Ref} className="glass-card rounded-3xl p-8 flex flex-col h-full min-h-[300px] relative overflow-hidden group opacity-0">
             <div className="text-sm text-brand-dark font-mono mb-4 font-semibold">/03</div>
-            <h3 className="text-2xl font-bold mb-4 leading-tight text-brand-dark">For New<br />Businesses</h3>
+            <h3 className="text-2xl font-bold mb-4 leading-tight text-brand-dark">Better<br />Decisions</h3>
             <p className="text-base text-brand-dark/90 leading-relaxed font-medium">
-              Intelligence from day one. No reviews required.
+              Stop guessing what your customers want. Make decisions based on what they are actually telling you.
             </p>
             <div className="mt-auto pt-8 text-brand-dark">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

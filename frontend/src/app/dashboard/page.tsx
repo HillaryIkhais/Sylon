@@ -73,12 +73,12 @@ export default function Dashboard() {
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-brand-dark/10 dark:border-white/10 pb-6">
             <div className="space-y-2">
-              <h1 className="text-4xl md:text-5xl font-bold text-brand-dark dark:text-brand-lightbrown tracking-tight">Today's Executive Brief</h1>
+              <h1 className="text-4xl md:text-5xl font-bold text-brand-dark dark:text-brand-lightbrown tracking-tight">Today's Clues</h1>
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <p className="text-brand-dark/60 dark:text-white/60 text-lg">Thursday, July 10, 2026. Here is where your revenue is hiding today.</p>
+                <p className="text-brand-dark/60 dark:text-white/60 text-lg">Thursday, July 10, 2026. Here is what deserves your attention today.</p>
                 <Link href="/upload" className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-500/10 text-green-700 dark:text-green-400 text-xs font-bold rounded-full border border-green-500/20 hover:bg-green-500/20 transition-colors">
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  42 Signals Analyzed • 8 Contacts Excluded
+                  42 Clues Gathered • 8 Contacts Excluded
                 </Link>
               </div>
             </div>
