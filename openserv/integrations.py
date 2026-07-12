@@ -42,17 +42,16 @@ def send_meta_message(platform: str, to_number: str, message_text: str, business
             "Authorization": f"Bearer {access_token}",
             "Content-Type": "application/json"
         }
-    
-    data = {
-        "messaging_product": platform.lower(),
-        "recipient_type": "individual",
-        "to": to_number,
-        "type": "text",
-        "text": {
-            "preview_url": False,
-            "body": message_text
+        data = {
+            "messaging_product": platform.lower(),
+            "recipient_type": "individual",
+            "to": to_number,
+            "type": "text",
+            "text": {
+                "preview_url": False,
+                "body": message_text
+            }
         }
-    }
 
     try:
         response = requests.post(url, headers=headers, json=data, timeout=10)
