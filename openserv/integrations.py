@@ -88,3 +88,41 @@ def reply_to_google_review(review_name: str, reply_text: str) -> dict:
     except requests.exceptions.RequestException as e:
         print(f"Error replying to Google review: {e}")
         return {"error": str(e), "status": "failed"}
+
+def send_bird_message(to_number: str, message_text: str) -> dict:
+    """
+    Sends an outgoing WhatsApp message using the Bird (MessageBird) API.
+    Used as an alternative sandbox for Hackathon testing.
+    """
+    bird_access_key = os.environ.get("BIRD_ACCESS_KEY")
+    if not bird_access_key:
+        raise Exception("Missing BIRD_ACCESS_KEY. Cannot send Bird message.")
+        
+    if not to_number.startswith("+"):
+        to_number = f"+{to_number}"
+        
+    url = "https://api.bird.com/workspaces/default/channels/whatsapp/messages"
+    headers = {
+        "Authorization": f"AccessKey {bird_access_key}",
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    }
+    
+    data = {
+        "to": to_number,
+        "type": "text",
+        "text": {
+            "body": message_text
+        }
+    }
+    
+    try:
+        response = requests.post(url, headers=headers, json=data)
+        response.raise_for_status()
+        print(f"[Bird Integration] Successfully sent message to {to_number}")
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        print(f"[Bird Integration Error] Failed to send message: {e}")
+        if hasattr(e, 'response') and e.response is not None:
+            print(f"Response: {e.response.text}")
+        return {"error": str(e)}

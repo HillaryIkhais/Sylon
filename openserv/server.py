@@ -20,11 +20,15 @@ from openserv.persistence import persistence_service
 from openserv.dependencies import get_current_user, get_optional_user
 
 from fastapi.middleware.cors import CORSMiddleware
-from openserv.routers.meta import router as meta_router
+from openserv.routers import mock, webhooks, meta, mock_proxy, bird
 
 app = FastAPI(title="Morlen OpenServ Webhook", description="FastAPI webhook endpoint for ElevenLabs and Meta")
 
-app.include_router(meta_router)
+app.include_router(mock.router)
+app.include_router(webhooks.router)
+app.include_router(meta.router)
+app.include_router(mock_proxy.router)
+app.include_router(bird.router)
 
 app.add_middleware(
     CORSMiddleware,
