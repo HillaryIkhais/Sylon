@@ -142,9 +142,9 @@ def process_customer_message(text_content: str, business_id: str, sender_id: str
         # Send it via Meta if channel is whatsapp
         if channel == "whatsapp":
             tool_send_meta_message("whatsapp", sender_id, final_reply, business_id=business_id)
-        elif channel == "bird":
-            from openserv.integrations import send_bird_message
-            send_bird_message(sender_id, final_reply)
+        elif channel == "twilio":
+            from openserv.integrations import send_twilio_message
+            send_twilio_message(sender_id, final_reply)
             print(f"[Decision Engine] Sent AUTOMATIC REPLY to {sender_id}.")
         
     elif decision == "DRAFT":
@@ -170,9 +170,9 @@ def process_customer_message(text_content: str, business_id: str, sender_id: str
             proxy_msg = f"📝 *DRAFT READY*\nCustomer: {sender_name} (+{sender_id})\n\nMorlen suggests:\n\"{draft_reply}\"\n\n_Reply 'approve' to send, or type your own response to rewrite._"
             if channel == "whatsapp":
                 tool_send_meta_message("whatsapp", owner_phone, proxy_msg, business_id=business_id)
-            elif channel == "bird":
-                from openserv.integrations import send_bird_message
-                send_bird_message(owner_phone, proxy_msg)
+            elif channel == "twilio":
+                from openserv.integrations import send_twilio_message
+                send_twilio_message(owner_phone, proxy_msg)
             
         result_payload["reply"] = "I need to check with the team on this. One moment."
         
@@ -195,9 +195,9 @@ def process_customer_message(text_content: str, business_id: str, sender_id: str
             proxy_msg = f"🚨 *ESCALATION REQUIRED*\nCustomer: {sender_name} (+{sender_id})\nMessage: \"{text_content}\"\n\n_Reason: {analysis.get('reasoning')}_\n\n_Reply to this message with your instructions to the customer._"
             if channel == "whatsapp":
                 tool_send_meta_message("whatsapp", owner_phone, proxy_msg, business_id=business_id)
-            elif channel == "bird":
-                from openserv.integrations import send_bird_message
-                send_bird_message(owner_phone, proxy_msg)
+            elif channel == "twilio":
+                from openserv.integrations import send_twilio_message
+                send_twilio_message(owner_phone, proxy_msg)
             
         result_payload["reply"] = "I have escalated this to the manager. They will get back to you shortly."
         
@@ -225,9 +225,9 @@ def handle_owner_message(business_id: str, text_content: str):
         if owner_phone:
             if channel == "whatsapp":
                 tool_send_meta_message("whatsapp", owner_phone, "✅ You have no pending drafts or escalations.", business_id=business_id)
-            elif channel == "bird":
-                from openserv.integrations import send_bird_message
-                send_bird_message(owner_phone, "✅ You have no pending drafts or escalations.")
+            elif channel == "twilio":
+                from openserv.integrations import send_twilio_message
+                send_twilio_message(owner_phone, "✅ You have no pending drafts or escalations.")
         return
 
     latest_item = items[0]
@@ -249,9 +249,9 @@ def handle_owner_message(business_id: str, text_content: str):
         if owner_phone:
             if channel == "whatsapp":
                 tool_send_meta_message("whatsapp", owner_phone, "⚠️ Error: Could not extract customer phone number from the draft. Please use the Web Dashboard.", business_id=business_id)
-            elif channel == "bird":
-                from openserv.integrations import send_bird_message
-                send_bird_message(owner_phone, "⚠️ Error: Could not extract customer phone number from the draft. Please use the Web Dashboard.")
+            elif channel == "twilio":
+                from openserv.integrations import send_twilio_message
+                send_twilio_message(owner_phone, "⚠️ Error: Could not extract customer phone number from the draft. Please use the Web Dashboard.")
         return
         
     customer_phone = phone_match.group(1)
@@ -270,9 +270,9 @@ def handle_owner_message(business_id: str, text_content: str):
             if owner_phone:
                 if channel == "whatsapp":
                     tool_send_meta_message("whatsapp", owner_phone, "⚠️ This is an escalation, not a draft. Please type the message you want to send to the customer.", business_id=business_id)
-                elif channel == "bird":
-                    from openserv.integrations import send_bird_message
-                    send_bird_message(owner_phone, "⚠️ This is an escalation, not a draft. Please type the message you want to send to the customer.")
+                elif channel == "twilio":
+                    from openserv.integrations import send_twilio_message
+                    send_twilio_message(owner_phone, "⚠️ This is an escalation, not a draft. Please type the message you want to send to the customer.")
             return
     else:
         # If they didn't just say "approve", then what they typed IS the reply.
@@ -282,9 +282,9 @@ def handle_owner_message(business_id: str, text_content: str):
     # 4. Send to Customer
     if channel == "whatsapp":
         tool_send_meta_message("whatsapp", customer_phone, final_reply, business_id=business_id)
-    elif channel == "bird":
-        from openserv.integrations import send_bird_message
-        send_bird_message(customer_phone, final_reply)
+    elif channel == "twilio":
+        from openserv.integrations import send_twilio_message
+        send_twilio_message(customer_phone, final_reply)
     
     # 5. Resolve the Action Item
     persistence_service.resolve_action_item(memory_id)
@@ -294,6 +294,6 @@ def handle_owner_message(business_id: str, text_content: str):
     if owner_phone:
         if channel == "whatsapp":
             tool_send_meta_message("whatsapp", owner_phone, f"✅ Sent to customer (+{customer_phone}).", business_id=business_id)
-        elif channel == "bird":
-            from openserv.integrations import send_bird_message
-            send_bird_message(owner_phone, f"✅ Sent to customer (+{customer_phone}).")
+        elif channel == "twilio":
+            from openserv.integrations import send_twilio_message
+            send_twilio_message(owner_phone, f"✅ Sent to customer (+{customer_phone}).")

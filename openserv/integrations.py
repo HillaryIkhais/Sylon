@@ -88,41 +88,41 @@ def reply_to_google_review(review_name: str, reply_text: str) -> dict:
     except requests.exceptions.RequestException as e:
         print(f"Error replying to Google review: {e}")
         return {"error": str(e), "status": "failed"}
-
-def send_bird_message(to_number: str, message_text: str) -> dict:
+def send_twilio_message(to_number: str, message_text: str) -> dict:
     """
-    Sends an outgoing WhatsApp message using the Bird (MessageBird) API.
-    Used as an alternative sandbox for Hackathon testing.
+    Sends an outgoing WhatsApp message using the Twilio REST API.
+    Used as the sandbox for Hackathon testing without Meta verification.
     """
-    bird_access_key = os.environ.get("BIRD_ACCESS_KEY")
-    if not bird_access_key:
-        raise Exception("Missing BIRD_ACCESS_KEY. Cannot send Bird message.")
+    account_sid = os.environ.get("TWILIO_ACCOUNT_SID")
+    auth_token = os.environ.get("TWILIO_AUTH_TOKEN")
+    from_number = os.environ.get("TWILIO_PHONE_NUMBER", "+14155238886")
+    
+    if not account_sid or not auth_token:
+        raise Exception("Missing TWILIO_ACCOUNT_SID or TWILIO_AUTH_TOKEN. Cannot send Twilio message.")
         
-    if not to_number.startswith("+"):
-        to_number = f"+{to_number}"
+    if not to_number.startswith("whatsapp:"):
+        if not to_number.startswith("+"):
+            to_number = f"+{to_number}"
+        to_number = f"whatsapp:{to_number}"
         
-    url = "https://api.bird.com/workspaces/default/channels/whatsapp/messages"
-    headers = {
-        "Authorization": f"AccessKey {bird_access_key}",
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-    }
+    if not from_number.startswith("whatsapp:"):
+        from_number = f"whatsapp:{from_number}"
+        
+    url = f"https://api.twilio.com/2010-04-01/Accounts/{account_sid}/Messages.json"
     
     data = {
-        "to": to_number,
-        "type": "text",
-        "text": {
-            "body": message_text
-        }
+        "To": to_number,
+        "From": from_number,
+        "Body": message_text
     }
     
     try:
-        response = requests.post(url, headers=headers, json=data)
+        response = requests.post(url, data=data, auth=(account_sid, auth_token))
         response.raise_for_status()
-        print(f"[Bird Integration] Successfully sent message to {to_number}")
+        print(f"[Twilio Integration] Successfully sent message to {to_number}")
         return response.json()
     except requests.exceptions.RequestException as e:
-        print(f"[Bird Integration Error] Failed to send message: {e}")
+        print(f"[Twilio Integration Error] Failed to send message: {e}")
         if hasattr(e, 'response') and e.response is not None:
             print(f"Response: {e.response.text}")
         return {"error": str(e)}
