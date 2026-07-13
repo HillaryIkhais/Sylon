@@ -77,16 +77,6 @@ function ChatContent() {
 
       setLoading(true);
       
-      if (localStorage.getItem('morlen_demo_mode') === 'true') {
-        setTimeout(() => {
-          setMessages([
-            { role: 'assistant', content: 'I am Morlen, your premium business strategist. Your data from WhatsApp and Instagram is fully synced. How can I assist you with your operations today?' }
-          ]);
-          setLoading(false);
-        }, 500);
-        return;
-      }
-
       try {
         const token = await getAccessToken();
         const authHeaders: Record<string, string> = { 
@@ -104,19 +94,7 @@ function ChatContent() {
           );
           setMessages(cleanHistory);
         } else {
-          // Proactive Greeting
-          const res = await fetch('/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', ...authHeaders },
-            body: JSON.stringify({ 
-              text: "I just connected my business data. Provide a highly generalized executive summary of my operations, customer sentiment, and pricing strategy. Do not fixate on specific products. Give me a high-level strategic overview of my business health based on the signals you ingested.", 
-              business_id: businessId 
-            })
-          });
-          const data = await res.json();
-          setMessages([
-            { role: 'assistant', content: data.response, comparison: data.comparison }
-          ]);
+          setMessages([{ role: 'assistant', content: 'I am Morlen, your premium business strategist. How can I assist you today?' }]);
         }
       } catch {
         setMessages([{ role: 'assistant', content: 'I am Morlen, your premium business strategist. How can I assist you?' }]);

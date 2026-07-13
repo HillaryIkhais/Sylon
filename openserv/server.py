@@ -692,7 +692,7 @@ async def join_waitlist(req: WaitlistRequest, background_tasks: BackgroundTasks)
         # Send Email Notification in the background
         def send_email_notification():
             resend_api_key = os.environ.get("RESEND_API_KEY")
-            notification_email = os.environ.get("WAITLIST_NOTIFICATION_EMAIL", "hello@morlen.ai")
+            notification_email = os.environ.get("WAITLIST_NOTIFICATION_EMAIL", "navstra.morlen@gmail.com")
             if resend_api_key:
                 import requests
                 try:

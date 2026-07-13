@@ -46,8 +46,42 @@ export default function Pricing() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl fade-up">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl fade-up">
           
+          {/* Free Tier */}
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-8 md:p-10 backdrop-blur-xl flex flex-col relative overflow-hidden group hover:border-brand-lightbrown/30 transition-colors">
+            <div className="mb-8">
+              <h3 className="text-2xl font-bold mb-2">Free Trial</h3>
+              <p className="text-white/60 text-sm">See what your business is telling you. (14 Days)</p>
+            </div>
+            
+            <div className="mb-8 border-b border-white/10 pb-8">
+              <div className="flex items-end gap-2 mb-2">
+                <span className="text-5xl font-bold">₦0</span>
+              </div>
+              <p className="text-sm text-brand-lightbrown font-semibold">No credit card required</p>
+            </div>
+
+            <ul className="space-y-4 mb-10 flex-1 text-sm text-white/80">
+              <li className="flex items-center gap-3">
+                <CheckIcon /> Connect your business
+              </li>
+              <li className="flex items-center gap-3">
+                <CheckIcon /> Experience your first Executive Brief
+              </li>
+              <li className="flex items-center gap-3">
+                <CheckIcon /> Discover Business Memory
+              </li>
+              <li className="flex items-center gap-3">
+                <CheckIcon /> See Morlen's recommendations
+              </li>
+            </ul>
+
+            <button onClick={() => setIsWaitlistOpen(true)} className="w-full py-4 rounded-xl border border-white/20 hover:bg-white/10 font-bold transition-colors">
+              Start Free Trial
+            </button>
+          </div>
+
           {/* Pro Tier */}
           <div className="rounded-3xl border border-white/10 bg-white/5 p-8 md:p-10 backdrop-blur-xl flex flex-col relative overflow-hidden group hover:border-brand-lightbrown/30 transition-colors">
             <div className="mb-8">
