@@ -176,6 +176,13 @@ def process_customer_message(text_content: str, business_id: str, sender_id: str
             
         result_payload["reply"] = "I need to check with the team on this. One moment."
         
+        # Send placeholder to customer
+        if channel == "whatsapp":
+            tool_send_meta_message("whatsapp", sender_id, result_payload["reply"], business_id=business_id)
+        elif channel == "twilio":
+            from openserv.integrations import send_twilio_message
+            send_twilio_message(sender_id, result_payload["reply"])
+        
     elif decision == "ESCALATE":
         # Flag immediately in the database
         memory_id = f"wm_esc_{uuid.uuid4().hex[:12]}"
@@ -200,6 +207,13 @@ def process_customer_message(text_content: str, business_id: str, sender_id: str
                 send_twilio_message(owner_phone, proxy_msg)
             
         result_payload["reply"] = "I have escalated this to the manager. They will get back to you shortly."
+        
+        # Send placeholder to customer
+        if channel == "whatsapp":
+            tool_send_meta_message("whatsapp", sender_id, result_payload["reply"], business_id=business_id)
+        elif channel == "twilio":
+            from openserv.integrations import send_twilio_message
+            send_twilio_message(sender_id, result_payload["reply"])
         
     elif decision == "WAIT":
         # Do nothing immediately, could trigger a QStash delayed job here later
