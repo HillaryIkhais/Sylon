@@ -9,10 +9,18 @@ async def receive_twilio_internal(request: Request):
     Internal endpoint called by the Next.js API Gateway for Twilio webhooks.
     """
     try:
-        body = await request.json()
-        print("[Python AI Microservice] Received forwarded webhook from Next.js Gateway (Twilio).")
+        content_type = request.headers.get("content-type", "")
+        if "application/x-www-form-urlencoded" in content_type:
+            form_data = await request.form()
+            body = dict(form_data)
+        else:
+            body = await request.json()
+            
+        print("[Python AI Microservice] Received Twilio Webhook.")
         asyncio.create_task(asyncio.to_thread(process_twilio_message, body))
-        return {"status": "accepted_for_processing"}
+        
+        from fastapi import Response
+        return Response(content='<?xml version="1.0" encoding="UTF-8"?><Response></Response>', media_type="application/xml")
     except Exception as e:
         print(f"[Python AI Error] Error parsing Twilio payload: {e}")
         return {"status": "error"}
