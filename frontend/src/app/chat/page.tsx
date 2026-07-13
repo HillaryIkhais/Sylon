@@ -54,7 +54,7 @@ function ChatContent() {
     if (typeof window === 'undefined') {
       return null;
     }
-    return localStorage.getItem(BUSINESS_ID_STORAGE_KEY);
+    return localStorage.getItem(BUSINESS_ID_STORAGE_KEY) || "demo_business";
   });
   const [input, setInput] = useState(() => {
     if (typeof window === 'undefined') {
@@ -148,30 +148,6 @@ function ChatContent() {
     setInput('');
     setLoading(true);
 
-    if (localStorage.getItem('morlen_demo_mode') === 'true') {
-       setTimeout(() => {
-         setMessages(prev => [...prev, { 
-           role: 'assistant', 
-           content: `Here is a detailed breakdown of your sales performance based on the live signals I have ingested across WhatsApp and Instagram:
-
-### **Revenue Highlights**
-- **Total Enquiries:** 250
-- **Purchase Conversions:** 89 (35.6% conversion rate)
-- **Estimated Revenue Pipeline:** ₦1,450,000
-
-### **Top Performing Inventory**
-1. **Black Velvet Dress (Medium)**: 42 enquiries, extremely high conversion rate. You are currently out of stock on this item.
-2. **Silk Wrap Blouse**: 18 enquiries, steady daily demand.
-
-### **Areas for Immediate Improvement**
-- **Lost Sales (12)**: 8 of these were due to price negotiations stalling around the ₦15,000 mark. Consider deploying a 5% first-time customer discount to save these carts.
-- **Complaints (4)**: Customers in the Lekki axis are experiencing delivery times > 24 hours. Consider partnering with a dedicated island dispatch rider.`,
-           timestamp: new Date().toISOString()
-         }]);
-         setLoading(false);
-       }, 1500);
-       return;
-    }
 
     try {
       const payload: { text: string; business_id?: string } = { text: userText };

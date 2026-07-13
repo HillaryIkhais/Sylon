@@ -23,7 +23,8 @@ export default function HistorySidebar({
     const fetchHistory = async () => {
       try {
         const token = await getAccessToken();
-        const res = await fetch("/api/business/list", {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://morlen.onrender.com";
+        const res = await fetch(`${apiUrl}/api/business/list`, {
           headers: {
             "Bypass-Tunnel-Reminder": "true",
             ...(token ? { Authorization: `Bearer ${token}` } : {}),

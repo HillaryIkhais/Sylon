@@ -163,13 +163,36 @@ def evaluate_route(user_input: str, business_id: str) -> str:
         log_demo("ROUTER", "Intent: COMPARE | Prompt received")
         return "COMPARE"
 
-    # [HACKATHON HOTFIX] Bypass the LLM Router which takes 16 seconds to timeout on 429 errors.
-    # Instantly return the heuristic intent to save the demo.
-    user_input_lower = user_input.lower()
-    if any(word in user_input_lower for word in ["if", "scenario", "what if", "simulate", "compare", " vs ", "what", "how", "why"]):
-        print("[Router Failsafe] Heuristic: SIMULATE")
-        return "SIMULATE"
+    prompt = f"""You are the intent router for Morlen, an AI business strategist.
+Your job is to read the user's input and classify it into exactly one of the following intent categories:
+- INGEST: The user is uploading or pasting raw reviews, chat logs, or customer data.
+- COMPARE: The user is asking to compare 2 or more distinct options (e.g., "A vs B", "which is better").
+- SIMULATE: The user is asking 'what if' or to predict the outcome of a business decision, price change, or new idea.
+- RECOMMEND: The user is asking for general advice, opportunities, or what to do next based on data.
+- CHAT: The user is just chatting, asking who you are, making small talk, or asking something off-topic (e.g., "send me money").
+
+Return ONLY the classification string (INGEST, COMPARE, SIMULATE, RECOMMEND, or CHAT) and nothing else.
+
+User Input: "{user_input}"
+"""
+    try:
+        result = call_cerebras(
+            prompt=prompt,
+            system_prompt="You are an intent classifier. Return only the category name.",
+            temperature=0.0,
+            max_tokens=10,
+            model_override=QWEN_FAST_MODEL,
+        ).strip().upper()
+        
+        for valid in ["INGEST", "COMPARE", "SIMULATE", "RECOMMEND", "CHAT"]:
+            if valid in result:
+                log_demo("ROUTER", f"Intent: {valid} (LLM classified)")
+                return valid
+    except Exception as e:
+        print(f"[Router Failsafe] LLM Router failed: {e}")
+        
     return "CHAT"
+
 
 
 import concurrent.futures

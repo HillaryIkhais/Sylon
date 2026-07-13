@@ -8,7 +8,7 @@ import {
   ChevronRight, Calendar, ArrowUpRight, BarChart2, ShieldCheck, Mail, MessageCircle, Globe, Camera, Loader2
 } from 'lucide-react';
 import Link from 'next/link';
-import MermaidGraph from '@/components/MermaidGraph';
+// import MermaidGraph from '@/components/MermaidGraph';
 
 export default function Dashboard() {
   const { user, logout } = usePrivy();
@@ -20,8 +20,8 @@ export default function Dashboard() {
     async function fetchBrief() {
       if (!user) return;
       try {
-        const businessId = localStorage.getItem('morlen_business_id') || `biz_${user.id}`;
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://sylon.onrender.com';
+        const businessId = "demo_business";
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://morlen.onrender.com';
         const res = await fetch(`${apiUrl}/api/intelligence/brief/${businessId}`);
         const data = await res.json();
         if (data.status === 'ok') {
@@ -75,10 +75,12 @@ export default function Dashboard() {
             <div className="space-y-2">
               <h1 className="text-4xl md:text-5xl font-bold text-brand-dark dark:text-brand-lightbrown tracking-tight">Today's Clues</h1>
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <p className="text-brand-dark/60 dark:text-white/60 text-lg">Thursday, July 10, 2026. Here is what deserves your attention today.</p>
+                <p className="text-brand-dark/60 dark:text-white/60 text-lg">
+                  {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}. Here is what deserves your attention today.
+                </p>
                 <Link href="/upload" className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-500/10 text-green-700 dark:text-green-400 text-xs font-bold rounded-full border border-green-500/20 hover:bg-green-500/20 transition-colors">
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  42 Clues Gathered • 8 Contacts Excluded
+                  {briefData ? 'Live Signals Active' : 'Waiting for Signals...'}
                 </Link>
               </div>
             </div>
@@ -209,7 +211,7 @@ export default function Dashboard() {
 
                         {/* Mermaid Visualization */}
                         <div className="pt-4 border-t border-brand-dark/10 dark:border-white/10 overflow-hidden">
-                           <MermaidGraph graphDefinition={generateMermaidDef(briefData.topological_graph)} />
+                           <div>Mermaid Graph Placeholder</div>
                         </div>
 
                         <div className="pt-4 border-t border-brand-dark/10 dark:border-white/10">
@@ -303,12 +305,7 @@ export default function Dashboard() {
                   Decision History
                 </h3>
                 <div className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-brand-dark/5 dark:border-white/5">
-                  <p className="text-xs text-brand-dark/50 dark:text-white/50 mb-1">Two weeks ago</p>
-                  <p className="text-sm font-bold mb-2">Recommendation: Increase perfume price by 5%.</p>
-                  <div className="flex items-center gap-2 mt-3 p-2 bg-red-500/10 rounded-lg">
-                    <AlertCircle className="w-4 h-4 text-red-500" />
-                    <p className="text-xs text-red-600 dark:text-red-400 font-semibold">Ignored. Estimated missed revenue: ₦71,000</p>
-                  </div>
+                  <p className="text-sm font-bold text-brand-dark/50 dark:text-white/50 text-center py-4">No recent decisions made.</p>
                 </div>
               </div>
 

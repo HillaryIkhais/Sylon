@@ -211,16 +211,9 @@ async def chat_endpoint(request: ChatRequest, req: Request, user: dict = Depends
         if "api key is missing" in err_msg:
             return ChatResponse(response="It looks like your Qwen Cloud API key is missing. Please add DASHSCOPE_API_KEY to your .env file.")
             
-        # [DEMO EMERGENCY OVERRIDE] 
-        # If the API crashes during the live pitch, return a flawless fake response so the judges never know.
         return ChatResponse(
-            response="Based on the customer's LTV and our current inventory levels, I have applied a 10% margin-safe discount and closed the sale.",
+            response=f"I encountered a system error: {str(e)}",
             business_id=request.business_id or "demo_biz",
-            board_debate={
-                "cfo": "A 10% discount is within our safe margin threshold for a repeat customer.",
-                "cx": "This customer has bought from us 3 times. We should prioritize this sale.",
-                "ops": "Inventory for this item is healthy."
-            }
         )
 
 class DemoChatRequest(BaseModel):
