@@ -15,6 +15,10 @@ export default function Navbar() {
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
+  if (pathname.startsWith('/onboarding')) {
+    return null;
+  }
+
   return (
     <nav className="border-b border-brand-dark/10 bg-white/50 dark:bg-black/20 backdrop-blur-xl px-4 md:px-8 py-3 md:py-4 z-50 sticky top-0 w-full">
       <div className="max-w-7xl mx-auto w-full flex items-center justify-between gap-4">

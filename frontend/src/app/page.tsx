@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
 import WaitlistModal from "@/components/WaitlistModal";
+import FAQAccordion from "@/components/FAQAccordion";
 
 export default function Home() {
   const { login, authenticated, ready } = usePrivy();
@@ -26,27 +27,16 @@ export default function Home() {
   }, [authenticated, ready, router]);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const card1Ref = useRef<HTMLDivElement>(null);
-  const card2Ref = useRef<HTMLDivElement>(null);
-  const card3Ref = useRef<HTMLDivElement>(null);
 
   // Background animation refs
   const bgRing1Ref = useRef<HTMLDivElement>(null);
   const bgRing2Ref = useRef<HTMLDivElement>(null);
   const nebulaGlowRef = useRef<HTMLDivElement>(null);
 
-  // Text animation refs
   const heroTextRef = useRef<HTMLHeadingElement>(null);
   const subTextRef = useRef<HTMLParagraphElement>(null);
 
   useGSAP(() => {
-    // Staggered fade up for cards
-    gsap.fromTo(
-      [card1Ref.current, card2Ref.current, card3Ref.current],
-      { y: 60, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1.2, stagger: 0.15, ease: "power3.out", delay: 0.6 }
-    );
-
     // Hero Text Entrance
     gsap.fromTo(
       heroTextRef.current,
@@ -116,123 +106,64 @@ export default function Home() {
 
 
 
-
       {/* Main Content */}
-      <main className="flex-grow flex flex-col items-center justify-start pt-24 sm:pt-32 md:pt-40 pb-24 sm:pb-32 px-4 md:px-8 z-10 relative">
-        {/* Hero Text */}
-        <div className="text-center max-w-4xl mx-auto mb-auto perspective-1000 px-2">
+      <main className="flex-grow flex flex-col justify-start pt-8 md:pt-24 pb-24 px-6 md:px-12 z-10 relative w-full max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 items-center w-full gap-y-6 md:gap-y-0 md:gap-x-12 perspective-1000">
+          
+          {/* Headline (Order 1 on mobile, Col 1 Row 1 on desktop) */}
           <h1
             ref={heroTextRef}
-            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8 text-brand-dark leading-tight drop-shadow-sm opacity-0"
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-center md:text-left text-brand-dark leading-tight drop-shadow-sm order-1 md:col-start-1 md:row-start-1 mb-0 md:mb-6 relative z-10"
           >
-            <span className="block mb-2">Know exactly what</span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-lightbrown to-brand-brown block">
-              deserves your attention today.
-            </span>
+            Turn customer conversations into <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-lightbrown to-brand-brown block md:inline">executive decisions.</span>
           </h1>
-        </div>
 
-        {/* The GSAP Ethereal Orb */}
-        <div className="w-full flex items-center justify-center my-6 md:my-12 transform scale-[0.7] sm:scale-90 md:scale-100">
-          <ConversationProvider>
-            <EtherealOrb />
-          </ConversationProvider>
-        </div>
-
-        {/* Subheadline and CTA */}
-        <div className="text-center mt-auto mb-16 flex flex-col items-center px-4 w-full">
+          {/* Right Column: Ethereal Orb (Order 2 on mobile, Col 2 Row 1-3 on desktop) */}
+          <div className="w-full flex justify-center items-center transform scale-[0.9] md:scale-100 relative h-[350px] sm:h-[400px] md:h-[500px] order-2 md:col-start-2 md:row-start-1 md:row-span-3">
+             <ConversationProvider>
+               <EtherealOrb />
+             </ConversationProvider>
+          </div>
+            
+          {/* Subheadline (Order 3 on mobile, Col 1 Row 2 on desktop) */}
           <p
             ref={subTextRef}
-            className="text-lg sm:text-xl md:text-2xl text-brand-dark/70 max-w-2xl text-center mx-auto mb-12 font-medium opacity-0"
+            className="text-base sm:text-lg md:text-xl text-brand-dark/70 max-w-lg mx-auto md:mx-0 text-center md:text-left font-medium order-3 md:col-start-1 md:row-start-2 mb-2 md:mb-8 relative z-10"
           >
             The intelligence layer for conversational commerce. Morlen gathers clues from every customer interaction to tell you exactly where your next opportunity is.
           </p>
-          <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto px-4 sm:px-0">
-            {process.env.NEXT_PUBLIC_SITE_MODE === 'public' ? (
-              <button
-                onClick={() => setIsWaitlistOpen(true)}
-                className="text-white bg-brand-brown px-8 py-3.5 sm:py-3 rounded-full font-bold w-full sm:w-auto inline-flex items-center justify-center space-x-2 hover:opacity-90 transition-all shadow-sm"
-              >
-                <span>Join Waitlist</span>
-              </button>
-            ) : (
-              <>
-                {authenticated ? (
-                  <button
-                    onClick={() => router.push('/upload')}
-                    className="text-white bg-gradient-to-r from-brand-brown to-brand-lightbrown px-8 py-3.5 sm:py-3 rounded-full font-bold w-full sm:w-auto inline-flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
-                  >
-                    <span>Ask Morlen</span>
-                    <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
-                    </svg>
-                  </button>
-                ) : (
-                  <button
-                    onClick={login}
-                    className="text-white bg-brand-brown px-8 py-3.5 sm:py-3 rounded-full font-bold w-full sm:w-auto inline-flex items-center justify-center space-x-2 hover:opacity-90 transition-all shadow-sm"
-                  >
-                    <span>Sign In to Morlen</span>
-                    <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" strokeLinecap="round" strokeLinejoin="round"></path>
-                    </svg>
-                  </button>
-                )}
-              </>
-            )}
+            
+          {/* CTA (Order 4 on mobile, Col 1 Row 3 on desktop) */}
+          <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 order-4 md:col-start-1 md:row-start-3">
+            <button
+              onClick={() => router.push('/onboarding')}
+              className="text-white bg-brand-brown px-8 py-4 rounded-full font-bold inline-flex items-center justify-center w-full sm:w-auto space-x-2 shadow-xl hover:scale-105 transition-all"
+            >
+              <span>Get Started</span>
+            </button>
           </div>
+
         </div>
-
-        {/* Features Grid */}
-        {process.env.NEXT_PUBLIC_SITE_MODE !== 'public' && (
-          <div className="max-w-6xl mx-auto w-full grid grid-cols-1 md:grid-cols-3 gap-6 mb-24 px-4">
-            {/* Card 1 */}
-          <div ref={card1Ref} className="glass-card rounded-3xl p-8 flex flex-col h-full min-h-[300px] relative overflow-hidden group opacity-0">
-            <div className="text-sm text-brand-dark font-mono mb-4 font-semibold">/01</div>
-            <h3 className="text-2xl font-bold mb-4 leading-tight text-brand-dark">Gather<br />Clues</h3>
-            <p className="text-base text-brand-dark/90 leading-relaxed font-medium">
-              Automatically detect recurring objections, requests, and opportunities hiding in your chats.
-            </p>
-            <div className="mt-auto pt-8 text-brand-dark">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" strokeLinecap="round" strokeLinejoin="round"></path>
-              </svg>
-            </div>
-            <div className="absolute inset-0 bg-white/30 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-          </div>
-
-          {/* Card 2 */}
-          <div ref={card2Ref} className="glass-card rounded-3xl p-8 flex flex-col h-full min-h-[300px] relative overflow-hidden group opacity-0">
-            <div className="text-sm text-brand-dark font-mono mb-4 font-semibold">/02</div>
-            <h3 className="text-2xl font-bold mb-4 leading-tight text-brand-dark">Focus<br />Attention</h3>
-            <p className="text-base text-brand-dark/90 leading-relaxed font-medium">
-              Every morning, see exactly what deserves your attention and the evidence backing it up.
-            </p>
-            <div className="mt-auto pt-8 text-brand-dark">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" strokeLinecap="round" strokeLinejoin="round"></path>
-              </svg>
-            </div>
-            <div className="absolute inset-0 bg-white/30 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-          </div>
-
-          {/* Card 3 */}
-          <div ref={card3Ref} className="glass-card rounded-3xl p-8 flex flex-col h-full min-h-[300px] relative overflow-hidden group opacity-0">
-            <div className="text-sm text-brand-dark font-mono mb-4 font-semibold">/03</div>
-            <h3 className="text-2xl font-bold mb-4 leading-tight text-brand-dark">Better<br />Decisions</h3>
-            <p className="text-base text-brand-dark/90 leading-relaxed font-medium">
-              Stop guessing what your customers want. Make decisions based on what they are actually telling you.
-            </p>
-            <div className="mt-auto pt-8 text-brand-dark">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21 7.5l-2.25-1.313M21 7.5v2.25m0-2.25l-2.246 1.313M3 7.5l2.25-1.313M3 7.5l2.246 1.313M3 7.5v2.25m9 3l2.25-1.313M12 12.75l-2.25-1.313M12 12.75V15m0 6.75l2.25-1.313M12 21.75V19.5m0 2.25l-2.25-1.313m0-16.875L12 2.25l2.25 1.313M21 14.25v2.25l-2.25 1.313m-13.5 0L3 16.5v-2.25" strokeLinecap="round" strokeLinejoin="round"></path>
-              </svg>
-            </div>
-            <div className="absolute inset-0 bg-white/30 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-          </div>
-          </div>
-        )}
       </main>
+
+      {/* FAQ */}
+      <section className="w-full py-24 px-8 bg-white/30 backdrop-blur-md relative z-10 border-t border-brand-dark/5">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-brand-dark mb-12">Frequently Asked Questions</h2>
+          <FAQAccordion />
+        </div>
+      </section>
+
+      {/* Bottom CTA */}
+      <section className="w-full py-32 px-4 bg-gradient-to-b from-brand-lightbrown/10 to-transparent relative z-10 text-center">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-bold text-brand-dark mb-6">Your business has a memory. Start using it.</h2>
+          <p className="text-xl text-brand-dark/70 mb-10 max-w-xl mx-auto">Connect Morlen today and transform thousands of raw customer chats into your most powerful competitive advantage.</p>
+          <button onClick={() => router.push('/onboarding')} className="text-white bg-brand-brown px-12 py-5 rounded-full font-bold text-lg inline-flex items-center space-x-2 shadow-xl hover:scale-105 transition-all">
+            <span>Get Started with Morlen</span>
+          </button>
+        </div>
+      </section>
 
       {/* Main Footer */}
       <footer className="w-full pb-8 pt-4 px-8 md:px-16 z-50 relative mt-auto border-t border-brand-dark/10">

@@ -26,24 +26,26 @@ class DecisionEngineOutput(BaseModel):
     decision: str = Field(description="Must be exactly one of: REPLY, DRAFT, ESCALATE, WAIT")
     reasoning: str = Field(description="A brief explanation of why this decision was made.")
 
-def build_context(business_id: str, sender_id: str) -> str:
+def build_context(business_id: str, sender_id: str, query_text: str = "") -> str:
     """Step 1: Retrieve Business Memory and Customer History"""
     profile = persistence_service.get_business_profile(business_id)
     if not profile:
         profile = {"name": "Unknown Business", "policies": "No policies found."}
     
-    # In a full production system, we would fetch the last 10 messages from sender_id here.
-    history = persistence_service.get_recent_memories(business_id, limit=5)
-    history_text = "\n".join([f"- {h['source']}: {h['text_content']}" for h in history if str(sender_id) in str(h.get('text_content', ''))])
+    from openserv.embedding_engine import search_knowledge
+    relevant_policies = ""
+    if query_text:
+        vector_results = search_knowledge(business_id, query_text, limit=3)
+        relevant_policies = "\n".join([f"- {r['content']}" for r in vector_results])
     
     context = f"""
 BUSINESS CONTEXT:
 Name: {profile.get('name')}
 Description: {profile.get('description')}
-Policies: {profile.get('policies')}
+General Policies: {profile.get('policies')}
 
-RECENT CUSTOMER HISTORY:
-{history_text if history_text else "First time messaging or no recent history found."}
+RELEVANT KNOWLEDGE/POLICIES (from Vector Search):
+{relevant_policies if relevant_policies else "No specific policies retrieved."}
 """
     return context
 
@@ -92,7 +94,7 @@ def process_customer_message(text_content: str, business_id: str, sender_id: str
     print(f"[Decision Engine] Processing message from {sender_name} ({sender_id}) for business {business_id} via {channel}...")
     
     # 1. Build Context
-    context = build_context(business_id, sender_id)
+    context = build_context(business_id, sender_id, text_content)
     
     # 2. Multi-Agent Debate
     cx_prompt = f"{context}\n\nCUSTOMER MESSAGE:\n\"{text_content}\"\n\nYou are the Customer Experience (CX) Agent. Your goal is to maximize customer satisfaction and retention. How should we respond?"
@@ -226,7 +228,7 @@ def process_customer_message(text_content: str, business_id: str, sender_id: str
 
     return result_payload
 
-def handle_owner_message(business_id: str, text_content: str):
+def handle_owner_message(business_id: str, text_content: str, channel: str = "whatsapp"):
     """
     Business Intent Router: Parses the owner's response to an escalation/draft via WhatsApp
     and forwards the action to the customer.

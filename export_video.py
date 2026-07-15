@@ -46,9 +46,9 @@ def main():
         video_path = page.video.path()
         print(f"Recording started. Output WebM path: {video_path}")
         
-        # Wait for the presentation autoplay to finish (~37 seconds timeline + buffers)
-        # Total wait time of 42 seconds to ensure outro is captured completely
-        duration_seconds = 42
+        # Wait for the presentation autoplay to finish
+        # Total wait time of 85 seconds to ensure all scenes are captured completely
+        duration_seconds = 85
         print(f"Recording for {duration_seconds} seconds...")
         
         for i in range(duration_seconds):

@@ -1,0 +1,289 @@
+<USER_REQUEST>
+Yes. This is the version I'd actually build.
+
+
+---
+
+SLIDE 1 — MORLEN
+
+Morlen
+
+The Operating System for Business Decisions.
+
+Turning customer conversations into executive decisions.
+
+Bottom:
+
+Founder Name
+
+Hillary Ikhais
+
+---
+
+The Problem
+
+Businesses have automated transactions.
+Over the last two decades, businesses have adopted software for almost every operational function
+
+Payments.
+
+Inventory.
+
+Accounting.
+
+CRM.
+
+Marketing.
+
+Conversations
+
+Yet business owners still ask the same questions:
+
+What deserves attention today?
+
+Which products should I restock?
+
+Which customers need follow-up?
+
+Where am I losing revenue?
+
+Why have sales reduced?
+
+Business software automates operations.
+
+It records what happened
+
+---
+
+SLIDE 2 — THE SHIFT
+
+Commerce has moved into conversations
+
+Across Nigeria, businesses now operate inside messaging platforms. 
+Customers now discover products, negotiate prices, confirm payments and arrange deliveries inside WhatsApp, Instagram and Facebook.
+
+For Nigerian MSMEs, the entire sales funnel now exists inside conversations.
+
+Yet traditional software was designed for structured forms, not unstructured conversations.
+
+As conversational commerce grows, businesses generate thousands of customer signals every day
+
+Most disappear without ever becoming business intelligence.
+
+
+---
+
+SLIDE 3 — THE PROBLEM
+
+Every conversation creates decisions.
+
+A business owner doesn't just receive messages.
+
+They constantly decide:
+
+• Should this customer receive follow-up?
+
+• Is demand increasing for this product?
+
+• Should inventory be reordered?
+
+• Are customers becoming more price-sensitive?
+
+• Which complaints appear repeatedly?
+
+• Which customers are likely to return?
+
+These decisions are still made manually.
+
+As conversations increase,
+
+Decision complexity grows even faster.
+
+---
+
+SLIDE 4 — MORLEN
+
+Morlen is an Executive Decision Intelligence Platform.
+
+Morlen continuously analyzes customer conversations, identifies business patterns and delivers prioritized business decisions.
+
+Instead of presenting plain dashboards,
+
+Morlen produces a daily executive briefing.
+
+Executive Brief
+
+A daily summary of the highest priority decisions.
+
+inventory risks, customer churn, demand spikes, operational issues.
+
+Opportunity Feed
+
+Revenue opportunities detected from conversations including estimated impact, confidence score, supporting evidence.
+
+Business Memory
+
+Long-term behavioural intelligence about customers.
+ for example customers increasingly ask for same day delivery, demand for product A rises every month end, customers compare prices before purchasing, repeat customers typically reorder after 21 days.
+
+Evidence-Based Recommendations
+
+Every recommendation explains
+
+• Why it exists
+
+• Expected impact
+
+• Supporting evidence
+
+Business owners stop searching for answers.
+
+Morlen brings the answers to them.
+
+
+---
+
+SLIDE 5 — MARKET + BUSINESS MODEL
+
+A Massive Market
+
+Nigeria has approximately:
+
+39.6 Million MSMEs
+
+Representing:
+
+• 96% of businesses
+
+• 87.9% of employment
+
+• 46.3% of GDP
+
+Millions already conduct business primarily through messaging platforms.
+
+Morlen is built for this new operating environment.
+
+
+---
+
+Business Model
+
+Subscription SaaS
+Starting with a 30 day free trial giving Morlen enough time to learn from customer conversations, build business memory, generate meaningful insights
+
+Starter [N8,000/month]
+For early stage businesses
+- Executive brief
+- Business memory
+- Basic decision intelligence
+- Single workspace
+
+Growth
+
+Businesses managing increasing customer conversations.
+- Everything in starter 
+- Opportunity feed
+- Advanced AI recommendations
+- Multi channel integrations
+- Team Collaboration
+
+Enterprise
+
+Organizations requiring company-wide decision intelligence and integrations.
+- Everything in growth
+- Custom AI deployment
+- Dedicate Support
+- Enterprise security and governance
+
+Additional revenue:
+• Enterprise Implementation & Onboarding
+
+---
+
+SLIDE 6 — FUNDING
+
+Raising Pre-Seed Capital
+
+Investment will accelerate:
+
+40% — Product Development
+
+Complete commercial MVP and core intelligence engine.
+
+25% — AI Infrastructure
+
+Inference, data pipelines and production infrastructure.
+
+20% — Customer Acquisition
+
+Pilot programs and early customer onboarding.
+
+15% — Strategic Partnerships & Operations
+
+Messaging integrations and business development.
+
+
+---
+
+Expected Outcomes
+
+Commercial MVP
+
+First paying customers
+
+Validated product-market fit
+
+Foundation for national expansion
+
+
+---
+
+SLIDE 7 — WHY MORLEN?
+
+Business software has always answered one question:
+
+"What happened?"
+
+Morlen answers a different question:
+
+"What should I do next?"
+
+CRM stores customer records
+
+ERP manages operations
+
+BI dashboards visualize historical metrics
+
+Chatbots automate converstaions
+
+Every conversation contains intelligence.
+
+Every business generates opportunities.
+
+Every owner has limited attention.
+
+Morlen exists to protect that attention—
+
+by turning conversations into decisions.
+
+
+---
+
+FINAL SLIDE
+
+MORLEN
+
+The future of business isn't more software.
+
+It's better decisions.
+
+Businesses already have the conversations.
+
+Morlen turns them into decisions.
+
+
+NEW SLIDE CONTENTS ALERT!
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-07-15T15:00:14+01:00.
+</ADDITIONAL_METADATA>
