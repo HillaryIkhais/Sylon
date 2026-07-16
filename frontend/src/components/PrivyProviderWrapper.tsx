@@ -7,11 +7,10 @@ export default function PrivyProviderWrapper({
 }: {
   children: React.ReactNode;
 }) {
-  const appId = process.env.NEXT_PUBLIC_PRIVY_APP_ID;
+  const appId = process.env.NEXT_PUBLIC_PRIVY_APP_ID || "missing-app-id";
 
-  if (!appId) {
-    console.warn("NEXT_PUBLIC_PRIVY_APP_ID is not set. Auth disabled.");
-    return <>{children}</>;
+  if (appId === "missing-app-id") {
+    console.warn("NEXT_PUBLIC_PRIVY_APP_ID is not set in Vercel. Using fallback to prevent crashes, but Auth will fail until it is set.");
   }
 
   return (
