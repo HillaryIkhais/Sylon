@@ -377,7 +377,7 @@ class PersistenceService:
                        review_count: int, full_payload: dict):
         with self.get_connection() as conn:
             conn.execute("""
-                INSERT OR REPLACE INTO personas (persona_id, business_id, name, source, narrative, drifts_json, avg_rating, top_words_json, grounding_quotes_json, review_count, full_payload_json, model, created_at)
+                INSERT OR REPLACE INTO personas (persona_id, business_id, name, source, narrative, traits_json, avg_rating, top_words_json, grounding_quotes_json, review_count, full_payload_json, model, created_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 persona_id, business_id, name, source, narrative, json.dumps(drifts), avg_rating, 
@@ -475,7 +475,7 @@ class PersistenceService:
             for row in persona_rows:
                 drifts = []
                 try:
-                    drifts = json.loads(row["drifts_json"])
+                    drifts = json.loads(row["traits_json"])
                 except:
                     pass
                 drift_str = drifts[0] if drifts and len(drifts) > 0 else "No significant drift detected."
