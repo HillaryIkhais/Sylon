@@ -8,14 +8,12 @@ import { ConversationProvider } from "@elevenlabs/react";
 import EtherealOrb from "@/components/EtherealOrb";
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
-import WaitlistModal from "@/components/WaitlistModal";
 import FAQAccordion from "@/components/FAQAccordion";
 
 export default function Home() {
   const { login, authenticated, ready } = usePrivy();
-  const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -186,11 +184,6 @@ export default function Home() {
           </div>
         </div>
       </footer>
-      
-      <WaitlistModal 
-        isOpen={isWaitlistOpen} 
-        onClose={() => setIsWaitlistOpen(false)} 
-      />
     </div>
   );
 }
