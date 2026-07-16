@@ -4,26 +4,12 @@ import Link from "next/link";
 import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { ConversationProvider } from "@elevenlabs/react";
-import EtherealOrb from "@/components/EtherealOrb";
-import { usePrivy } from "@privy-io/react-auth";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
 import WaitlistModal from "@/components/WaitlistModal";
 
 export default function Home() {
-  const { login, authenticated, ready } = usePrivy();
   const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
-  const router = useRouter();
-
-  useEffect(() => {
-    if (ready && authenticated && typeof window !== 'undefined') {
-      if (!localStorage.getItem('morlen_onboarded')) {
-        router.push('/onboarding');
-      }
-    }
-  }, [authenticated, ready, router]);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const card1Ref = useRef<HTMLDivElement>(null);
@@ -132,11 +118,9 @@ export default function Home() {
           </h1>
         </div>
 
-        {/* The GSAP Ethereal Orb */}
-        <div className="w-full flex items-center justify-center my-6 md:my-12 transform scale-[0.7] sm:scale-90 md:scale-100">
-          <ConversationProvider>
-            <EtherealOrb />
-          </ConversationProvider>
+        {/* Orb removed for waitlist site */}
+        <div className="w-full flex items-center justify-center my-6 md:my-12 min-h-[300px]">
+          {/* Static placeholder or just empty space */}
         </div>
 
         {/* Subheadline and CTA */}
@@ -148,44 +132,17 @@ export default function Home() {
             Run your business knowing nothing important slips through the cracks. Morlen analyzes every customer signal to tell you exactly where your revenue is hiding.
           </p>
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto px-4 sm:px-0">
-            {process.env.NEXT_PUBLIC_SITE_MODE === 'public' ? (
               <button
                 onClick={() => setIsWaitlistOpen(true)}
                 className="text-white bg-brand-brown px-8 py-3.5 sm:py-3 rounded-full font-bold w-full sm:w-auto inline-flex items-center justify-center space-x-2 hover:opacity-90 transition-all shadow-sm"
               >
                 <span>Join Waitlist</span>
               </button>
-            ) : (
-              <>
-                {authenticated ? (
-                  <button
-                    onClick={() => router.push('/upload')}
-                    className="text-white bg-gradient-to-r from-brand-brown to-brand-lightbrown px-8 py-3.5 sm:py-3 rounded-full font-bold w-full sm:w-auto inline-flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
-                  >
-                    <span>Ask Morlen</span>
-                    <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
-                    </svg>
-                  </button>
-                ) : (
-                  <button
-                    onClick={login}
-                    className="text-white bg-brand-brown px-8 py-3.5 sm:py-3 rounded-full font-bold w-full sm:w-auto inline-flex items-center justify-center space-x-2 hover:opacity-90 transition-all shadow-sm"
-                  >
-                    <span>Sign In to Morlen</span>
-                    <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" strokeLinecap="round" strokeLinejoin="round"></path>
-                    </svg>
-                  </button>
-                )}
-              </>
-            )}
           </div>
         </div>
 
         {/* Features Grid */}
-        {process.env.NEXT_PUBLIC_SITE_MODE !== 'public' && (
-          <div className="max-w-6xl mx-auto w-full grid grid-cols-1 md:grid-cols-3 gap-6 mb-24 px-4">
+        <div className="max-w-6xl mx-auto w-full grid grid-cols-1 md:grid-cols-3 gap-6 mb-24 px-4">
             {/* Card 1 */}
           <div ref={card1Ref} className="glass-card rounded-3xl p-8 flex flex-col h-full min-h-[300px] relative overflow-hidden group opacity-0">
             <div className="text-sm text-brand-dark font-mono mb-4 font-semibold">/01</div>
@@ -231,7 +188,6 @@ export default function Home() {
             <div className="absolute inset-0 bg-white/30 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
           </div>
           </div>
-        )}
       </main>
 
       {/* Main Footer */}
