@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import ThemeToggle from './ThemeToggle';
-import AuthButton from './AuthButton';
 import { Menu, X } from 'lucide-react';
 
 export default function Navbar() {
@@ -29,39 +28,12 @@ export default function Navbar() {
             <Link href="/" className={`whitespace-nowrap text-brand-dark dark:text-white/90 hover:text-brand-lightbrown transition-colors ${pathname === '/' ? 'font-bold !text-brand-brown' : ''}`}>
               Home
             </Link>
-            
-            {process.env.NEXT_PUBLIC_SITE_MODE === 'public' ? (
-              <>
-                <Link href="/platform" className={`whitespace-nowrap text-brand-dark dark:text-white/90 hover:text-brand-lightbrown transition-colors ${pathname === '/platform' ? 'font-bold !text-brand-brown' : ''}`}>
-                  Platform
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link href="/dashboard" className={`whitespace-nowrap text-brand-dark dark:text-white/90 hover:text-brand-lightbrown transition-colors ${pathname === '/dashboard' ? 'font-bold !text-brand-brown' : ''}`}>
-                  Dashboard
-                </Link>
-                <Link href="/upload" className={`whitespace-nowrap text-brand-dark dark:text-white/90 hover:text-brand-lightbrown transition-colors ${pathname === '/upload' ? 'font-bold !text-brand-brown' : ''}`}>
-                  Ingest
-                </Link>
-                <Link href="/chat" className={`whitespace-nowrap text-brand-dark dark:text-white/90 hover:text-brand-lightbrown transition-colors ${pathname === '/chat' ? 'font-bold !text-brand-brown' : ''}`}>
-                  Consult
-                </Link>
-                <Link href="/inbox" className={`whitespace-nowrap text-brand-dark dark:text-white/90 hover:text-brand-lightbrown transition-colors ${pathname === '/inbox' ? 'font-bold !text-brand-brown' : ''}`}>
-                  Inbox
-                </Link>
-                <Link href="/insights" className={`whitespace-nowrap text-brand-dark dark:text-white/90 hover:text-brand-lightbrown transition-colors ${pathname === '/insights' ? 'font-bold !text-brand-brown' : ''}`}>
-                  Insights
-                </Link>
-              </>
-            )}
           </div>
         </div>
 
         {/* Right CTA & Mobile Toggle */}
         <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
           <ThemeToggle />
-          {process.env.NEXT_PUBLIC_SITE_MODE !== 'public' && <AuthButton />}
           
           {/* Mobile Menu Toggle Button */}
           <button 
@@ -81,32 +53,6 @@ export default function Navbar() {
             <Link href="/" className={`text-brand-dark dark:text-white/90 ${pathname === '/' ? 'text-brand-brown' : ''}`}>
               Home
             </Link>
-            
-            {process.env.NEXT_PUBLIC_SITE_MODE === 'public' ? (
-              <>
-                <Link href="/platform" className={`text-brand-dark dark:text-white/90 ${pathname === '/platform' ? 'text-brand-brown' : ''}`}>
-                  Platform
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link href="/dashboard" className={`text-brand-dark dark:text-white/90 ${pathname === '/dashboard' ? 'text-brand-brown' : ''}`}>
-                  Dashboard
-                </Link>
-                <Link href="/upload" className={`text-brand-dark dark:text-white/90 ${pathname === '/upload' ? 'text-brand-brown' : ''}`}>
-                  Ingest
-                </Link>
-                <Link href="/chat" className={`text-brand-dark dark:text-white/90 ${pathname === '/chat' ? 'text-brand-brown' : ''}`}>
-                  Consult
-                </Link>
-                <Link href="/inbox" className={`text-brand-dark dark:text-white/90 ${pathname === '/inbox' ? 'text-brand-brown' : ''}`}>
-                  Inbox
-                </Link>
-                <Link href="/insights" className={`text-brand-dark dark:text-white/90 ${pathname === '/insights' ? 'text-brand-brown' : ''}`}>
-                  Insights
-                </Link>
-              </>
-            )}
           </div>
         </div>
       )}
