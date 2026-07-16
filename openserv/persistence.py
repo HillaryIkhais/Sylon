@@ -466,7 +466,7 @@ class PersistenceService:
 
             # 2. Get Personas / Archetypes
             persona_rows = conn.execute(
-                "SELECT name, drifts_json, avg_rating FROM personas WHERE business_id = ? ORDER BY created_at DESC LIMIT 10",
+                "SELECT name, traits_json, avg_rating FROM personas WHERE business_id = ? ORDER BY created_at DESC LIMIT 10",
                 (business_id,)
             ).fetchall()
             
