@@ -27,15 +27,15 @@ export default function Dashboard() {
             <Briefcase className="w-4 h-4 text-brand-brown dark:text-brand-lightbrown" />
             Executive Brief
           </Link>
-          <Link href="/dashboard/memory" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-brand-dark/60 dark:text-white/60 hover:bg-brand-lightbrown/5 hover:text-brand-dark dark:hover:text-white font-medium text-sm transition-colors group">
+          <Link href="/dashboard/memory" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-brand-dark/60 dark:text-brand-dark/70 hover:bg-brand-lightbrown/5 hover:text-brand-dark dark:hover:text-white font-medium text-sm transition-colors group">
             <BrainCircuit className="w-4 h-4 group-hover:text-brand-lightbrown transition-colors" />
             Business Memory
           </Link>
-          <Link href="/dashboard/opportunities" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-brand-dark/60 dark:text-white/60 hover:bg-brand-lightbrown/5 hover:text-brand-dark dark:hover:text-white font-medium text-sm transition-colors group">
+          <Link href="/dashboard/opportunities" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-brand-dark/60 dark:text-brand-dark/70 hover:bg-brand-lightbrown/5 hover:text-brand-dark dark:hover:text-white font-medium text-sm transition-colors group">
             <TrendingUp className="w-4 h-4 group-hover:text-brand-lightbrown transition-colors" />
             Opportunities
           </Link>
-          <Link href="/pricing" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-brand-dark/60 dark:text-white/60 hover:bg-brand-lightbrown/5 hover:text-brand-dark dark:hover:text-white font-medium text-sm transition-colors group mt-8">
+          <Link href="/pricing" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-brand-dark/60 dark:text-brand-dark/70 hover:bg-brand-lightbrown/5 hover:text-brand-dark dark:hover:text-white font-medium text-sm transition-colors group mt-8">
             <Zap className="w-4 h-4 group-hover:text-brand-lightbrown transition-colors" />
             Upgrade Plan
           </Link>
@@ -46,7 +46,7 @@ export default function Dashboard() {
             <div className="w-2 h-2 rounded-full bg-brand-lightbrown animate-pulse" />
             <span className="text-xs font-semibold text-brand-brown dark:text-brand-lightbrown">Agents Online</span>
           </div>
-          <p className="text-xs text-brand-dark/50 dark:text-white/50 leading-relaxed">
+          <p className="text-xs text-brand-dark/50 dark:text-brand-dark/60 leading-relaxed">
             Morlen is actively monitoring your connected channels.
           </p>
         </div>
@@ -61,45 +61,45 @@ export default function Dashboard() {
           
           <header className="mb-10">
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 text-brand-dark dark:text-white">Good morning.</h1>
-            <p className="text-brand-dark/60 dark:text-white/60">Here is your daily executive briefing.</p>
+            <p className="text-brand-dark/60 dark:text-brand-dark/70">Here is your daily executive briefing.</p>
           </header>
 
           {/* KPI Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="glass-card p-5 rounded-2xl">
-              <div className="text-brand-dark/60 dark:text-white/60 text-sm mb-2 flex items-center justify-between">
+              <div className="text-brand-dark/60 dark:text-brand-dark/70 text-sm mb-2 flex items-center justify-between">
                 Conversations
                 <MessageSquare className="w-4 h-4 opacity-50" />
               </div>
               <div className="text-2xl font-semibold mb-1">0</div>
-              <div className="text-xs text-brand-dark/50 dark:text-white/50 font-medium">Awaiting data...</div>
+              <div className="text-xs text-brand-dark/50 dark:text-brand-dark/60 font-medium">Awaiting data...</div>
             </div>
             
             <div className="glass-card p-5 rounded-2xl">
-              <div className="text-brand-dark/60 dark:text-white/60 text-sm mb-2 flex items-center justify-between">
+              <div className="text-brand-dark/60 dark:text-brand-dark/70 text-sm mb-2 flex items-center justify-between">
                 Auto-Resolved
                 <Bot className="w-4 h-4 opacity-50" />
               </div>
               <div className="text-2xl font-semibold mb-1">0%</div>
-              <div className="text-xs text-brand-dark/50 dark:text-white/50 font-medium">Awaiting data...</div>
+              <div className="text-xs text-brand-dark/50 dark:text-brand-dark/60 font-medium">Awaiting data...</div>
             </div>
 
             <div className="glass-card p-5 rounded-2xl">
-              <div className="text-brand-dark/60 dark:text-white/60 text-sm mb-2 flex items-center justify-between">
+              <div className="text-brand-dark/60 dark:text-brand-dark/70 text-sm mb-2 flex items-center justify-between">
                 Lost Sales (Prevented)
                 <TrendingUp className="w-4 h-4 opacity-50" />
               </div>
               <div className="text-2xl font-semibold mb-1">₦0</div>
-              <div className="text-xs text-brand-dark/50 dark:text-white/50 font-medium">Awaiting data...</div>
+              <div className="text-xs text-brand-dark/50 dark:text-brand-dark/60 font-medium">Awaiting data...</div>
             </div>
 
             <div className="glass-card p-5 rounded-2xl">
-              <div className="text-brand-dark/60 dark:text-white/60 text-sm mb-2 flex items-center justify-between">
+              <div className="text-brand-dark/60 dark:text-brand-dark/70 text-sm mb-2 flex items-center justify-between">
                 Sentiment Score
                 <LineChart className="w-4 h-4 opacity-50" />
               </div>
               <div className="text-2xl font-semibold mb-1">0.0 / 10</div>
-              <div className="text-xs text-brand-dark/50 dark:text-white/50 font-medium">Awaiting data...</div>
+              <div className="text-xs text-brand-dark/50 dark:text-brand-dark/60 font-medium">Awaiting data...</div>
             </div>
           </div>
 
@@ -118,7 +118,7 @@ export default function Dashboard() {
                 <div className="glass-card p-12 rounded-3xl flex flex-col items-center text-center justify-center">
                   <Activity className="w-12 h-12 text-brand-brown dark:text-brand-lightbrown mb-4" />
                   <h3 className="font-medium text-lg mb-2">No Opportunities Detected</h3>
-                  <p className="text-sm text-brand-dark/60 dark:text-white/60 max-w-sm">
+                  <p className="text-sm text-brand-dark/60 dark:text-brand-dark/70 max-w-sm">
                     Morlen is analyzing your incoming conversations. High-value revenue opportunities and churn risks will appear here automatically.
                   </p>
                 </div>
@@ -137,7 +137,7 @@ export default function Dashboard() {
 
                 <div className="flex-1 flex flex-col items-center justify-center text-center py-10">
                   <BrainCircuit className="w-10 h-10 text-brand-brown dark:text-brand-lightbrown mb-4" />
-                  <p className="text-sm text-brand-dark/60 dark:text-white/60">
+                  <p className="text-sm text-brand-dark/60 dark:text-brand-dark/70">
                     Your business memory is currently empty. Connect your channels to begin extracting insights.
                   </p>
                 </div>

@@ -22,11 +22,11 @@ export default function Opportunities() {
         </div>
 
         <nav className="space-y-1">
-          <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-brand-dark/60 dark:text-white/60 hover:bg-brand-lightbrown/5 hover:text-brand-dark dark:hover:text-white font-medium text-sm transition-colors group">
+          <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-brand-dark/60 dark:text-brand-dark/70 hover:bg-brand-lightbrown/5 hover:text-brand-dark dark:hover:text-white font-medium text-sm transition-colors group">
             <Briefcase className="w-4 h-4 group-hover:text-brand-lightbrown transition-colors" />
             Executive Brief
           </Link>
-          <Link href="/dashboard/memory" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-brand-dark/60 dark:text-white/60 hover:bg-brand-lightbrown/5 hover:text-brand-dark dark:hover:text-white font-medium text-sm transition-colors group">
+          <Link href="/dashboard/memory" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-brand-dark/60 dark:text-brand-dark/70 hover:bg-brand-lightbrown/5 hover:text-brand-dark dark:hover:text-white font-medium text-sm transition-colors group">
             <BrainCircuit className="w-4 h-4 group-hover:text-brand-lightbrown transition-colors" />
             Business Memory
           </Link>
@@ -34,7 +34,7 @@ export default function Opportunities() {
             <TrendingUp className="w-4 h-4 text-brand-brown dark:text-brand-lightbrown" />
             Opportunities
           </Link>
-          <Link href="/pricing" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-brand-dark/60 dark:text-white/60 hover:bg-brand-lightbrown/5 hover:text-brand-dark dark:hover:text-white font-medium text-sm transition-colors group mt-8">
+          <Link href="/pricing" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-brand-dark/60 dark:text-brand-dark/70 hover:bg-brand-lightbrown/5 hover:text-brand-dark dark:hover:text-white font-medium text-sm transition-colors group mt-8">
             <Zap className="w-4 h-4 group-hover:text-brand-lightbrown transition-colors" />
             Upgrade Plan
           </Link>
@@ -51,7 +51,7 @@ export default function Opportunities() {
           <header className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 text-brand-dark dark:text-white">High-Value Opportunities</h1>
-              <p className="text-brand-dark/60 dark:text-white/60">Revenue patterns and churn risks identified by Morlen.</p>
+              <p className="text-brand-dark/60 dark:text-brand-dark/70">Revenue patterns and churn risks identified by Morlen.</p>
             </div>
             
             <div className="flex items-center gap-3">
@@ -63,7 +63,7 @@ export default function Opportunities() {
                   className="pl-9 pr-4 py-2 rounded-full bg-white/60 dark:bg-white/5 border border-brand-dark/10 dark:border-white/10 text-sm text-brand-dark dark:text-white focus:outline-none focus:border-brand-lightbrown w-full md:w-64 backdrop-blur-md"
                 />
               </div>
-              <button className="p-2 rounded-full border border-brand-dark/10 dark:border-white/10 bg-white/60 dark:bg-white/5 hover:bg-brand-lightbrown/10 transition-colors text-brand-dark/60 dark:text-white/60 backdrop-blur-md">
+              <button className="p-2 rounded-full border border-brand-dark/10 dark:border-white/10 bg-white/60 dark:bg-white/5 hover:bg-brand-lightbrown/10 transition-colors text-brand-dark/60 dark:text-brand-dark/70 backdrop-blur-md">
                 <Filter className="w-4 h-4" />
               </button>
             </div>
@@ -75,7 +75,7 @@ export default function Opportunities() {
               <Activity className="w-10 h-10 text-brand-brown dark:text-brand-lightbrown" />
             </div>
             <h3 className="text-xl font-semibold mb-3 text-brand-dark dark:text-white">No Opportunities Detected</h3>
-            <p className="text-brand-dark/60 dark:text-white/60 max-w-md mx-auto mb-8 leading-relaxed">
+            <p className="text-brand-dark/60 dark:text-brand-dark/70 max-w-md mx-auto mb-8 leading-relaxed">
               Morlen is continuously analyzing your conversations. High-value revenue opportunities and churn risks will appear here once detected.
             </p>
           </div>

@@ -14,7 +14,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-brand-lightbrown/30 border-t-brand-lightbrown rounded-full animate-spin" />
-          <p className="text-brand-dark/60 dark:text-white/50 font-medium">
+          <p className="text-brand-dark/60 dark:text-brand-dark/60 font-medium">
             Loading...
           </p>
         </div>
@@ -46,7 +46,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
             <h2 className="text-2xl font-bold text-brand-dark dark:text-white mb-2">
               Sign in to continue
             </h2>
-            <p className="text-brand-dark/70 dark:text-white/60 font-medium">
+            <p className="text-brand-dark/70 dark:text-brand-dark/70 font-medium">
               Authenticate to access Morlen&apos;s business intelligence tools.
             </p>
           </div>

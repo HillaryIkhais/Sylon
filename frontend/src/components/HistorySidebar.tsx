@@ -110,7 +110,7 @@ export default function HistorySidebar({
       >
         <div className="p-6 border-b border-brand-dark/10 dark:border-white/10 pt-14 md:pt-6">
           <h2 className="text-lg font-bold text-brand-dark dark:text-white">Session History</h2>
-          <p className="text-xs text-brand-dark/60 dark:text-white/60 mt-1">
+          <p className="text-xs text-brand-dark/60 dark:text-brand-dark/70 mt-1">
             Access your past simulations
           </p>
         </div>
@@ -135,7 +135,7 @@ export default function HistorySidebar({
                     className={`w-full text-left p-3 pr-10 rounded-xl transition-all border ${
                       isActive
                         ? "bg-brand-lightbrown/20 border-brand-lightbrown text-brand-dark dark:text-white font-bold shadow-sm"
-                        : "bg-white/40 dark:bg-black/20 border-transparent text-brand-dark/80 dark:text-white/80 hover:bg-white/60 hover:border-brand-dark/10"
+                        : "bg-white/40 dark:bg-black/20 border-transparent text-brand-dark/80 dark:text-brand-dark/90 hover:bg-white/60 hover:border-brand-dark/10"
                     }`}
                   >
                     <div className="text-sm truncate">
