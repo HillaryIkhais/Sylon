@@ -20,9 +20,9 @@ export default function PrivyProviderWrapper({
       clientId={process.env.NEXT_PUBLIC_PRIVY_CLIENT_ID || process.env.PRIVY_CLIENT_ID}
       config={{
         appearance: {
-          theme: "light",
+          theme: "dark",
           accentColor: "#A57365",
-          logo: undefined,
+          logo: "/morlen-logo.png",
         },
         loginMethods: ["email", "google"],
       }}
