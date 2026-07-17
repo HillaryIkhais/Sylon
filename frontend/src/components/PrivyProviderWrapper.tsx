@@ -22,7 +22,6 @@ export default function PrivyProviderWrapper({
         appearance: {
           theme: "dark",
           accentColor: "#A57365",
-          logo: "/morlen-logo.png",
         },
         loginMethods: ["email", "google"],
       }}
