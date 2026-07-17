@@ -194,7 +194,7 @@ function ChatContent() {
   };
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto p-4 md:p-8 flex flex-col md:flex-row flex-1 animate-in fade-in duration-500 text-brand-dark dark:text-gray-100 gap-4 md:gap-8 items-stretch min-h-0 relative">
+    <div className="w-full max-w-[1400px] mx-auto p-0 md:p-8 flex flex-col md:flex-row flex-1 animate-in fade-in duration-500 text-brand-dark dark:text-gray-100 gap-0 md:gap-8 items-stretch min-h-0 relative">
       
       {/* History Sidebar */}
       <HistorySidebar 
@@ -205,30 +205,30 @@ function ChatContent() {
         }} 
       />
 
-      {/* Left Panel: The Ethereal Orb — Desktop */}
+      {/* Mobile: Orb Top Section (35%) */}
+      <div className="md:hidden flex-shrink-0 relative flex items-center justify-center overflow-visible" style={{ height: '35dvh' }}>
+        <div className="scale-[0.5] origin-center">
+          <ConversationProvider>
+            <EtherealOrb onTranscription={handleTranscription} isMobile={true} />
+          </ConversationProvider>
+        </div>
+      </div>
+
+      {/* Desktop: Left Panel Orb */}
       <div className="hidden md:flex w-full md:w-[55%] flex-col items-center justify-center pl-0 md:pl-12">
         <ConversationProvider>
           <EtherealOrb onTranscription={handleTranscription} />
         </ConversationProvider>
       </div>
 
-      {/* Right Panel: Text Chat */}
-      <div className="w-full md:w-[45%] flex flex-col flex-1 md:flex-initial min-h-[600px]">
-        <header className="mb-4 md:mb-6 pt-14 md:pt-0 flex-shrink-0 flex justify-between items-start relative z-10">
+      {/* Right Panel: Text Chat (mobile: 65%, desktop: 45%) */}
+      <div className="w-full md:w-[45%] flex flex-col flex-1 md:flex-initial px-4 pb-4 md:px-0 md:pb-0" style={{ minHeight: 0 }}>
+        <header className="mb-3 md:mb-6 pt-2 md:pt-0 flex-shrink-0 flex justify-between items-start relative z-10">
           <div>
-            <h1 className="page-heading text-2xl sm:text-3xl md:text-4xl font-bold mb-1 md:mb-2">Morlen Cognitive Core</h1>
+            <h1 className="page-heading text-xl sm:text-3xl md:text-4xl font-bold mb-1 md:mb-2">Morlen Cognitive Core</h1>
             <p className="page-subtitle font-medium text-sm md:text-base">Simulate changes, ask for recommendations, or discuss strategy.</p>
           </div>
         </header>
-
-        {/* Ethereal Orb — Mobile */}
-        <div className={`md:hidden relative w-full flex justify-center transition-all duration-500 overflow-visible ${messages.length > 0 ? 'h-0 opacity-0 pointer-events-none' : 'h-52 mb-4 mt-2'}`}>
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 scale-[0.55] origin-top">
-            <ConversationProvider>
-              <EtherealOrb onTranscription={handleTranscription} isMobile={true} />
-            </ConversationProvider>
-          </div>
-        </div>
 
         <div className="glass-card rounded-3xl p-3 sm:p-4 md:p-6 flex flex-col flex-1 overflow-hidden shadow-sm min-h-0">
           <div className="flex-1 overflow-y-auto pr-1 sm:pr-2 flex flex-col gap-3 sm:gap-4 mb-3 sm:mb-4 min-h-0 relative">
