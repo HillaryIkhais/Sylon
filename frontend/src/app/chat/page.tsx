@@ -221,9 +221,9 @@ function ChatContent() {
           </div>
         </header>
 
-                {/* Ethereal Orb — Mobile */}
-        <div className={`md:hidden flex w-full justify-center mt-2 mb-2 transition-all duration-500 ${messages.length > 0 ? 'h-0 overflow-hidden opacity-0 scale-0' : 'h-auto'}`}>
-          <div className="transform scale-[0.6] origin-top">
+        {/* Ethereal Orb — Mobile */}
+        <div className={`md:hidden relative w-full flex justify-center transition-all duration-500 overflow-visible ${messages.length > 0 ? 'h-0 opacity-0 pointer-events-none' : 'h-52 mb-4 mt-2'}`}>
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 scale-[0.55] origin-top">
             <ConversationProvider>
               <EtherealOrb onTranscription={handleTranscription} isMobile={true} />
             </ConversationProvider>
