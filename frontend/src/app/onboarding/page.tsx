@@ -65,7 +65,6 @@ export default function Onboarding() {
         
         <div className="relative z-10 w-full max-w-md text-left flex flex-col h-full justify-between">
           <div>
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-lightbrown to-brand-brown mb-8 flex items-center justify-center font-bold text-4xl text-white shadow-2xl shadow-brand-brown/30">M</div>
             <h1 className="text-5xl font-bold tracking-tight mb-6 leading-tight">
               Build your <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-lightbrown to-brand-brown">Business Memory</span>

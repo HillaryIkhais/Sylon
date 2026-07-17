@@ -10,7 +10,6 @@ export default function Pricing() {
       {/* Navbar */}
       <nav className="w-full max-w-7xl mx-auto px-6 py-6 flex items-center justify-between relative z-10 border-b border-white/5">
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-lightbrown to-brand-brown flex items-center justify-center font-bold text-lg text-brand-dark">M</div>
           <span className="font-semibold text-xl tracking-tight">Morlen</span>
         </Link>
         <Link 
@@ -116,7 +115,6 @@ export default function Pricing() {
 
         {/* Closing Sequence */}
         <div className="text-center py-24 border-t border-white/10 max-w-3xl mx-auto">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-lightbrown to-brand-brown mx-auto mb-8 flex items-center justify-center font-bold text-2xl text-brand-dark shadow-xl shadow-brand-lightbrown/20">M</div>
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-8 leading-tight">
             "Every conversation tells a story. Morlen helps businesses know which ones matter."
           </h2>

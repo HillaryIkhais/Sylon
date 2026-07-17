@@ -63,17 +63,16 @@ export default function Processing() {
       <div className="hidden md:flex md:w-1/2 relative bg-white/40 backdrop-blur-2xl border-r border-brand-dark/5 flex-col items-center justify-center p-12">
         <div className="absolute top-[-10%] left-[-10%] w-[120%] h-[120%] bg-brand-glow/20 rounded-full blur-[120px] pointer-events-none mix-blend-multiply" />
         
-        <div className="relative z-10 w-full max-w-md text-left flex flex-col h-full justify-between">
-          <div>
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-lightbrown to-brand-brown mb-8 flex items-center justify-center font-bold text-4xl text-white shadow-2xl shadow-brand-brown/30">M</div>
-            <h1 className="text-5xl font-bold tracking-tight mb-6 leading-tight">
-              Creating your <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-lightbrown to-brand-brown">Workspace</span>
-            </h1>
-            <p className="text-xl text-brand-dark/60 font-medium">
-              We're setting up your Morlen environment and calibrating the intelligence layer for your industry.
-            </p>
-          </div>
+        <div className="flex-1 flex flex-col items-center justify-center p-8 relative z-10 fade-up">
+            <div className="text-center mb-16">
+              <h1 className="text-5xl font-bold tracking-tight mb-6 leading-tight">
+                Creating your <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-lightbrown to-brand-brown">Workspace</span>
+              </h1>
+              <p className="text-xl text-brand-dark/60 font-medium">
+                We're setting up your Morlen environment and calibrating the intelligence layer for your industry.
+              </p>
+            </div>
           
           <div className="w-full flex justify-center items-center transform scale-[0.8] opacity-80 pointer-events-none mt-12 h-[300px]">
              <ConversationProvider>

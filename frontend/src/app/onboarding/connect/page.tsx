@@ -45,13 +45,12 @@ export default function ConnectData() {
       <div className="hidden md:flex md:w-1/2 relative bg-white/40 backdrop-blur-2xl border-r border-brand-dark/5 flex-col items-center justify-center p-12">
         <div className="absolute top-[-10%] left-[-10%] w-[120%] h-[120%] bg-brand-glow/20 rounded-full blur-[120px] pointer-events-none mix-blend-multiply" />
         
-        <div className="relative z-10 w-full max-w-md text-left flex flex-col h-full justify-between">
-          <div>
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-lightbrown to-brand-brown mb-8 flex items-center justify-center font-bold text-4xl text-white shadow-2xl shadow-brand-brown/30">M</div>
-            <h1 className="text-5xl font-bold tracking-tight mb-6 leading-tight">
-              Connect your <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-lightbrown to-brand-brown">Data Sources</span>
-            </h1>
+        <div className="w-full max-w-2xl mx-auto flex flex-col items-center relative z-10 fade-up">
+            <div className="text-center mb-12">
+              <h1 className="text-5xl font-bold tracking-tight mb-6 leading-tight">
+                Connect your <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-lightbrown to-brand-brown">Data Sources</span>
+              </h1>
             <p className="text-xl text-brand-dark/60 font-medium">
               Morlen needs raw conversation data to build your Business Memory and find hidden revenue opportunities.
             </p>
