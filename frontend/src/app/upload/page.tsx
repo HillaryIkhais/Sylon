@@ -44,7 +44,7 @@ function UploadContent() {
   const [isNavigating, setIsNavigating] = useState(false);
   const [isDataReady, setIsDataReady] = useState(false);
   const [isMetaModalOpen, setIsMetaModalOpen] = useState(false);
-  const [isConfidenceReviewOpen, setIsConfidenceReviewOpen] = useState(false);
+
   const [metaConnecting, setMetaConnecting] = useState(false);
   const [authError, setAuthError] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -66,44 +66,9 @@ function UploadContent() {
   const router = useRouter();
 
   // Dynamic Contacts State
-  const [dynamicContacts, setDynamicContacts] = useState<any[]>([]);
 
-  useEffect(() => {
-    // Generate context-aware contacts based on industry
-    const industry = localStorage.getItem("morlen_industry") || "";
-    let contacts = [];
-    
-    if (industry === "Fashion & Apparel") {
-      contacts = [
-        { id: 1, name: "Sarah (Customer)", conf: "98%", signals: '"How much?", Payment, Order placed', active: true },
-        { id: 2, name: "Fabric Supplier (Vendor)", conf: "85%", signals: 'Catalog share, New fabric inquiry', active: true },
-        { id: 3, name: "Mom", conf: "12%", signals: '"How is mummy?", Family name', active: false },
-        { id: 4, name: "Church Group", conf: "5%", signals: 'Casual chat, non-business hours', active: false }
-      ];
-    } else if (industry === "Food & Beverage") {
-      contacts = [
-        { id: 1, name: "John (Customer)", conf: "99%", signals: '"Is my order ready?", Menu inquiry', active: true },
-        { id: 2, name: "Fresh Produce Supplier", conf: "88%", signals: 'Invoice #402, Delivery time', active: true },
-        { id: 3, name: "Mom", conf: "12%", signals: '"How is mummy?", Family name', active: false },
-        { id: 4, name: "Church Group", conf: "5%", signals: 'Casual chat, non-business hours', active: false }
-      ];
-    } else if (industry === "Health & Wellness") {
-      contacts = [
-        { id: 1, name: "Amanda (Client)", conf: "97%", signals: '"Booking appointment", Session time', active: true },
-        { id: 2, name: "Equipment Vendor", conf: "82%", signals: 'Supply delivery, Restock', active: true },
-        { id: 3, name: "Mom", conf: "12%", signals: '"How is mummy?", Family name', active: false },
-        { id: 4, name: "Church Group", conf: "5%", signals: 'Casual chat, non-business hours', active: false }
-      ];
-    } else {
-      contacts = [
-        { id: 1, name: "Sarah (Customer)", conf: "98%", signals: '"How much?", Payment, Order placed', active: true },
-        { id: 2, name: "Vendor / Supplier", conf: "85%", signals: 'Catalog share, New customer inquiry', active: true },
-        { id: 3, name: "Mom", conf: "12%", signals: '"How is mummy?", Family name', active: false },
-        { id: 4, name: "Church Group", conf: "5%", signals: 'Casual chat, non-business hours', active: false }
-      ];
-    }
-    setDynamicContacts(contacts);
-  }, []);
+
+
 
   useEffect(() => {
     let phaseInterval: NodeJS.Timeout;
@@ -272,7 +237,7 @@ function UploadContent() {
       
       // Only proceed on true success
       setIsMetaModalOpen(false);
-      setIsConfidenceReviewOpen(true);
+      handleSample(); // Proceed directly to health scan, skipping mocked contact review
     } catch (err: any) {
       console.error("Network error when connecting WhatsApp API:", err);
       let errorMsg = err.name === 'AbortError' 
@@ -519,82 +484,6 @@ function UploadContent() {
         </div>
       )}
 
-      {isConfidenceReviewOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-[#242526] w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="relative p-6 md:p-8">
-              <button 
-                onClick={() => setIsConfidenceReviewOpen(false)}
-                className="absolute top-4 right-4 p-2 text-brand-dark/50 hover:bg-brand-dark/5 rounded-full transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>
-              </button>
-              
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-brand-lightbrown/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-brand-brown" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                </div>
-                <h3 className="text-2xl font-bold text-brand-dark dark:text-white mb-2">
-                  Which contacts should Morlen analyze?
-                </h3>
-                <p className="text-brand-dark/70 dark:text-white/60 text-sm leading-relaxed max-w-md mx-auto">
-                  Morlen uses a Business Confidence score to separate customers from personal chats. You have the final say.
-                </p>
-              </div>
-              
-              <div className="bg-brand-lightbrown/5 border border-brand-dark/10 dark:border-white/10 rounded-xl overflow-hidden mb-6">
-                <div className="p-3 bg-brand-dark/5 dark:bg-white/5 border-b border-brand-dark/10 dark:border-white/10 flex justify-between items-center">
-                  <span className="text-xs font-bold text-brand-dark/70 dark:text-white/70 uppercase tracking-wider">Top Contacts Detected</span>
-                  <span className="text-xs font-semibold text-brand-brown">42 Signals found</span>
-                </div>
-                <div className="divide-y divide-brand-dark/5 dark:divide-white/5 max-h-[40vh] overflow-y-auto">
-                  
-                  {dynamicContacts.map((contact) => (
-                    <div key={contact.id} className={`p-4 flex items-start gap-3 ${contact.active ? 'bg-green-50/30 dark:bg-green-900/10' : 'opacity-60'}`}>
-                      <input 
-                        type="checkbox" 
-                        defaultChecked={contact.active} 
-                        className="mt-1 w-4 h-4 text-brand-brown rounded border-brand-dark/20 focus:ring-brand-brown" 
-                      />
-                      <div className="flex-1">
-                        <div className="flex justify-between items-start mb-1">
-                          <span className={`font-bold text-brand-dark dark:text-white text-sm ${!contact.active ? 'line-through' : ''}`}>
-                            {contact.name}
-                          </span>
-                          <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${contact.active ? 'text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30' : 'text-brand-dark/40 dark:text-white/40 border border-brand-dark/20 dark:border-white/20'}`}>
-                            {contact.conf}{!contact.active ? ' - Auto-excluded' : ' Confidence'}
-                          </span>
-                        </div>
-                        <p className={`text-xs ${contact.active ? 'text-brand-dark/60 dark:text-white/50' : 'text-brand-dark/50 dark:text-white/40'}`}>
-                          Signals: {contact.signals}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-
-                </div>
-              </div>
-
-              <div className="text-center pt-2">
-                <button
-                  onClick={() => {
-                    setIsConfidenceReviewOpen(false);
-                    handleSample();
-                  }}
-                  className="w-full bg-brand-brown hover:bg-brand-dark text-white font-bold py-3.5 px-6 rounded-xl shadow-md transition-colors flex items-center justify-center gap-2"
-                >
-                  Confirm & Run Health Scan
-                </button>
-                <div className="mt-4">
-                  <a href="/privacy" target="_blank" className="text-xs text-brand-brown hover:underline font-medium">
-                    Read our Privacy Manifesto: Morlen doesn't read your life.
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       </div>
   );
