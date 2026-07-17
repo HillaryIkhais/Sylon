@@ -31,7 +31,7 @@ export async function POST(request: Request) {
 
     // Forward the payload to the Python AI Microservice asynchronously
     // We don't await the Python server's response to ensure we return 200 OK to Meta instantly
-    const pythonBackendUrl = process.env.PYTHON_BACKEND_URL || 'http://127.0.0.1:8000';
+    const pythonBackendUrl = process.env.PYTHON_BACKEND_URL || 'https://morlen.onrender.com';
     
     fetch(`${pythonBackendUrl}/internal/process-whatsapp`, {
       method: 'POST',

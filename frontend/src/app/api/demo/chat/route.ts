@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
   try {
     const payload = await request.json();
-    const pythonBackendUrl = process.env.PYTHON_BACKEND_URL || 'http://127.0.0.1:8000';
+    const pythonBackendUrl = process.env.PYTHON_BACKEND_URL || 'https://morlen.onrender.com';
 
     const res = await fetch(`${pythonBackendUrl}/demo/chat`, {
       method: 'POST',

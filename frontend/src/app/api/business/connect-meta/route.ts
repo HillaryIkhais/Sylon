@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
   try {
     const payload = await request.json();
-    const backendUrl = process.env.MORLEN_BACKEND_URL || process.env.PYTHON_BACKEND_URL || 'http://127.0.0.1:8000';
+    const backendUrl = process.env.MORLEN_BACKEND_URL || process.env.PYTHON_BACKEND_URL || 'https://morlen.onrender.com';
 
     // 1. Post to OAuth meta endpoint (simulate or real)
     const oauthPayload = {

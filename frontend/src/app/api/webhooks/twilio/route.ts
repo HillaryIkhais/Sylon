@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     console.log('[Next.js Gateway] Received Twilio Webhook Payload:', JSON.stringify(payload, null, 2));
 
     // Forward the payload to the Python AI Microservice asynchronously
-    const pythonBackendUrl = process.env.PYTHON_BACKEND_URL || 'http://127.0.0.1:8000';
+    const pythonBackendUrl = process.env.PYTHON_BACKEND_URL || 'https://morlen.onrender.com';
     
     fetch(`${pythonBackendUrl}/webhooks/twilio/internal/process-twilio`, {
       method: 'POST',
