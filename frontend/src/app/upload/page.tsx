@@ -258,7 +258,9 @@ function UploadContent() {
         let friendlyMsg = "Could not connect to WhatsApp. Please check your number and try again.";
         try {
           const parsed = JSON.parse(errorText);
-          if (parsed.detail) friendlyMsg = parsed.detail;
+          if (parsed.error && parsed.detail) friendlyMsg = `${parsed.error} ${parsed.detail}`;
+          else if (parsed.detail) friendlyMsg = parsed.detail;
+          else if (parsed.error) friendlyMsg = parsed.error;
           else if (parsed.message) friendlyMsg = parsed.message;
         } catch { /* not JSON, use default */ }
         throw new Error(friendlyMsg);
