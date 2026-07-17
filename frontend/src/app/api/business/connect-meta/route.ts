@@ -33,9 +33,17 @@ export async function POST(request: Request) {
     }
 
     if (!oauthRes.ok) {
+      let backendErr = 'Could not save OAuth tokens. Please verify your credentials.';
+      try {
+        const errorData = await oauthRes.json();
+        if (errorData.detail) backendErr = errorData.detail;
+        else if (errorData.message) backendErr = errorData.message;
+      } catch (e) {
+        // ignore parsing errors
+      }
       return NextResponse.json({ 
         error: `WhatsApp authentication failed (${oauthRes.status}).`,
-        detail: 'Could not save OAuth tokens. Please verify your credentials.' 
+        detail: backendErr 
       }, { status: 502 });
     }
 
