@@ -200,10 +200,20 @@ class PersistenceService:
                 source TEXT NOT NULL,
                 narrative TEXT NOT NULL,
                 traits_json TEXT,
+                avg_rating REAL,
+                top_words_json TEXT,
+                grounding_quotes_json TEXT,
+                review_count INTEGER,
+                full_payload_json TEXT,
+                model TEXT,
                 created_at TEXT NOT NULL,
                 FOREIGN KEY (business_id) REFERENCES businesses(business_id)
             )
             """)
+            
+            # Migrations for personas
+            for col in ["avg_rating REAL", "top_words_json TEXT", "grounding_quotes_json TEXT", "review_count INTEGER", "full_payload_json TEXT", "model TEXT"]:
+                self._safe_ddl(conn, f"ALTER TABLE personas ADD COLUMN {col}")
             
             self._safe_ddl(conn, """
             CREATE TABLE IF NOT EXISTS collision_logs (
@@ -211,12 +221,21 @@ class PersistenceService:
                 business_id TEXT NOT NULL,
                 scenario TEXT NOT NULL,
                 source_mode TEXT NOT NULL,
-                final_decision TEXT NOT NULL,
-                agent_context_json TEXT,
+                persona_ids_json TEXT,
+                collision_analysis TEXT,
+                strategist_response TEXT,
+                predicted_rating REAL,
+                early_warning TEXT,
+                model TEXT,
+                metadata_json TEXT,
                 created_at TEXT NOT NULL,
                 FOREIGN KEY (business_id) REFERENCES businesses(business_id)
             )
             """)
+
+            # Migrations for collision_logs
+            for col in ["persona_ids_json TEXT", "collision_analysis TEXT", "strategist_response TEXT", "predicted_rating REAL", "early_warning TEXT", "model TEXT", "metadata_json TEXT"]:
+                self._safe_ddl(conn, f"ALTER TABLE collision_logs ADD COLUMN {col}")
 
             self._safe_ddl(conn, """
             CREATE TABLE IF NOT EXISTS recommendation_logs (
