@@ -123,8 +123,14 @@ export default function HistorySidebar({
           ) : (
             sessions.map((s) => {
               const isActive = currentBusinessId === s.business_id;
-              const dateString = s.created_at.endsWith('Z') ? s.created_at : s.created_at + 'Z';
-              const date = new Date(dateString).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit' });
+              let dateString = s.created_at;
+              if (dateString && !dateString.endsWith('Z') && !dateString.includes('+')) {
+                dateString += 'Z';
+              }
+              const d = new Date(dateString || Date.now());
+              const date = isNaN(d.getTime()) 
+                ? "Recent" 
+                : d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit' });
               return (
                 <div key={s.business_id} className="relative group">
                   <button
