@@ -72,7 +72,7 @@ export default function Opportunities() {
           {/* Empty State Layout */}
           <div className="glass-card p-16 rounded-3xl flex flex-col items-center justify-center text-center mt-12">
             <div className="w-20 h-20 bg-brand-lightbrown/10 rounded-full flex items-center justify-center mb-6">
-              <Activity className="w-10 h-10 text-brand-brown/50 dark:text-brand-lightbrown/50" />
+              <Activity className="w-10 h-10 text-brand-brown dark:text-brand-lightbrown" />
             </div>
             <h3 className="text-xl font-semibold mb-3 text-brand-dark dark:text-white">No Opportunities Detected</h3>
             <p className="text-brand-dark/60 dark:text-white/60 max-w-md mx-auto mb-8 leading-relaxed">

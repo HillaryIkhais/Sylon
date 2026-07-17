@@ -116,7 +116,7 @@ export default function Dashboard() {
                 </div>
                 
                 <div className="glass-card p-12 rounded-3xl flex flex-col items-center text-center justify-center">
-                  <Activity className="w-12 h-12 text-brand-dark/30 dark:text-white/30 mb-4" />
+                  <Activity className="w-12 h-12 text-brand-brown dark:text-brand-lightbrown mb-4" />
                   <h3 className="font-medium text-lg mb-2">No Opportunities Detected</h3>
                   <p className="text-sm text-brand-dark/60 dark:text-white/60 max-w-sm">
                     Morlen is analyzing your incoming conversations. High-value revenue opportunities and churn risks will appear here automatically.
@@ -136,7 +136,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className="flex-1 flex flex-col items-center justify-center text-center py-10">
-                  <BrainCircuit className="w-10 h-10 text-brand-dark/30 dark:text-white/30 mb-4" />
+                  <BrainCircuit className="w-10 h-10 text-brand-brown dark:text-brand-lightbrown mb-4" />
                   <p className="text-sm text-brand-dark/60 dark:text-white/60">
                     Your business memory is currently empty. Connect your channels to begin extracting insights.
                   </p>
