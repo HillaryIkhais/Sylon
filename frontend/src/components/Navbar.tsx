@@ -15,7 +15,7 @@ export default function Navbar() {
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
-  if (pathname.startsWith('/onboarding')) {
+  if (pathname.startsWith('/onboarding') || pathname.startsWith('/dashboard')) {
     return null;
   }
 
