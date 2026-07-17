@@ -46,6 +46,7 @@ function UploadContent() {
   const [isMetaModalOpen, setIsMetaModalOpen] = useState(false);
   const [isConfidenceReviewOpen, setIsConfidenceReviewOpen] = useState(false);
   const [metaConnecting, setMetaConnecting] = useState(false);
+  const [authError, setAuthError] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [advancedTokens, setAdvancedTokens] = useState({ phoneId: "", token: "" });
   
@@ -235,6 +236,7 @@ function UploadContent() {
       return;
     }
     
+    setAuthError("");
     setMetaConnecting(true);
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
@@ -251,17 +253,19 @@ function UploadContent() {
       clearTimeout(timeoutId);
       
       if (!res.ok) {
-        console.warn("Backend API returned an error, but proceeding with demo flow:", await res.text());
-        // We don't throw an error here to ensure the demo/product launch flow continues 
-        // even if Vercel env variables are missing or backend is down.
+        const errorText = await res.text();
+        throw new Error(errorText || "Invalid credentials or backend unreachable");
       }
-    } catch (err) {
-      console.error("Network error when connecting WhatsApp API:", err);
-      // Fallback for demo mode: log the error but do not block the UI
-    } finally {
-      setMetaConnecting(false);
+      
+      // Only proceed on true success
       setIsMetaModalOpen(false);
       setIsConfidenceReviewOpen(true);
+    } catch (err: any) {
+      console.error("Network error when connecting WhatsApp API:", err);
+      let errorMsg = err.name === 'AbortError' ? "Connection timed out. Please try again." : err.message || "Failed to authenticate.";
+      setAuthError(errorMsg);
+    } finally {
+      setMetaConnecting(false);
     }
   };
 
@@ -489,6 +493,11 @@ function UploadContent() {
                     "Securely Connect WhatsApp"
                   )}
                 </button>
+                {authError && (
+                  <div className="mt-3 text-center text-sm font-medium text-red-500 bg-red-500/10 p-2 rounded-lg">
+                    {authError}
+                  </div>
+                )}
               </div>
             </div>
           </div>
