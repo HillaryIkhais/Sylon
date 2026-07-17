@@ -7,6 +7,9 @@ import { useGSAP } from "@gsap/react";
 import { useState } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
 import WaitlistModal from "@/components/WaitlistModal";
+import { ConversationProvider } from "@elevenlabs/react";
+import EtherealOrb from "@/components/EtherealOrb";
+import FAQAccordion from "@/components/FAQAccordion";
 
 export default function Home() {
   const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
@@ -111,16 +114,15 @@ export default function Home() {
             ref={heroTextRef}
             className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8 text-brand-dark leading-tight drop-shadow-sm opacity-0"
           >
-            <span className="block mb-2">Every conversation is</span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-lightbrown to-brand-brown block">
-              a business decision.
-            </span>
+            <span className="block">Turn customer conversations into <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-lightbrown to-brand-brown">executive decisions.</span></span>
           </h1>
         </div>
 
-        {/* Orb removed for waitlist site */}
-        <div className="w-full flex items-center justify-center my-6 md:my-12 min-h-[300px]">
-          {/* Static placeholder or just empty space */}
+        {/* The GSAP Ethereal Orb */}
+        <div className="w-full flex items-center justify-center my-6 md:my-12 transform scale-[0.7] sm:scale-90 md:scale-100">
+          <ConversationProvider>
+            <EtherealOrb />
+          </ConversationProvider>
         </div>
 
         {/* Subheadline and CTA */}
@@ -189,6 +191,14 @@ export default function Home() {
           </div>
           </div>
       </main>
+
+      {/* FAQ Section */}
+      <section className="w-full py-24 px-4 relative z-10">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-brand-dark dark:text-white mb-12">Frequently Asked Questions</h2>
+          <FAQAccordion />
+        </div>
+      </section>
 
       {/* Main Footer */}
       <footer className="w-full pb-8 pt-4 px-8 md:px-16 z-50 relative mt-auto border-t border-brand-dark/10">

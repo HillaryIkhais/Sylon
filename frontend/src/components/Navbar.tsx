@@ -28,6 +28,9 @@ export default function Navbar() {
             <Link href="/" className={`whitespace-nowrap text-brand-dark dark:text-white/90 hover:text-brand-lightbrown transition-colors ${pathname === '/' ? 'font-bold !text-brand-brown' : ''}`}>
               Home
             </Link>
+            <Link href="/platform" className={`whitespace-nowrap text-brand-dark dark:text-white/90 hover:text-brand-lightbrown transition-colors ${pathname === '/platform' ? 'font-bold !text-brand-brown' : ''}`}>
+              Platform
+            </Link>
           </div>
         </div>
 
@@ -52,6 +55,9 @@ export default function Navbar() {
           <div className="flex flex-col gap-4 text-lg font-semibold">
             <Link href="/" className={`text-brand-dark dark:text-white/90 ${pathname === '/' ? 'text-brand-brown' : ''}`}>
               Home
+            </Link>
+            <Link href="/platform" className={`text-brand-dark dark:text-white/90 ${pathname === '/platform' ? 'text-brand-brown' : ''}`}>
+              Platform
             </Link>
           </div>
         </div>
