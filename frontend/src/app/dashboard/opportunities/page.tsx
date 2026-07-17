@@ -43,7 +43,7 @@ export default function Opportunities() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto relative w-full">
+      <main className="flex-1 overflow-y-auto relative w-full pb-24 lg:pb-0">
         {/* Abstract Background */}
         <div className="absolute top-[-10%] left-[20%] w-[600px] h-[600px] bg-brand-lightbrown/5 rounded-full blur-[150px] pointer-events-none" />
 

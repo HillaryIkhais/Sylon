@@ -55,7 +55,7 @@ export default function Dashboard() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto relative w-full">
+      <main className="flex-1 overflow-y-auto relative w-full pb-24 lg:pb-0">
         {/* Abstract Background */}
         <div className="absolute top-0 right-0 w-[800px] h-[500px] bg-brand-lightbrown/5 rounded-full blur-[150px] pointer-events-none" />
 
