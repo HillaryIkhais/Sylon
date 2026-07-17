@@ -4,6 +4,11 @@ export async function POST(request: Request) {
   try {
     const payload = await request.json();
     const backendUrl = process.env.MORLEN_BACKEND_URL || process.env.PYTHON_BACKEND_URL || 'https://morlen.onrender.com';
+    
+    // Extract auth header from frontend request
+    const authHeader = request.headers.get('authorization') || request.headers.get('Authorization');
+    const fetchHeaders: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (authHeader) fetchHeaders['Authorization'] = authHeader;
 
     // 1. Post to OAuth meta endpoint (simulate or real)
     const oauthPayload = {
@@ -16,7 +21,7 @@ export async function POST(request: Request) {
     try {
       oauthRes = await fetch(`${backendUrl}/business/oauth/meta`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: fetchHeaders,
         body: JSON.stringify(oauthPayload)
       });
     } catch (fetchErr) {
@@ -44,7 +49,7 @@ export async function POST(request: Request) {
     try {
       phoneRes = await fetch(`${backendUrl}/business/settings/owner-phone`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: fetchHeaders,
         body: JSON.stringify(phonePayload)
       });
     } catch (fetchErr) {

@@ -241,9 +241,13 @@ function UploadContent() {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
     try {
+      const token = await getAccessToken();
       const res = await fetch('/api/business/connect-meta', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({ 
           business_id: businessId,
           owner_phone: ownerPhone 
