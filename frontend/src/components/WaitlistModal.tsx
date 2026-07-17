@@ -151,11 +151,11 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
           {step === 1 && (
             <div className="flex-grow flex flex-col gap-4 animate-in slide-in-from-right-4 fade-in duration-500">
               <h3 className="text-2xl font-bold text-brand-dark dark:text-white mb-1">Let's get started</h3>
-              <p className="text-brand-dark/60 dark:text-white/60 text-sm mb-2">Tell us a bit about yourself and your business.</p>
+              <p className="text-brand-dark/60 dark:text-brand-dark/70 text-sm mb-2">Tell us a bit about yourself and your business.</p>
               
               <div className="space-y-4">
                 <div className="group">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-brand-dark/50 dark:text-white/50 mb-1.5 transition-colors group-focus-within:text-brand-brown">Name</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-brand-dark/50 dark:text-brand-dark/60 mb-1.5 transition-colors group-focus-within:text-brand-brown">Name</label>
                   <input type="text" 
                     className="w-full px-4 py-3 rounded-xl border border-brand-dark/10 dark:border-white/10 bg-black/5 dark:bg-white/5 focus:bg-transparent focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none transition-all placeholder:text-brand-dark/30 dark:placeholder:text-white/30"
                     placeholder="Jane Doe"
@@ -164,7 +164,7 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
                   />
                 </div>
                 <div className="group">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-brand-dark/50 dark:text-white/50 mb-1.5 transition-colors group-focus-within:text-brand-brown">Business Name</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-brand-dark/50 dark:text-brand-dark/60 mb-1.5 transition-colors group-focus-within:text-brand-brown">Business Name</label>
                   <input type="text" 
                     className="w-full px-4 py-3 rounded-xl border border-brand-dark/10 dark:border-white/10 bg-black/5 dark:bg-white/5 focus:bg-transparent focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none transition-all placeholder:text-brand-dark/30 dark:placeholder:text-white/30"
                     placeholder="Morlen Cafe"
@@ -173,7 +173,7 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
                   />
                 </div>
                 <div className="group">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-brand-dark/50 dark:text-white/50 mb-1.5 transition-colors group-focus-within:text-brand-brown">Email</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-brand-dark/50 dark:text-brand-dark/60 mb-1.5 transition-colors group-focus-within:text-brand-brown">Email</label>
                   <input type="email" 
                     className="w-full px-4 py-3 rounded-xl border border-brand-dark/10 dark:border-white/10 bg-black/5 dark:bg-white/5 focus:bg-transparent focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none transition-all placeholder:text-brand-dark/30 dark:placeholder:text-white/30"
                     placeholder="jane@example.com"
@@ -182,7 +182,7 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
                   />
                 </div>
                 <div className="group">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-brand-dark/50 dark:text-white/50 mb-1.5 transition-colors group-focus-within:text-brand-brown">WhatsApp Number</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-brand-dark/50 dark:text-brand-dark/60 mb-1.5 transition-colors group-focus-within:text-brand-brown">WhatsApp Number</label>
                   <input type="tel" 
                     className="w-full px-4 py-3 rounded-xl border border-brand-dark/10 dark:border-white/10 bg-black/5 dark:bg-white/5 focus:bg-transparent focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none transition-all placeholder:text-brand-dark/30 dark:placeholder:text-white/30"
                     placeholder="+234 800 000 0000"
@@ -198,7 +198,7 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
           {step === 2 && (
             <div className="flex-grow flex flex-col gap-4 animate-in slide-in-from-right-4 fade-in duration-500">
               <h3 className="text-2xl font-bold text-brand-dark dark:text-white mb-2">Your Industry</h3>
-              <p className="text-brand-dark/60 dark:text-white/60 text-sm mb-4">What best describes your business?</p>
+              <p className="text-brand-dark/60 dark:text-brand-dark/70 text-sm mb-4">What best describes your business?</p>
               
               <div className="grid grid-cols-3 gap-3">
                 {categories.map((cat) => (
@@ -226,7 +226,7 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
           {step === 3 && (
             <div className="flex-grow flex flex-col gap-4 animate-in slide-in-from-right-4 fade-in duration-500">
               <h3 className="text-2xl font-bold text-brand-dark dark:text-white mb-2">Sales Channels</h3>
-              <p className="text-brand-dark/60 dark:text-white/60 text-sm mb-4">Where do your customers find you?</p>
+              <p className="text-brand-dark/60 dark:text-brand-dark/70 text-sm mb-4">Where do your customers find you?</p>
               
               <div className="space-y-3">
                 {['WhatsApp', 'Instagram', 'Facebook', 'Google Business', 'TikTok'].map((channel) => (
@@ -260,7 +260,7 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
           {step === 4 && (
             <div className="flex-grow flex flex-col gap-4 animate-in slide-in-from-right-4 fade-in duration-500">
               <h3 className="text-2xl font-bold text-brand-dark dark:text-white mb-2">Biggest Challenge</h3>
-              <p className="text-brand-dark/60 dark:text-white/60 text-sm mb-4">What drains most of your time?</p>
+              <p className="text-brand-dark/60 dark:text-brand-dark/70 text-sm mb-4">What drains most of your time?</p>
               
               <div className="space-y-3">
                 {[
@@ -282,7 +282,7 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
                         : 'border-brand-dark/10 dark:border-white/10 hover:border-brand-dark/30 dark:hover:border-white/30 text-brand-dark/70 dark:text-white/70 hover:bg-black/5 dark:hover:bg-white/5'
                     }`}
                   >
-                    <div className={formData.challenge === challenge ? "text-brand-brown" : "text-brand-dark/50 dark:text-white/50"}>
+                    <div className={formData.challenge === challenge ? "text-brand-brown" : "text-brand-dark/50 dark:text-brand-dark/60"}>
                       {challengeIcons[challenge]}
                     </div>
                     <span className="font-bold text-left">{challenge}</span>
@@ -296,7 +296,7 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
           {step === 5 && (
             <div className="flex-grow flex flex-col gap-4 animate-in slide-in-from-right-4 fade-in duration-500">
               <h3 className="text-2xl font-bold text-brand-dark dark:text-white mb-2">Message Volume</h3>
-              <p className="text-brand-dark/60 dark:text-white/60 text-sm mb-4">How many customer messages do you get daily?</p>
+              <p className="text-brand-dark/60 dark:text-brand-dark/70 text-sm mb-4">How many customer messages do you get daily?</p>
               
               <div className="grid grid-cols-2 gap-3">
                 {[
@@ -333,7 +333,7 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
               
               <div>
                 <h3 className="text-3xl font-black text-brand-dark dark:text-white mb-3 tracking-tight">You're on the list.</h3>
-                <p className="text-brand-dark/70 dark:text-white/70 max-w-sm mx-auto leading-relaxed">
+                <p className="text-brand-dark/70 dark:text-brand-dark/80 max-w-sm mx-auto leading-relaxed">
                   We're excited to have you onboard. You'll be among the first businesses invited for Early Access to Morlen.
                 </p>
               </div>
@@ -341,7 +341,7 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
               {position && (
                 <div className="bg-brand-brown/5 dark:bg-white/5 rounded-3xl p-8 w-full max-w-xs border border-brand-brown/20 dark:border-white/10 relative overflow-hidden group">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-brand-brown/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150" />
-                  <div className="text-xs font-bold text-brand-dark/50 dark:text-white/50 uppercase tracking-widest mb-2">Your Position</div>
+                  <div className="text-xs font-bold text-brand-dark/50 dark:text-brand-lightbrown/70 uppercase tracking-widest mb-2">Your Position</div>
                   <div className="text-6xl font-black text-brand-brown tracking-tighter relative">
                     #{position}
                   </div>
@@ -357,7 +357,7 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
                 <button 
                   onClick={prevStep}
                   disabled={isSubmitting}
-                  className="px-5 py-2.5 font-bold text-brand-dark/50 dark:text-white/50 hover:text-brand-dark dark:hover:text-white transition-colors"
+                  className="px-5 py-2.5 font-bold text-brand-dark/50 dark:text-brand-dark/60 hover:text-brand-dark dark:hover:text-brand-dark transition-colors"
                 >
                   Back
                 </button>
@@ -394,7 +394,7 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
             <div className="mt-8 w-full animate-in fade-in duration-1000 delay-300">
               <button 
                 onClick={onClose}
-                className="w-full px-6 py-4 bg-brand-dark dark:bg-white text-white dark:text-brand-dark font-bold rounded-2xl hover:scale-[1.02] transition-all shadow-xl"
+                className="w-full px-6 py-4 bg-brand-brown text-white font-bold rounded-2xl hover:bg-brand-brown/90 hover:scale-[1.02] transition-all shadow-xl shadow-brand-brown/20"
               >
                 Close Window
               </button>
