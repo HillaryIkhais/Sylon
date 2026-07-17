@@ -10,13 +10,14 @@ import {
   Filter,
   Search
 } from "lucide-react";
+import DashboardMobileNav from "@/components/DashboardMobileNav";
 
 export default function Opportunities() {
   return (
     <div className="min-h-screen text-brand-dark dark:text-white flex overflow-hidden">
       
       {/* Sidebar */}
-      <aside className="hidden lg:flex w-64 border-r border-brand-dark/10 dark:border-white/10 bg-white/50 dark:bg-brand-dark/50 backdrop-blur-xl flex-col p-4 relative z-20">
+      <aside className="hidden lg:flex w-64 border-r border-brand-dark/10 dark:border-white/10 bg-white/50 dark:bg-black/20 backdrop-blur-xl flex-col p-4 relative z-20">
         <div className="flex items-center gap-2 mb-12 px-2 pt-2">
           <span className="font-semibold tracking-tight text-lg pl-2 text-brand-brown dark:text-brand-lightbrown">Morlen OS</span>
         </div>
@@ -47,6 +48,7 @@ export default function Opportunities() {
         <div className="absolute top-[-10%] left-[20%] w-[600px] h-[600px] bg-brand-lightbrown/5 rounded-full blur-[150px] pointer-events-none" />
 
         <div className="max-w-6xl mx-auto p-4 md:p-8 relative z-10">
+          <DashboardMobileNav activePath="/dashboard/opportunities" />
           
           <header className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
