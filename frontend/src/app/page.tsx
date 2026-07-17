@@ -125,10 +125,7 @@ export default function Home() {
             ref={heroTextRef}
             className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8 text-brand-dark leading-tight drop-shadow-sm opacity-0"
           >
-            <span className="block mb-2">Know exactly what</span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-lightbrown to-brand-brown block">
-              deserves your attention today.
-            </span>
+            <span className="block">Turn customer conversations into <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-lightbrown to-brand-brown">executive decisions.</span></span>
           </h1>
         </div>
 
