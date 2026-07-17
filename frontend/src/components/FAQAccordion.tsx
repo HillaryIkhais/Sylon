@@ -45,7 +45,7 @@ export default function FAQAccordion() {
         return (
           <div 
             key={index} 
-            className="border border-brand-dark/10 bg-white/50 backdrop-blur-md rounded-2xl overflow-hidden transition-all duration-300"
+            className="border border-brand-dark/10 bg-white/50 dark:bg-black/20 backdrop-blur-md rounded-2xl overflow-hidden transition-all duration-300"
           >
             <button
               onClick={() => toggle(index)}
