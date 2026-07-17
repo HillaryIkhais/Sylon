@@ -12,14 +12,26 @@ export async function POST(request: Request) {
       meta_access_token: process.env.META_ACCESS_TOKEN || payload.real_access_token || "mock_demo_token"
     };
 
-    const oauthRes = await fetch(`${backendUrl}/business/oauth/meta`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(oauthPayload)
-    });
+    let oauthRes;
+    try {
+      oauthRes = await fetch(`${backendUrl}/business/oauth/meta`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(oauthPayload)
+      });
+    } catch (fetchErr) {
+      console.error('[API Connect Meta] Backend unreachable:', fetchErr);
+      return NextResponse.json({ 
+        error: 'Backend service is currently unavailable. Please try again later.',
+        detail: 'Could not reach the Morlen backend server.' 
+      }, { status: 503 });
+    }
 
     if (!oauthRes.ok) {
-      throw new Error(`Failed to save OAuth tokens: ${oauthRes.statusText}`);
+      return NextResponse.json({ 
+        error: `WhatsApp authentication failed (${oauthRes.status}).`,
+        detail: 'Could not save OAuth tokens. Please verify your credentials.' 
+      }, { status: 502 });
     }
 
     // 2. Post to Settings to save Owner Phone
@@ -28,19 +40,34 @@ export async function POST(request: Request) {
       owner_phone: payload.owner_phone
     };
 
-    const phoneRes = await fetch(`${backendUrl}/business/settings/owner-phone`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(phonePayload)
-    });
+    let phoneRes;
+    try {
+      phoneRes = await fetch(`${backendUrl}/business/settings/owner-phone`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(phonePayload)
+      });
+    } catch (fetchErr) {
+      console.error('[API Connect Meta] Backend unreachable on phone save:', fetchErr);
+      return NextResponse.json({ 
+        error: 'Backend service is currently unavailable. Please try again later.',
+        detail: 'Could not reach the Morlen backend server.' 
+      }, { status: 503 });
+    }
 
     if (!phoneRes.ok) {
-      throw new Error(`Failed to save owner phone: ${phoneRes.statusText}`);
+      return NextResponse.json({ 
+        error: `Failed to save your phone number (${phoneRes.status}).`,
+        detail: 'Please try again.' 
+      }, { status: 502 });
     }
 
     return NextResponse.json({ status: 'ok', message: 'WhatsApp connected successfully' });
   } catch (error) {
-    console.error('[API Connect Meta] Error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    console.error('[API Connect Meta] Unexpected error:', error);
+    return NextResponse.json({ 
+      error: 'Something went wrong. Please try again.',
+      detail: 'An unexpected error occurred during WhatsApp connection.' 
+    }, { status: 500 });
   }
 }

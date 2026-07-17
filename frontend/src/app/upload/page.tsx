@@ -254,7 +254,14 @@ function UploadContent() {
       
       if (!res.ok) {
         const errorText = await res.text();
-        throw new Error(errorText || "Invalid credentials or backend unreachable");
+        // Try to parse as JSON to extract a clean message
+        let friendlyMsg = "Could not connect to WhatsApp. Please check your number and try again.";
+        try {
+          const parsed = JSON.parse(errorText);
+          if (parsed.detail) friendlyMsg = parsed.detail;
+          else if (parsed.message) friendlyMsg = parsed.message;
+        } catch { /* not JSON, use default */ }
+        throw new Error(friendlyMsg);
       }
       
       // Only proceed on true success
@@ -262,7 +269,9 @@ function UploadContent() {
       setIsConfidenceReviewOpen(true);
     } catch (err: any) {
       console.error("Network error when connecting WhatsApp API:", err);
-      let errorMsg = err.name === 'AbortError' ? "Connection timed out. Please try again." : err.message || "Failed to authenticate.";
+      let errorMsg = err.name === 'AbortError' 
+        ? "Connection timed out. Please check your internet and try again." 
+        : err.message || "Failed to authenticate. Please try again.";
       setAuthError(errorMsg);
     } finally {
       setMetaConnecting(false);
