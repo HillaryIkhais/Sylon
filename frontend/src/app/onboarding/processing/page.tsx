@@ -11,10 +11,10 @@ export default function Processing() {
   const [phase, setPhase] = useState(0);
 
   const phases = [
-    { text: "Creating business profile...", icon: MessageSquare, color: "text-brand-brown", bg: "bg-brand-brown/10" },
-    { text: "Structuring intelligence layer...", icon: BrainCircuit, color: "text-brand-lightbrown", bg: "bg-brand-brown/10" },
-    { text: "Calibrating algorithms...", icon: Database, color: "text-brand-dark", bg: "bg-brand-dark/10" },
-    { text: "Finalizing workspace setup...", icon: Sparkles, color: "text-brand-brown", bg: "bg-brand-brown/10" }
+    { text: "Creating business profile...", icon: MessageSquare, color: "text-brand-brown dark:text-brand-lightbrown", bg: "bg-brand-brown/10 dark:bg-brand-brown/20" },
+    { text: "Structuring intelligence layer...", icon: BrainCircuit, color: "text-brand-lightbrown", bg: "bg-brand-brown/10 dark:bg-brand-brown/20" },
+    { text: "Calibrating algorithms...", icon: Database, color: "text-brand-dark dark:text-white", bg: "bg-brand-dark/10 dark:bg-white/10" },
+    { text: "Finalizing workspace setup...", icon: Sparkles, color: "text-brand-brown dark:text-brand-lightbrown", bg: "bg-brand-brown/10 dark:bg-brand-brown/20" }
   ];
 
   // Needed for first icon
@@ -57,19 +57,19 @@ export default function Processing() {
   }, [router, phases.length]);
 
   return (
-    <div className="min-h-screen bg-glow-bg text-brand-dark flex flex-col md:flex-row relative overflow-hidden">
+    <div className="min-h-screen bg-glow-bg text-brand-dark dark:text-white flex flex-col md:flex-row relative overflow-hidden">
       
       {/* Left Side: Creative Brand Identity */}
-      <div className="hidden md:flex md:w-1/2 relative bg-white/40 backdrop-blur-2xl border-r border-brand-dark/5 flex-col items-center justify-center p-12">
+      <div className="hidden md:flex md:w-1/2 relative bg-white/40 dark:bg-black/20 backdrop-blur-2xl border-r border-brand-dark/5 dark:border-white/5 flex-col items-center justify-center p-12">
         <div className="absolute top-[-10%] left-[-10%] w-[120%] h-[120%] bg-brand-glow/20 rounded-full blur-[120px] pointer-events-none mix-blend-multiply" />
         
         <div className="flex-1 flex flex-col items-center justify-center p-8 relative z-10 fade-up">
             <div className="text-center mb-16">
-              <h1 className="text-5xl font-bold tracking-tight mb-6 leading-tight">
+              <h1 className="text-5xl font-bold tracking-tight mb-6 leading-tight text-brand-dark dark:text-white">
                 Creating your <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-lightbrown to-brand-brown">Workspace</span>
               </h1>
-              <p className="text-xl text-brand-dark/60 font-medium">
+              <p className="text-xl text-brand-dark/60 dark:text-brand-dark/70 font-medium">
                 We're setting up your Morlen environment and calibrating the intelligence layer for your industry.
               </p>
             </div>
@@ -89,7 +89,7 @@ export default function Processing() {
           {/* Central Animation Ring */}
           <div className="relative w-48 h-48 mb-16 flex items-center justify-center">
             {/* Outer rotating dashed ring */}
-            <div className="absolute inset-0 rounded-full border-2 border-dashed border-brand-dark/20 animate-[spin_10s_linear_infinite]" />
+            <div className="absolute inset-0 rounded-full border-2 border-dashed border-brand-dark/20 dark:border-white/20 animate-[spin_10s_linear_infinite]" />
             
             {/* Inner pulse */}
             <div className={`absolute inset-4 rounded-full transition-colors duration-1000 animate-pulse ${phases[phase].bg}`} />
@@ -105,7 +105,7 @@ export default function Processing() {
 
           {/* Text */}
           <div className="h-16 flex flex-col items-center justify-center">
-            <h2 className="text-3xl font-bold tracking-tight text-center animate-in fade-in slide-in-from-bottom-4 duration-500 text-brand-dark" key={phase}>
+            <h2 className="text-3xl font-bold tracking-tight text-center animate-in fade-in slide-in-from-bottom-4 duration-500 text-brand-dark dark:text-white" key={phase}>
               {phases[phase].text}
             </h2>
           </div>
@@ -126,11 +126,11 @@ export default function Processing() {
                   {isCompleted ? (
                     <CheckCircle2 className="w-6 h-6 text-emerald-500 flex-shrink-0" />
                   ) : isCurrent ? (
-                    <div className="w-6 h-6 rounded-full border-[3px] border-brand-dark/10 border-t-brand-brown animate-spin flex-shrink-0" />
+                    <div className="w-6 h-6 rounded-full border-[3px] border-brand-dark/10 dark:border-white/10 border-t-brand-brown animate-spin flex-shrink-0" />
                   ) : (
-                    <div className="w-6 h-6 rounded-full border-2 border-brand-dark/20 flex-shrink-0" />
+                    <div className="w-6 h-6 rounded-full border-2 border-brand-dark/20 dark:border-white/20 flex-shrink-0" />
                   )}
-                  <span className={`text-base font-bold tracking-wide ${isCompleted ? 'text-brand-dark/40' : isCurrent ? 'text-brand-dark' : 'text-brand-dark/40'}`}>
+                  <span className={`text-base font-bold tracking-wide ${isCompleted ? 'text-brand-dark/40 dark:text-white/40' : isCurrent ? 'text-brand-dark dark:text-white' : 'text-brand-dark/40 dark:text-white/40'}`}>
                     {p.text}
                   </span>
                 </div>
