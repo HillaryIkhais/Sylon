@@ -39,9 +39,9 @@ export default function Pricing() {
           <div className="p-8 rounded-3xl bg-zinc-900/50 border border-white/5 backdrop-blur-md flex flex-col">
             <h3 className="text-xl font-semibold mb-2">Starter</h3>
             <p className="text-sm text-zinc-400 mb-6">Perfect for small teams getting started with automation.</p>
-            <div className="mb-6">
-              <span className="text-4xl font-bold">$49</span>
-              <span className="text-zinc-400">/mo</span>
+            <div className="mb-6 flex items-end gap-1">
+              <span className="text-4xl font-bold">₦8,000</span>
+              <span className="text-zinc-400 mb-1">/mo</span>
             </div>
             <ul className="space-y-4 mb-8 flex-1">
               <li className="flex items-center gap-3 text-sm text-zinc-300">
@@ -66,9 +66,9 @@ export default function Pricing() {
             </div>
             <h3 className="text-xl font-semibold mb-2 text-white">Growth</h3>
             <p className="text-sm text-zinc-300 mb-6">Full multi-agent capabilities and business memory.</p>
-            <div className="mb-6">
-              <span className="text-4xl font-bold">$199</span>
-              <span className="text-indigo-200">/mo</span>
+            <div className="mb-6 flex items-end gap-1">
+              <span className="text-4xl font-bold">₦15,000</span>
+              <span className="text-indigo-200 mb-1">/mo</span>
             </div>
             <ul className="space-y-4 mb-8 flex-1">
               <li className="flex items-center gap-3 text-sm text-zinc-200">
