@@ -236,6 +236,8 @@ function UploadContent() {
     }
     
     setMetaConnecting(true);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
     try {
       const res = await fetch('/api/business/connect-meta', {
         method: 'POST',
@@ -243,8 +245,10 @@ function UploadContent() {
         body: JSON.stringify({ 
           business_id: businessId,
           owner_phone: ownerPhone 
-        })
+        }),
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
       
       if (!res.ok) {
         console.warn("Backend API returned an error, but proceeding with demo flow:", await res.text());
