@@ -61,9 +61,6 @@ export default function Pricing() {
 
           {/* Growth */}
           <div className="p-8 rounded-3xl bg-gradient-to-b from-brand-lightbrown/10 to-transparent border border-brand-lightbrown/50 backdrop-blur-xl flex flex-col relative transform md:-translate-y-4 shadow-2xl shadow-brand-lightbrown/10 group">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-brand-lightbrown text-brand-dark text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-wider">
-              Most Popular
-            </div>
             <h3 className="text-xl font-bold mb-2 text-brand-lightbrown">Growth</h3>
             <p className="text-sm text-white/60 mb-6">Full multi-agent capabilities and business memory.</p>
             <div className="mb-6 flex items-end gap-1 border-b border-white/10 pb-6">

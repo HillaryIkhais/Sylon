@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { 
   ArrowLeft,
-  Sparkles,
+  Zap,
   Activity
 } from "lucide-react";
 import { useState } from "react";
@@ -31,7 +31,7 @@ export default function OpportunityDetail() {
           <div className="flex flex-col md:flex-row md:items-start justify-between mb-12 gap-6">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-lightbrown/10 text-brand-lightbrown text-xs font-medium border border-brand-lightbrown/20 mb-4">
-                <Sparkles className="w-3 h-3" />
+                <Zap className="w-3 h-3" />
                 Revenue Opportunity
               </div>
               <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-2">Analyzing Data...</h1>

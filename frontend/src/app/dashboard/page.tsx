@@ -7,7 +7,7 @@ import {
   LineChart, 
   TrendingUp, 
   MessageSquare,
-  Sparkles,
+  Zap,
   Bot,
   Activity
 } from "lucide-react";
@@ -36,7 +36,7 @@ export default function Dashboard() {
             Opportunities
           </Link>
           <Link href="/pricing" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-zinc-400 hover:bg-white/5 hover:text-white font-medium text-sm transition-colors group mt-8">
-            <Sparkles className="w-4 h-4 group-hover:text-brand-lightbrown transition-colors" />
+            <Zap className="w-4 h-4 group-hover:text-brand-lightbrown transition-colors" />
             Upgrade Plan
           </Link>
         </nav>
@@ -60,7 +60,7 @@ export default function Dashboard() {
         <div className="max-w-6xl mx-auto p-4 md:p-8 relative z-10">
           
           <header className="mb-10">
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-2">Good morning, Alex.</h1>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-2">Good morning.</h1>
             <p className="text-zinc-400">Here is your daily executive briefing.</p>
           </header>
 
@@ -110,7 +110,7 @@ export default function Dashboard() {
               <section>
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-semibold flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-brand-lightbrown" />
+                    <Zap className="w-5 h-5 text-brand-lightbrown" />
                     High-Value Opportunities
                   </h2>
                 </div>
