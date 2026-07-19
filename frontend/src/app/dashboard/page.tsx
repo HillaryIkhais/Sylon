@@ -82,9 +82,12 @@ export default function Dashboard() {
                 </Link>
               </div>
             </div>
-            <div className="flex gap-3">
-              <Link href="/chat" className="px-5 py-2.5 bg-gradient-to-r from-brand-brown to-brand-lightbrown text-white font-bold text-sm rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2">
-                <MessageCircle className="w-4 h-4" /> Ask Morlen
+            <div className="flex gap-3 flex-wrap">
+              <Link href="/demo" className="px-5 py-2.5 bg-brand-dark text-white dark:bg-white dark:text-brand-dark font-bold text-sm rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2 border-2 border-brand-lightbrown">
+                <Globe className="w-4 h-4" /> Live Demo Simulator
+              </Link>
+              <Link href="/inbox" className="px-5 py-2.5 bg-gradient-to-r from-brand-brown to-brand-lightbrown text-white font-bold text-sm rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2">
+                <MessageCircle className="w-4 h-4" /> Signal Inbox
               </Link>
               <button className="px-5 py-2.5 bg-black/5 dark:bg-white/5 border border-brand-dark/10 dark:border-white/10 text-brand-dark dark:text-white font-bold text-sm rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
                 Generate Growth Plan
