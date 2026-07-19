@@ -265,7 +265,7 @@ async def demo_chat_endpoint(request: DemoChatRequest):
             elif "delivery" in text or "fee" in text or "free" in text or "charge" in text:
                 policies = f"Delivery Policy: {request.text}"
                 with persistence_service.get_connection() as conn:
-                    conn.execute("UPDATE businesses SET policies = ? WHERE id = ?", (policies, request.session_id))
+                    conn.execute("UPDATE businesses SET policies = ? WHERE business_id = ?", (policies, request.session_id))
                 return {
                     "response": "Perfect! Your workspace is ready. ✅\n\nNow, let's switch gears. I am now acting as Morlen answering your customers. You can pretend to be a customer messaging your business right now!",
                     "status": "ready"

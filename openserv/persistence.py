@@ -108,6 +108,7 @@ class PersistenceService:
                 whatsapp_phone_id TEXT,
                 meta_access_token TEXT,
                 owner_phone TEXT,
+                policies TEXT,
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL
             )
@@ -130,7 +131,7 @@ class PersistenceService:
             """)
 
             # Safe migrations for existing demo data
-            for col in ["whatsapp_phone_id", "meta_access_token", "owner_phone"]:
+            for col in ["whatsapp_phone_id", "meta_access_token", "owner_phone", "policies"]:
                 self._safe_ddl(conn, f"ALTER TABLE businesses ADD COLUMN {col} TEXT")
 
             self._safe_ddl(conn, """
