@@ -17,9 +17,9 @@ class PsycopgWrapper:
     def __init__(self, conn):
         self.conn = conn
     def execute(self, query, vars=None):
-        # We use RealDictCursor so rows behave like sqlite3.Row dictionaries
-        from psycopg2.extras import RealDictCursor
-        cursor = self.conn.cursor(cursor_factory=RealDictCursor)
+        # We use DictCursor so rows behave exactly like sqlite3.Row dictionaries and tuples
+        from psycopg2.extras import DictCursor
+        cursor = self.conn.cursor(cursor_factory=DictCursor)
         # SQLite uses ? for parameters, psycopg2 uses %s. 
         # For a quick hackathon patch, we can replace ? with %s for Postgres.
         query = query.replace("?", "%s")
