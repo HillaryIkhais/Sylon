@@ -6,14 +6,14 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ConversationProvider } from "@elevenlabs/react";
 import EtherealOrb from "@/components/EtherealOrb";
-import { usePrivy } from "@privy-io/react-auth";
+import { useHackathonAuth } from "@/hooks/useHackathonAuth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
 import WaitlistModal from "@/components/WaitlistModal";
 
 export default function Home() {
-  const { login, authenticated, ready } = usePrivy();
+  const { login, authenticated, ready } = useHackathonAuth();
   const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
   const router = useRouter();
 

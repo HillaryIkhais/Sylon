@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import EtherealOrb from "@/components/EtherealOrb";
 import { ConversationProvider } from "@elevenlabs/react";
 import AuthGuard from "@/components/AuthGuard";
-import { usePrivy } from "@privy-io/react-auth";
+import { useHackathonAuth } from "@/hooks/useHackathonAuth";
 import { Send } from 'lucide-react';
 
 import HistorySidebar from "@/components/HistorySidebar";
@@ -35,7 +35,7 @@ export default function Chat() {
 }
 
 function ChatContent() {
-  const { getAccessToken } = usePrivy();
+  const { getAccessToken } = useHackathonAuth();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {

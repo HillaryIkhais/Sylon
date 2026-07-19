@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { usePrivy } from '@privy-io/react-auth';
+import { useHackathonAuth } from '@/hooks/useHackathonAuth';
 import AuthGuard from '@/components/AuthGuard';
 import { Activity, AlertTriangle, MessageSquare, Check, X } from 'lucide-react';
 
 export default function Inbox() {
-  const { user } = usePrivy();
+  const { user } = useHackathonAuth();
   const [items, setItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 

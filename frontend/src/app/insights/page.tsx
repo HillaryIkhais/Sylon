@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { usePrivy } from "@privy-io/react-auth";
+import { useHackathonAuth } from "@/hooks/useHackathonAuth";
 
 type InsightData = {
   health_score: number;
@@ -26,7 +26,7 @@ type InsightData = {
 const COMPARISON_DEMO_PROMPT = "Generator diesel costs just spiked 20% overnight. Compare these survival options: raise prices by 15%, close the kitchen 2 hours earlier, or reduce menu size. Which is safest?";
 
 export default function Insights() {
-  const { getAccessToken } = usePrivy();
+  const { getAccessToken } = useHackathonAuth();
   const [data, setData] = useState<InsightData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

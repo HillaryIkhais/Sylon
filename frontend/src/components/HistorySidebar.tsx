@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { usePrivy } from "@privy-io/react-auth";
+import { useHackathonAuth } from "@/hooks/useHackathonAuth";
 
 type SessionInfo = {
   business_id: string;
@@ -14,7 +14,7 @@ export default function HistorySidebar({
   currentBusinessId: string | null;
   onSelectSession: (id: string) => void;
 }) {
-  const { getAccessToken } = usePrivy();
+  const { getAccessToken } = useHackathonAuth();
   const [sessions, setSessions] = useState<SessionInfo[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(true);

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { usePrivy } from '@privy-io/react-auth';
+import { useHackathonAuth } from '@/hooks/useHackathonAuth';
 import AuthGuard from '@/components/AuthGuard';
 import { 
   TrendingUp, AlertCircle, ShoppingBag, DollarSign, 
@@ -11,7 +11,7 @@ import Link from 'next/link';
 import MermaidGraph from '@/components/MermaidGraph';
 
 export default function Dashboard() {
-  const { user, logout } = usePrivy();
+  const { user, logout } = useHackathonAuth();
   const [loyaltyEnabled, setLoyaltyEnabled] = useState(true);
   const [briefData, setBriefData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);

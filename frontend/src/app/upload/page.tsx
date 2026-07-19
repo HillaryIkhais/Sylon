@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AuthGuard from "@/components/AuthGuard";
-import { usePrivy } from "@privy-io/react-auth";
+import { useHackathonAuth } from "@/hooks/useHackathonAuth";
 
 type UploadResult = {
   status?: string;
@@ -31,7 +31,7 @@ export default function Upload() {
 }
 
 function UploadContent() {
-  const { getAccessToken } = usePrivy();
+  const { getAccessToken } = useHackathonAuth();
   const [file, setFile] = useState<File | null>(null);
   const [businessId, setBusinessId] = useState(() => {
     if (typeof window === 'undefined') {
