@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:is(.dark *));
+/* @custom-variant dark (&:is(.dark *)); */
 @theme {
   --color-brand-brown: var(--brand-brown);
   --color-brand-lightbrown: var(--brand-lightbrown);
@@ -64,6 +64,14 @@
 
   .dark .page-subtitle {
     color: rgba(255, 255, 255, 0.7) !important;
+  }
+
+  /* Ensure full viewport height */
+  html, body {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    overflow: hidden;
   }
 }
 
@@ -141,12 +149,4 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
-}
-
-/* Ensure full viewport height */
-html, body {
-  height: 100%;
-  width: 100%;
-  position: fixed;
-  overflow: hidden;
 }

@@ -131,8 +131,8 @@ class PersistenceService:
             """)
 
             # Safe migrations for existing demo data
-            for col in ["whatsapp_phone_id", "meta_access_token", "owner_phone", "policies"]:
-                self._safe_ddl(conn, f"ALTER TABLE businesses ADD COLUMN {col} TEXT")
+            # for col in ["whatsapp_phone_id", "meta_access_token", "owner_phone", "policies"]:
+            #     self._safe_ddl(conn, f"ALTER TABLE businesses ADD COLUMN {col} TEXT")
 
             self._safe_ddl(conn, """
             CREATE TABLE IF NOT EXISTS business_memories (
@@ -147,7 +147,7 @@ class PersistenceService:
             )
             """)
 
-            self._safe_ddl(conn, "ALTER TABLE business_memories ADD COLUMN reasoning_trace TEXT")
+            # self._safe_ddl(conn, "ALTER TABLE business_memories ADD COLUMN reasoning_trace TEXT")
 
             self._safe_ddl(conn, """
             CREATE TABLE IF NOT EXISTS review_batches (
