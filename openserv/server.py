@@ -236,45 +236,40 @@ async def demo_chat_endpoint(request: DemoChatRequest):
     """
     try:
         if request.mode == "onboarding":
-            # Conversational Onboarding Flow
-            # Check if business already exists
             profile = persistence_service.get_business_profile(request.session_id)
+            
+            # Step 1: Initial creation
             if not profile:
-                # First message!
-                persistence_service.upsert_business(request.session_id, name="Pending Demo Business", description="")
+                persistence_service.upsert_business(request.session_id, name="Pending", description="Pending")
                 return {
                     "response": "👋 Welcome to Morlen! I'm your AI Business Operator. To set up your workspace, what is the name of your business?",
                     "status": "onboarding"
                 }
             
-            # Simple stateless onboarding logic based on keywords
-            text = request.text.lower()
-            if "name is" in text or "called" in text or len(text.split()) <= 3:
-                # Assume they provided the name
-                persistence_service.upsert_business(request.session_id, name=request.text, description="A business")
+            # Step 2: Receiving the Name
+            if profile.get("name") == "Pending":
+                persistence_service.upsert_business(request.session_id, name=request.text, description="Pending")
                 return {
                     "response": f"Got it, {request.text}. What kind of products or services do you sell?",
                     "status": "onboarding"
                 }
-            elif "sell" in text or "provide" in text or "we do" in text:
+                
+            # Step 3: Receiving the Description
+            if profile.get("description") == "Pending":
                 persistence_service.upsert_business(request.session_id, name=profile.get("name"), description=request.text)
                 return {
                     "response": "Excellent. I've updated your Business Memory with your product catalog. Do you offer delivery, and if so, what are your rates?",
                     "status": "onboarding"
                 }
-            elif "delivery" in text or "fee" in text or "free" in text or "charge" in text:
-                policies = f"Delivery Policy: {request.text}"
-                with persistence_service.get_connection() as conn:
-                    conn.execute("UPDATE businesses SET policies = ? WHERE business_id = ?", (policies, request.session_id))
-                return {
-                    "response": "Perfect! Your workspace is ready. ✅\n\nNow, let's switch gears. I am now acting as Morlen answering your customers. You can pretend to be a customer messaging your business right now!",
-                    "status": "ready"
-                }
-            else:
-                return {
-                    "response": "Thanks! Tell me a bit more about your policies, or type 'Done' to finish setup.",
-                    "status": "onboarding"
-                }
+                
+            # Step 4: Receiving the Policies (Final step)
+            policies = f"Delivery Policy: {request.text}"
+            with persistence_service.get_connection() as conn:
+                conn.execute("UPDATE businesses SET policies = ? WHERE business_id = ?", (policies, request.session_id))
+            return {
+                "response": "Perfect! Your workspace is ready. ✅\n\nNow, let's switch gears. I am now acting as Morlen answering your customers. You can pretend to be a customer messaging your business right now!",
+                "status": "ready"
+            }
                 
         elif request.mode == "customer":
             # Process as a customer messaging the business
