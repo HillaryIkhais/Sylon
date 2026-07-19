@@ -111,10 +111,10 @@ export default function DemoChat() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50 dark:bg-[#121212] overflow-hidden text-brand-dark dark:text-gray-100">
+    <div className="flex flex-col h-[calc(100vh-64px)] md:h-[calc(100vh-72px)] bg-glow-bg overflow-hidden text-brand-dark dark:text-white relative">
       
       {/* Header */}
-      <header className="flex-shrink-0 bg-white dark:bg-[#1C1E21] border-b border-gray-200 dark:border-white/10 px-4 md:px-8 py-4 flex items-center justify-between z-10 shadow-sm">
+      <header className="flex-shrink-0 glass-card border-b border-brand-dark/10 dark:border-white/10 px-4 md:px-8 py-4 flex items-center justify-between z-10 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-brand-brown flex items-center justify-center text-white font-bold shadow-md">
             S
@@ -154,8 +154,8 @@ export default function DemoChat() {
             <div key={i} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}>
               <div className={`max-w-[85%] md:max-w-[75%] rounded-2xl p-4 shadow-sm ${
                 m.role === 'user' 
-                  ? 'bg-brand-brown text-white rounded-br-sm' 
-                  : 'bg-white dark:bg-[#1C1E21] border border-gray-100 dark:border-white/5 rounded-bl-sm'
+                  ? 'bg-gradient-to-br from-brand-brown to-brand-dark text-white rounded-br-sm shadow-md' 
+                  : 'glass-card border border-brand-dark/10 dark:border-white/10 rounded-bl-sm'
               }`}>
                 {/* Agent Role Badge */}
                 {m.role === 'assistant' && (
@@ -175,7 +175,7 @@ export default function DemoChat() {
                     <div className="text-[10px] font-bold uppercase text-brand-brown dark:text-brand-lightbrown mb-2 tracking-wider">
                       Internal Qwen Debate Route: {m.decision}
                     </div>
-                    <div className="bg-gray-50 dark:bg-black/30 rounded-lg p-3 text-xs space-y-2">
+                    <div className="bg-white/40 dark:bg-black/40 backdrop-blur-md rounded-lg p-3 text-xs space-y-2 border border-brand-dark/5 dark:border-white/5 shadow-inner">
                       {m.board_debate.cx && (
                         <div className="flex gap-2">
                           <span className="font-bold text-red-500">CX:</span> 
@@ -203,7 +203,7 @@ export default function DemoChat() {
 
           {loading && (
             <div className="flex items-start">
-              <div className="bg-white dark:bg-[#1C1E21] border border-gray-100 dark:border-white/5 rounded-2xl rounded-bl-sm p-4 shadow-sm max-w-[75%]">
+              <div className="glass-card border border-brand-dark/10 dark:border-white/10 rounded-2xl rounded-bl-sm p-4 shadow-sm max-w-[75%]">
                 <div className="flex gap-1.5 items-center">
                   <div className="w-2 h-2 rounded-full bg-brand-lightbrown animate-bounce" style={{ animationDelay: '0ms' }}></div>
                   <div className="w-2 h-2 rounded-full bg-brand-lightbrown animate-bounce" style={{ animationDelay: '150ms' }}></div>
@@ -217,7 +217,7 @@ export default function DemoChat() {
       </div>
 
       {/* Input Area */}
-      <div className="flex-shrink-0 bg-white dark:bg-[#1C1E21] border-t border-gray-200 dark:border-white/10 p-4 md:p-6 pb-6 md:pb-8">
+      <div className="flex-shrink-0 glass-card border-t border-brand-dark/10 dark:border-white/10 p-4 md:p-6 pb-6 md:pb-8 z-10 relative">
         <form onSubmit={sendMessage} className="max-w-3xl mx-auto relative flex items-center">
           <input
             type="text"
@@ -225,7 +225,7 @@ export default function DemoChat() {
             onChange={(e) => setInput(e.target.value)}
             disabled={loading}
             placeholder={mode === 'onboarding' ? "Reply to Morlen..." : "Message your business as a customer..."}
-            className="w-full bg-gray-100 dark:bg-black/50 border border-transparent focus:border-brand-brown/50 rounded-full py-4 pl-6 pr-14 outline-none text-sm md:text-base transition-all shadow-inner"
+            className="w-full bg-white/50 dark:bg-black/50 backdrop-blur-md border border-brand-dark/10 dark:border-white/10 focus:border-brand-brown/50 rounded-full py-4 pl-6 pr-14 outline-none text-sm md:text-base transition-all shadow-inner placeholder-brand-dark/40 dark:placeholder-white/40"
           />
           <button 
             type="submit"
@@ -237,9 +237,9 @@ export default function DemoChat() {
         </form>
         {mode === 'customer' && (
           <div className="max-w-3xl mx-auto mt-3 flex justify-center gap-2">
-            <button type="button" onClick={() => setInput("How much is the red shoe?")} className="text-[10px] px-3 py-1 bg-gray-100 dark:bg-white/5 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">Test Pricing</button>
-            <button type="button" onClick={() => setInput("Can you remove 5k from the price?")} className="text-[10px] px-3 py-1 bg-gray-100 dark:bg-white/5 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">Test Negotiation (Draft)</button>
-            <button type="button" onClick={() => setInput("Your delivery guy stole my money!")} className="text-[10px] px-3 py-1 bg-gray-100 dark:bg-white/5 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">Test Escalation</button>
+            <button type="button" onClick={() => setInput("How much is the red shoe?")} className="text-[10px] px-3 py-1 glass-card rounded-full hover:bg-brand-dark/5 dark:hover:bg-white/5 transition-colors border border-brand-dark/10 dark:border-white/10 shadow-sm">Test Pricing</button>
+            <button type="button" onClick={() => setInput("Can you remove 5k from the price?")} className="text-[10px] px-3 py-1 glass-card rounded-full hover:bg-brand-dark/5 dark:hover:bg-white/5 transition-colors border border-brand-dark/10 dark:border-white/10 shadow-sm">Test Negotiation (Draft)</button>
+            <button type="button" onClick={() => setInput("Your delivery guy stole my money!")} className="text-[10px] px-3 py-1 glass-card rounded-full hover:bg-brand-dark/5 dark:hover:bg-white/5 transition-colors border border-brand-dark/10 dark:border-white/10 shadow-sm">Test Escalation</button>
           </div>
         )}
       </div>
