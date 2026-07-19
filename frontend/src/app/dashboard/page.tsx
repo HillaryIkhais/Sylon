@@ -75,7 +75,9 @@ export default function Dashboard() {
             <div className="space-y-2">
               <h1 className="text-4xl md:text-5xl font-bold text-brand-dark dark:text-brand-lightbrown tracking-tight">Today's Clues</h1>
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <p className="text-brand-dark/60 dark:text-white/60 text-lg">Thursday, July 10, 2026. Here is what deserves your attention today.</p>
+                <p className="text-brand-dark/60 dark:text-white/60 text-lg">
+                  {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}. Here is what deserves your attention today.
+                </p>
                 <Link href="/upload" className="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-lightbrown/10 text-brand-brown dark:text-brand-lightbrown text-xs font-bold rounded-full border border-brand-lightbrown/20 hover:bg-brand-lightbrown/20 transition-colors">
                   <ShieldCheck className="w-3.5 h-3.5" />
                   42 Clues Gathered • 8 Contacts Excluded
