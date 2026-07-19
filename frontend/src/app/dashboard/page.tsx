@@ -85,7 +85,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex gap-3 flex-wrap">
-              <Link href="/demo" className="px-5 py-2.5 bg-brand-dark text-white dark:bg-white dark:text-brand-dark font-bold text-sm rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2 border-2 border-brand-lightbrown">
+              <Link href="/demo" className="px-5 py-2.5 bg-[#1a0f0d] text-white dark:bg-white dark:text-[#1a0f0d] font-bold text-sm rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2 border-2 border-brand-lightbrown">
                 <Globe className="w-4 h-4" /> Live Demo Simulator
               </Link>
               <Link href="/inbox" className="px-5 py-2.5 bg-gradient-to-r from-brand-brown to-brand-lightbrown text-white font-bold text-sm rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2">
