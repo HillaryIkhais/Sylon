@@ -425,8 +425,7 @@ class PersistenceService:
             return [dict(r) for r in rows]
     def get_action_items(self, business_id: str) -> list:
         with self.get_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute('''
+            cursor = conn.execute('''
                 SELECT memory_id as id, business_id, text_content as interaction_text, intent as insight, created_at as timestamp, source, reasoning_trace 
                 FROM business_memories 
                 WHERE business_id = ? AND source IN ('draft_reply', 'escalation')
@@ -437,9 +436,8 @@ class PersistenceService:
 
     def resolve_action_item(self, memory_id: str):
         with self.get_connection() as conn:
-            cursor = conn.cursor()
             # Mark it as resolved so it doesn't show up in the inbox anymore, but keep the history
-            cursor.execute("UPDATE business_memories SET source = source || '_resolved' WHERE memory_id = ?", (memory_id,))
+            conn.execute("UPDATE business_memories SET source = source || '_resolved' WHERE memory_id = ?", (memory_id,))
             conn.commit()
 
 

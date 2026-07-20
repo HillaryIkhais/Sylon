@@ -70,13 +70,11 @@ async def get_action_items(business_id: str):
     return {"status": "success", "items": items}
 
 @app.post("/business/action-items/{memory_id}/approve")
-async def approve_action_item(memory_id: int, req: ActionApproveRequest):
+async def approve_action_item(memory_id: str, req: ActionApproveRequest):
     # Fetch the draft from DB (in production, verify ownership)
-    conn = persistence_service.get_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT business_id, insight FROM business_memories WHERE id = ?", (memory_id,))
-    row = cursor.fetchone()
-    conn.close()
+    with persistence_service.get_connection() as conn:
+        cursor = conn.execute("SELECT business_id, text_content FROM business_memories WHERE memory_id = ?", (memory_id,))
+        row = cursor.fetchone()
     
     if not row:
         from fastapi import HTTPException
