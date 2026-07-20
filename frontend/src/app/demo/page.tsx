@@ -24,7 +24,7 @@ export default function DemoChat() {
   useEffect(() => {
     // Always start fresh on page load for the best demo experience
     const newSession = 'demo_' + Math.random().toString(36).substring(2, 9);
-    sessionStorage.setItem('morlen_demo_session', newSession);
+    localStorage.setItem('morlen_demo_session', newSession);
     setSessionId(newSession);
     
     // Trigger initial onboarding message
@@ -59,7 +59,7 @@ export default function DemoChat() {
 
   const handleReset = () => {
     const newSession = 'demo_' + Math.random().toString(36).substring(2, 9);
-    sessionStorage.setItem('morlen_demo_session', newSession);
+    localStorage.setItem('morlen_demo_session', newSession);
     setSessionId(newSession);
     setMessages([]);
     setMode('onboarding');

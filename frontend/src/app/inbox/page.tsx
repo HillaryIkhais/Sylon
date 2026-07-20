@@ -14,7 +14,7 @@ export default function Inbox() {
     if (!user) return;
     try {
       const businessId = localStorage.getItem('morlen_business_id') || `biz_${user.id}`;
-      const demoSessionId = sessionStorage.getItem('morlen_demo_session');
+      const demoSessionId = localStorage.getItem('morlen_demo_session');
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://sylon.onrender.com';
       
       // Fetch primary business items
