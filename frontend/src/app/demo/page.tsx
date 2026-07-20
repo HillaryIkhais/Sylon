@@ -91,7 +91,7 @@ export default function DemoChat() {
       const data = await res.json();
       
       if (data.status === 'error') {
-        setMessages([...newMessages, { role: 'assistant', content: `🚨 BACKEND CRASH:\n\n${data.traceback?.substring(0, 1000)}...` }]);
+        setMessages(prev => [...prev, { role: 'assistant', content: `🚨 BACKEND CRASH:\n\n${data.traceback?.substring(0, 1000)}...` }]);
         return;
       }
       
