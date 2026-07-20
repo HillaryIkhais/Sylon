@@ -45,6 +45,12 @@ export default function DemoChat() {
         body: JSON.stringify({ session_id: sid, text: 'start', mode: 'onboarding' })
       });
       const data = await res.json();
+      
+      if (data.status === 'error') {
+        setMessages(prev => [...prev, { role: 'assistant', content: `🚨 BACKEND CRASH: ${data.error}\n\n${data.traceback?.substring(0, 500)}...` }]);
+        return;
+      }
+      
       if (data.response) {
         setMessages([{ role: 'assistant', content: data.response }]);
       }
@@ -84,13 +90,20 @@ export default function DemoChat() {
       
       const data = await res.json();
       
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: data.response || 'Sorry, I encountered an error.', 
-        board_debate: data.board_debate,
-        decision: data.decision,
-        timestamp: new Date().toISOString()
-      }]);
+      if (data.status === 'error') {
+        setMessages([...newMessages, { role: 'assistant', content: `🚨 BACKEND CRASH:\n\n${data.traceback?.substring(0, 1000)}...` }]);
+        return;
+      }
+      
+      if (data.response) {
+        setMessages(prev => [...prev, { 
+          role: 'assistant', 
+          content: data.response || 'Sorry, I encountered an error.', 
+          board_debate: data.board_debate,
+          decision: data.decision,
+          timestamp: new Date().toISOString()
+        }]);
+      }
 
       if (data.status === 'ready') {
         setMode('customer');

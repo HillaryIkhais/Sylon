@@ -294,13 +294,13 @@ class PersistenceService:
             if row:
                 import json
                 try:
-                    metadata = json.loads(row[3]) if row[3] else {}
+                    metadata = json.loads(row["metadata_json"]) if row["metadata_json"] else {}
                 except:
                     metadata = {}
                 return {
-                    "name": row[0],
-                    "description": row[1],
-                    "categories": row[2],
+                    "name": row["name"],
+                    "description": row["description"],
+                    "categories": row["categories"],
                     "policies": metadata.get("policies", "No specific policies defined.")
                 }
             return None
@@ -433,7 +433,7 @@ class PersistenceService:
                 WHERE business_id = ? AND source IN ('draft_reply', 'escalation')
                 ORDER BY created_at DESC
             ''', (business_id,))
-            items = [{"id": row[0], "business_id": row[1], "interaction_text": row[2], "insight": row[3], "timestamp": row[4], "source": row[5], "reasoning_trace": row[6]} for row in cursor.fetchall()]
+            items = [{"id": row["id"], "business_id": row["business_id"], "interaction_text": row["interaction_text"], "insight": row["insight"], "timestamp": row["timestamp"], "source": row["source"], "reasoning_trace": row["reasoning_trace"]} for row in cursor.fetchall()]
             return items
 
     def resolve_action_item(self, memory_id: str):

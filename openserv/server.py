@@ -65,9 +65,13 @@ class ActionApproveRequest(BaseModel):
 
 @app.get("/business/action-items")
 async def get_action_items(business_id: str):
-    # In a real app, business_id would come from the JWT claims via Depends(get_current_user)
-    items = persistence_service.get_action_items(business_id)
-    return {"status": "success", "items": items}
+    try:
+        # In a real app, business_id would come from the JWT claims via Depends(get_current_user)
+        items = persistence_service.get_action_items(business_id)
+        return {"status": "success", "items": items}
+    except Exception as e:
+        import traceback
+        return {"status": "error", "message": str(e), "traceback": traceback.format_exc()}
 
 @app.post("/business/action-items/{memory_id}/approve")
 async def approve_action_item(memory_id: str, req: ActionApproveRequest):
@@ -80,8 +84,8 @@ async def approve_action_item(memory_id: str, req: ActionApproveRequest):
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Draft not found")
         
-    business_id = row[0]
-    draft_text = row[1]
+    business_id = row["business_id"]
+    draft_text = row["text_content"]
     
     # If the user edited the text in the UI, use that instead
     final_text = req.edited_text if req.edited_text else draft_text
@@ -284,21 +288,24 @@ async def demo_chat_endpoint(request: DemoChatRequest):
             # Generate a random customer ID for this session
             customer_id = f"cust_{request.session_id[-6:]}"
             
-            # process_customer_message expects: text_content, business_id, sender_id, sender_name, channel
-            result = process_customer_message(
-                text_content=request.text,
-                business_id=request.session_id,
-                sender_id=customer_id,
-                sender_name="Web Demo Customer",
-                channel="web"
-            )
-            
-            return {
-                "response": result.get("reply", "No reply generated."),
-                "board_debate": result.get("debate_trace"),
-                "decision": result.get("decision"),
-                "status": "customer"
-            }
+            try:
+                # process_customer_message expects: text_content, business_id, sender_id, sender_name, channel
+                result = process_customer_message(
+                    text_content=request.text,
+                    business_id=request.session_id,
+                    sender_id=customer_id,
+                    sender_name="Web Demo Customer",
+                    channel="web"
+                )
+                return {
+                    "response": result.get("reply", "No reply generated."),
+                    "board_debate": result.get("debate_trace"),
+                    "decision": result.get("decision"),
+                    "status": "customer"
+                }
+            except Exception as e:
+                import traceback
+                return {"status": "error", "error": str(e), "traceback": traceback.format_exc()}
             
     except Exception as e:
         import traceback

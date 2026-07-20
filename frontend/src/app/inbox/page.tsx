@@ -20,12 +20,20 @@ export default function Inbox() {
       // Fetch primary business items
       const res = await fetch(`${apiUrl}/business/action-items?business_id=${businessId}`);
       const data = await res.json();
+      if (data.status === 'error') {
+        console.error("Backend Crash:", data.traceback);
+        alert(`BACKEND CRASH:\n\n${data.traceback}`);
+      }
       let allItems = data.status === 'success' ? data.items : [];
       
       // If the judge is testing the live simulator, also fetch demo session items
       if (demoSessionId) {
         const demoRes = await fetch(`${apiUrl}/business/action-items?business_id=${demoSessionId}`);
         const demoData = await demoRes.json();
+        if (demoData.status === 'error') {
+          console.error("Backend Crash Demo:", demoData.traceback);
+          alert(`BACKEND CRASH:\n\n${demoData.traceback}`);
+        }
         if (demoData.status === 'success') {
           allItems = [...allItems, ...demoData.items];
         }
