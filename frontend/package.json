@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "dev:public": "NEXT_PUBLIC_SITE_MODE=public next dev -p 3001",
-    "dev:app": "NEXT_PUBLIC_SITE_MODE=app next dev -p 3000",
+    "dev": "next dev --webpack",
+    "dev:public": "NEXT_PUBLIC_SITE_MODE=public next dev -p 3001 --webpack",
+    "dev:app": "NEXT_PUBLIC_SITE_MODE=app next dev -p 3000 --webpack",
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint"

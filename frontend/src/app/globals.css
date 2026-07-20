@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@custom-variant dark (&:is(.dark *));
 @theme {
   --color-brand-brown: var(--brand-brown);
   --color-brand-lightbrown: var(--brand-lightbrown);
