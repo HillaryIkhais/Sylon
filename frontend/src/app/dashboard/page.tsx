@@ -21,7 +21,7 @@ export default function Dashboard() {
       if (!user) return;
       try {
         const businessId = localStorage.getItem('morlen_business_id') || `biz_${user.id}`;
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://sylon.onrender.com';
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://morlen.onrender.com';
         const res = await fetch(`${apiUrl}/api/intelligence/brief/${businessId}`);
         const data = await res.json();
         if (data.status === 'ok') {
