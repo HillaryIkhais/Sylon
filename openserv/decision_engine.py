@@ -160,6 +160,8 @@ def process_customer_message(text_content: str, business_id: str, sender_id: str
                 INSERT INTO business_memories (memory_id, business_id, source, text_content, created_at, intent, reasoning_trace)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             """, (memory_id, business_id, "draft_reply", formatted, created_at, analysis.get("intent", "draft"), json.dumps(debate_trace)))
+            if hasattr(conn, 'commit'):
+                conn.commit()
         
         print(f"[Decision Engine] Saved DRAFT REPLY for owner approval.")
         

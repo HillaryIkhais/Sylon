@@ -283,6 +283,8 @@ class PersistenceService:
                     INSERT INTO businesses (business_id, name, description, categories, city, state, location, metadata_json, whatsapp_phone_id, meta_access_token, created_at, updated_at)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, (business_id, name, description, cat_str, city, state, loc_str, meta_str, whatsapp_phone_id, meta_access_token, now, now))
+            if hasattr(conn, 'commit'):
+                conn.commit()
 
     def get_business_profile(self, business_id: str) -> dict:
         """Retrieve the business profile context for the AI Decision Engine"""
