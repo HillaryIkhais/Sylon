@@ -109,7 +109,7 @@ export default function DemoChat() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-64px)] md:h-[calc(100vh-72px)] bg-[#fdfbf9] dark:bg-[#0a0a0a] overflow-hidden text-brand-dark dark:text-gray-100 relative font-sans">
+    <div className="flex flex-col flex-1 w-full min-h-0 h-full bg-[#fdfbf9] dark:bg-[#0a0a0a] overflow-hidden text-brand-dark dark:text-gray-100 relative font-sans">
       
       {/* Decorative Background Elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
