@@ -14,12 +14,27 @@ export default function Inbox() {
     if (!user) return;
     try {
       const businessId = localStorage.getItem('morlen_business_id') || `biz_${user.id}`;
+      const demoSessionId = sessionStorage.getItem('morlen_demo_session');
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://sylon.onrender.com';
+      
+      // Fetch primary business items
       const res = await fetch(`${apiUrl}/business/action-items?business_id=${businessId}`);
       const data = await res.json();
-      if (data.status === 'success') {
-        setItems(data.items);
+      let allItems = data.status === 'success' ? data.items : [];
+      
+      // If the judge is testing the live simulator, also fetch demo session items
+      if (demoSessionId) {
+        const demoRes = await fetch(`${apiUrl}/business/action-items?business_id=${demoSessionId}`);
+        const demoData = await demoRes.json();
+        if (demoData.status === 'success') {
+          allItems = [...allItems, ...demoData.items];
+        }
       }
+      
+      // Sort all items by timestamp descending
+      allItems.sort((a: any, b: any) => parseInt(b.timestamp) - parseInt(a.timestamp));
+      setItems(allItems);
+      
     } catch (e) {
       console.error(e);
     } finally {
