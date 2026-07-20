@@ -15,8 +15,8 @@
     --brand-lightbrown: #e69d81;
     --brand-dark: #1a0f0a;
     --brand-glow: #ffbd98;
-    --bg-base: #ffcba4;
-    --bg-glow: radial-gradient(ellipse at 50% 40%, #ffffff 0%, #fff0e6 20%, #ffcba4 60%, #e08e79 100%);
+    --bg-base: #fcfaf8; /* Premium clean off-white */
+    --bg-glow: radial-gradient(circle at 50% -20%, #fff0e6 0%, #fcfaf8 50%, #fcfaf8 100%);
     
     /* Orb specific variables */
     --orb-dome-active: inset 0 0 100px rgba(165,115,101,0.9);
@@ -27,12 +27,12 @@
   }
 
   .dark {
-    --brand-brown: #d68f77;
+    --brand-brown: #e69d81;
     --brand-lightbrown: #ffcba4;
     --brand-dark: #f5ece9;
     --brand-glow: #ff5722;
-    --bg-base: #1f1411; /* Warm dark brown */
-    --bg-glow: radial-gradient(ellipse at 50% 40%, #3a271f 0%, #261914 40%, #160e0a 100%);
+    --bg-base: #0e0a08; /* Premium deep rich dark brown/black */
+    --bg-glow: radial-gradient(circle at 50% -20%, #261914 0%, #0e0a08 50%, #0e0a08 100%);
 
     /* Orb specific variables */
     --orb-dome-active: inset 0 0 100px rgba(255,100,50,0.6);
