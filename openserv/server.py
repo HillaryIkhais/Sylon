@@ -276,6 +276,11 @@ async def demo_chat_endpoint(request: DemoChatRequest):
             from openserv.decision_engine import process_customer_message
             import uuid
             
+            # Ensure the business row exists (in case onboarding timed out during Render cold start)
+            profile = persistence_service.get_business_profile(request.session_id)
+            if not profile:
+                persistence_service.upsert_business(request.session_id, name="Demo User", description="Demo Account")
+            
             # Generate a random customer ID for this session
             customer_id = f"cust_{request.session_id[-6:]}"
             
