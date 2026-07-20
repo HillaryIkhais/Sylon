@@ -48,9 +48,9 @@ export default function Dashboard() {
       
       // Style the first node in the optimal sequence (the bottleneck) differently
       if (topologicalGraph.optimal_sequence && topologicalGraph.optimal_sequence[0] === node) {
-        def += `    style ${cleanNode} fill:#7a463b,stroke:#e69d81,stroke-width:4px,color:#fff\n`;
+        def += `    style ${cleanNode} fill:#ff4444,stroke:#333,stroke-width:4px,color:#fff\n`;
       } else {
-        def += `    style ${cleanNode} fill:#2a1610,stroke:#c4a47c,stroke-width:2px,color:#fff\n`;
+        def += `    style ${cleanNode} fill:#2a2a2a,stroke:#c4a47c,stroke-width:2px,color:#fff\n`;
       }
     });
 
@@ -78,7 +78,7 @@ export default function Dashboard() {
                 <p className="text-brand-dark/60 dark:text-white/60 text-lg">
                   {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}. Here is what deserves your attention today.
                 </p>
-                <Link href="/upload" className="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-lightbrown/10 text-brand-brown dark:text-brand-lightbrown text-xs font-bold rounded-full border border-brand-lightbrown/20 hover:bg-brand-lightbrown/20 transition-colors">
+                <Link href="/upload" className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-500/10 text-green-700 dark:text-green-400 text-xs font-bold rounded-full border border-green-500/20 hover:bg-green-500/20 transition-colors">
                   <ShieldCheck className="w-3.5 h-3.5" />
                   42 Clues Gathered • 8 Contacts Excluded
                 </Link>
@@ -103,7 +103,7 @@ export default function Dashboard() {
             <div className="xl:col-span-2 space-y-6 md:space-y-8">
               
               <h2 className="text-xl font-bold flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-brand-lightbrown" /> Top Revenue Opportunities
+                <TrendingUp className="w-5 h-5 text-green-500" /> Top Revenue Opportunities
               </h2>
               
               {isLoading ? (
@@ -123,11 +123,11 @@ export default function Dashboard() {
                     
                     {/* Dynamic Opportunities */}
                     {briefData.opportunities?.map((opp: any, idx: number) => (
-                      <div key={idx} className="rounded-3xl bg-brand-lightbrown/5 border border-brand-lightbrown/20 p-6 flex flex-col hover:bg-brand-lightbrown/10 transition-colors cursor-pointer relative overflow-hidden group">
+                      <div key={idx} className="rounded-3xl bg-green-500/5 border border-green-500/20 p-6 flex flex-col hover:bg-green-500/10 transition-colors cursor-pointer relative overflow-hidden group">
                         <div className="absolute top-0 right-0 p-4">
-                          <span className="flex w-3 h-3 bg-brand-lightbrown rounded-full animate-pulse"></span>
+                          <span className="flex w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
                         </div>
-                        <h3 className="text-sm font-bold text-brand-brown dark:text-brand-lightbrown mb-1">{opp.title}</h3>
+                        <h3 className="text-sm font-bold text-green-600 dark:text-green-400 mb-1">{opp.title}</h3>
                         <p className="text-lg font-bold text-brand-dark dark:text-white mb-4">{opp.product_or_metric}</p>
                         
                         {opp.evidence && opp.evidence.length > 0 && (
@@ -138,7 +138,7 @@ export default function Dashboard() {
                             <ul className="space-y-1">
                               {opp.evidence.map((ev: string, i: number) => (
                                 <li key={i} className="text-xs text-brand-dark/70 dark:text-white/70 flex items-start gap-1">
-                                  <span className="text-brand-lightbrown mt-0.5">•</span> {ev}
+                                  <span className="text-green-500 mt-0.5">•</span> {ev}
                                 </li>
                               ))}
                             </ul>
@@ -148,7 +148,7 @@ export default function Dashboard() {
                         <div className="mt-auto pt-2 border-t border-brand-dark/5 dark:border-white/5">
                           <p className="text-xs text-brand-dark/50 dark:text-white/50 mb-1">{opp.metric_label}</p>
                           <p className="text-3xl font-bold text-brand-dark dark:text-white flex items-center gap-2">
-                            {opp.value_metric} <ArrowUpRight className="w-5 h-5 text-brand-lightbrown" />
+                            {opp.value_metric} <ArrowUpRight className="w-5 h-5 text-green-500" />
                           </p>
                         </div>
                       </div>
@@ -157,14 +157,14 @@ export default function Dashboard() {
                     {/* Dynamic Warnings */}
                     {briefData.warnings?.map((warn: any, idx: number) => (
                       <div key={idx} className={`rounded-3xl border p-6 flex flex-col cursor-pointer transition-colors ${
-                        warn.type === 'pricing' ? 'bg-amber-700/5 border-amber-700/20 hover:bg-amber-700/10' :
+                        warn.type === 'pricing' ? 'bg-yellow-500/5 border-yellow-500/20 hover:bg-yellow-500/10' :
                         warn.type === 'Insufficient Data' ? 'bg-brand-dark/5 border-brand-dark/20 dark:bg-white/5 dark:border-white/20' :
-                        'bg-brand-brown/5 border-brand-brown/20 hover:bg-brand-brown/10'
+                        'bg-red-500/5 border-red-500/20 hover:bg-red-500/10'
                       }`}>
                         <h3 className={`text-sm font-bold mb-1 flex items-center gap-1 ${
-                          warn.type === 'pricing' ? 'text-amber-700 dark:text-amber-400' :
+                          warn.type === 'pricing' ? 'text-yellow-600 dark:text-yellow-400' :
                           warn.type === 'Insufficient Data' ? 'text-brand-dark/70 dark:text-white/70' :
-                          'text-brand-brown dark:text-brand-lightbrown'
+                          'text-red-600 dark:text-red-400'
                         }`}>
                           {warn.type === 'pricing' ? <AlertCircle className="w-4 h-4" /> : 
                            warn.type === 'Insufficient Data' ? <BarChart2 className="w-4 h-4" /> :
@@ -174,13 +174,13 @@ export default function Dashboard() {
                         
                         {warn.evidence && warn.evidence.length > 0 && (
                           <div className="mt-auto p-3 rounded-xl bg-black/5 dark:bg-white/5 border border-brand-dark/5 dark:border-white/5">
-                            <p className={`text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1 ${warn.type === 'pricing' ? 'text-amber-700/70' : 'text-brand-brown/70'}`}>
+                            <p className={`text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1 ${warn.type === 'pricing' ? 'text-yellow-600/70' : 'text-red-600/70'}`}>
                               <BarChart2 className="w-3 h-3" /> Evidence
                             </p>
                             <ul className="space-y-1">
                               {warn.evidence.map((ev: string, i: number) => (
                                 <li key={i} className="text-xs text-brand-dark/70 dark:text-white/70 flex items-start gap-1">
-                                  <span className={`${warn.type === 'pricing' ? 'text-amber-600' : 'text-brand-brown'} mt-0.5`}>•</span> {ev}
+                                  <span className={`${warn.type === 'pricing' ? 'text-yellow-500' : 'text-red-500'} mt-0.5`}>•</span> {ev}
                                 </li>
                               ))}
                             </ul>
@@ -227,7 +227,7 @@ export default function Dashboard() {
                                 </div>
                                 <div className="flex-1 p-3 bg-white dark:bg-brand-dark border border-brand-dark/10 dark:border-white/10 rounded-xl flex justify-between items-center">
                                   <span className="font-semibold text-sm">{node}</span>
-                                  <span className="text-xs font-mono bg-brand-lightbrown/10 text-brand-brown dark:text-brand-lightbrown px-2 py-1 rounded-md">
+                                  <span className="text-xs font-mono bg-green-500/10 text-green-600 dark:text-green-400 px-2 py-1 rounded-md">
                                     +₦{briefData.topological_graph.revenue_map[node]?.toLocaleString()}
                                   </span>
                                 </div>
@@ -246,11 +246,11 @@ export default function Dashboard() {
                               <div className="flex justify-between items-center mb-3 pb-3 border-b border-white/20">
                                 <div>
                                   <span className="opacity-60 text-xs">ACTION: </span>
-                                  <span className="text-brand-lightbrown font-bold">{briefData.autopilot_action.action_type.toUpperCase()}</span>
+                                  <span className="text-green-400 font-bold">{briefData.autopilot_action.action_type.toUpperCase()}</span>
                                 </div>
                                 <div>
                                   <span className="opacity-60 text-xs">CONFIDENCE: </span>
-                                  <span className="text-brand-glow font-bold">{(briefData.autopilot_action.confidence * 100).toFixed(1)}%</span>
+                                  <span className="text-yellow-400 font-bold">{(briefData.autopilot_action.confidence * 100).toFixed(1)}%</span>
                                 </div>
                               </div>
                               <p className="mb-2"><span className="opacity-60">TO:</span> {briefData.autopilot_action.recipient}</p>
@@ -258,7 +258,7 @@ export default function Dashboard() {
                               <p className="whitespace-pre-wrap opacity-90 p-3 bg-white/5 rounded-lg border border-white/10">
                                 {briefData.autopilot_action.content}
                               </p>
-                              <button className="mt-4 w-full py-2 bg-gradient-to-r from-brand-brown to-brand-lightbrown hover:opacity-90 text-white font-bold rounded-xl transition-colors">
+                              <button className="mt-4 w-full py-2 bg-green-500 hover:bg-green-400 text-black font-bold rounded-xl transition-colors">
                                 Approve & Execute Autopilot Action
                               </button>
                             </div>
@@ -310,9 +310,9 @@ export default function Dashboard() {
                 <div className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-brand-dark/5 dark:border-white/5">
                   <p className="text-xs text-brand-dark/50 dark:text-white/50 mb-1">Two weeks ago</p>
                   <p className="text-sm font-bold mb-2">Recommendation: Increase perfume price by 5%.</p>
-                  <div className="flex items-center gap-2 mt-3 p-2 bg-brand-brown/10 rounded-lg">
-                    <AlertCircle className="w-4 h-4 text-brand-brown" />
-                    <p className="text-xs text-brand-brown dark:text-brand-lightbrown font-semibold">Ignored. Estimated missed revenue: ₦71,000</p>
+                  <div className="flex items-center gap-2 mt-3 p-2 bg-red-500/10 rounded-lg">
+                    <AlertCircle className="w-4 h-4 text-red-500" />
+                    <p className="text-xs text-red-600 dark:text-red-400 font-semibold">Ignored. Estimated missed revenue: ₦71,000</p>
                   </div>
                 </div>
               </div>
@@ -333,7 +333,7 @@ export default function Dashboard() {
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-semibold">Loyalty Perks</span>
                     <div onClick={() => setLoyaltyEnabled(!loyaltyEnabled)} className="cursor-pointer">
-                      <span className={`text-xs font-bold ${loyaltyEnabled ? 'text-brand-lightbrown' : 'text-brand-dark/40'}`}>{loyaltyEnabled ? 'On' : 'Off'}</span>
+                      <span className={`text-xs font-bold ${loyaltyEnabled ? 'text-green-500' : 'text-brand-dark/40'}`}>{loyaltyEnabled ? 'On' : 'Off'}</span>
                     </div>
                   </div>
                 </div>
@@ -345,12 +345,12 @@ export default function Dashboard() {
                   Signal Sources
                 </h3>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-brand-lightbrown/10 flex items-center justify-center border border-brand-lightbrown/30">
-                    <MessageCircle className="w-5 h-5 text-brand-lightbrown" />
+                  <div className="w-10 h-10 rounded-full bg-[#25D366]/10 flex items-center justify-center border border-[#25D366]/30">
+                    <MessageCircle className="w-5 h-5 text-[#25D366]" />
                   </div>
                   <div>
                     <p className="text-sm font-bold">WhatsApp Business</p>
-                    <p className="text-xs text-brand-lightbrown">Syncing Live</p>
+                    <p className="text-xs text-green-500">Syncing Live</p>
                   </div>
                 </div>
                 
