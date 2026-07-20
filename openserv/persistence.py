@@ -433,7 +433,7 @@ class PersistenceService:
                 WHERE business_id = ? AND source IN ('draft_reply', 'escalation')
                 ORDER BY created_at DESC
             ''', (business_id,))
-            items = [{"id": row["id"], "business_id": row["business_id"], "interaction_text": row["interaction_text"], "insight": row["insight"], "timestamp": row["timestamp"], "source": row["source"], "reasoning_trace": row["reasoning_trace"]} for row in cursor.fetchall()]
+            items = [{"id": row["id"], "business_id": row["business_id"], "interaction_text": row["interaction_text"], "insight": row["insight"], "timestamp": str(row["timestamp"]) if row["timestamp"] else None, "source": row["source"], "reasoning_trace": row["reasoning_trace"]} for row in cursor.fetchall()]
             return items
 
     def resolve_action_item(self, memory_id: str):

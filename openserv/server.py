@@ -26,6 +26,17 @@ app = FastAPI(title="Morlen OpenServ Webhook", description="FastAPI webhook endp
 
 app.include_router(meta_router)
 
+from fastapi import Request
+from fastapi.responses import JSONResponse
+import traceback
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={"status": "error", "message": "GLOBAL CRASH: " + str(exc), "traceback": traceback.format_exc()}
+    )
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
