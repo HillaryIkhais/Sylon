@@ -14,15 +14,13 @@
 
 @layer base {
   :root {
-    /* Brand Core */
+    /* Authentic Morlen Brand Theme */
     --brand-brown: #7a463b;
     --brand-lightbrown: #e69d81;
     --brand-dark: #1a0f0a;
     --brand-glow: #ffbd98;
-    
-    /* Ultra-Premium Light Mode Backgrounds */
-    --bg-base: #faf9f7; /* Very subtle warm off-white (luxury cream) */
-    --bg-glow: radial-gradient(circle at 50% 0%, #fff7f2 0%, #faf9f7 60%, #faf9f7 100%);
+    --bg-base: #ffcba4;
+    --bg-glow: radial-gradient(ellipse at 50% 40%, #ffffff 0%, #fff0e6 20%, #ffcba4 60%, #e08e79 100%);
     
     /* Orb specific variables */
     --orb-dome-active: inset 0 0 100px rgba(165,115,101,0.9);
@@ -33,15 +31,13 @@
   }
 
   .dark {
-    /* Brand Core for Dark Mode */
-    --brand-brown: #e69d81;
+    /* Authentic Morlen Brand Theme */
+    --brand-brown: #d68f77;
     --brand-lightbrown: #ffcba4;
     --brand-dark: #f5ece9;
     --brand-glow: #ff5722;
-    
-    /* Ultra-Premium Dark Mode Backgrounds */
-    --bg-base: #0c0a09; /* Very deep rich espresso black */
-    --bg-glow: radial-gradient(circle at 50% 0%, #1c1512 0%, #0c0a09 60%, #0c0a09 100%);
+    --bg-base: #1f1411; /* Warm dark brown */
+    --bg-glow: radial-gradient(ellipse at 50% 40%, #3a271f 0%, #261914 40%, #160e0a 100%);
 
     /* Orb specific variables */
     --orb-dome-active: inset 0 0 100px rgba(255,100,50,0.6);

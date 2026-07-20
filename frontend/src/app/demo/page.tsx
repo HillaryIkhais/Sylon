@@ -118,7 +118,7 @@ export default function DemoChat() {
       </div>
       
       {/* Premium Header */}
-      <header className="flex-shrink-0 bg-white/80 dark:bg-[#151515]/80 backdrop-blur-xl border-b border-brand-dark/5 dark:border-white/5 px-4 md:px-8 py-4 flex items-center justify-between z-10 shadow-sm transition-colors duration-300">
+      <header className="flex-shrink-0 bg-white/40 dark:bg-black/30 backdrop-blur-xl border-b border-brand-dark/5 dark:border-white/5 px-4 md:px-8 py-4 flex items-center justify-between z-10 shadow-sm transition-colors duration-300">
         <div className="flex items-center gap-4">
           <Link href="/dashboard" className="hidden md:flex p-2 -ml-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 text-gray-500 dark:text-gray-400 transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
@@ -181,8 +181,8 @@ export default function DemoChat() {
 
               <div className={`max-w-[85%] md:max-w-[75%] rounded-3xl p-5 shadow-sm transition-all ${
                 m.role === 'user' 
-                  ? 'bg-brand-dark dark:bg-white text-white dark:text-brand-dark rounded-br-sm shadow-md' 
-                  : 'bg-white dark:bg-[#1a1a1a] border border-gray-100 dark:border-white/5 rounded-bl-sm text-gray-800 dark:text-gray-200 shadow-xl shadow-brand-dark/5'
+                  ? 'bg-gradient-to-r from-brand-lightbrown to-brand-brown text-white rounded-br-sm shadow-md' 
+                  : 'bg-white/80 dark:bg-[#1f1411]/80 backdrop-blur-md border border-gray-100 dark:border-white/5 rounded-bl-sm text-brand-dark dark:text-gray-200 shadow-xl shadow-brand-dark/5'
               }`}>
                 
                 <div className="text-base leading-relaxed whitespace-pre-wrap font-medium">{m.content}</div>
@@ -241,7 +241,7 @@ export default function DemoChat() {
       </div>
 
       {/* Input Area */}
-      <div className="flex-shrink-0 bg-white/80 dark:bg-[#151515]/80 backdrop-blur-xl border-t border-brand-dark/5 dark:border-white/5 p-4 md:p-6 pb-8 md:pb-10 z-20 relative shadow-[0_-10px_40px_rgba(0,0,0,0.03)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.2)]">
+      <div className="flex-shrink-0 bg-white/40 dark:bg-black/30 backdrop-blur-xl border-t border-brand-dark/5 dark:border-white/5 p-4 md:p-6 pb-8 md:pb-10 z-20 relative shadow-[0_-10px_40px_rgba(0,0,0,0.03)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.2)]">
         <div className="max-w-3xl mx-auto flex flex-col gap-3">
           
           {mode === 'customer' && (
