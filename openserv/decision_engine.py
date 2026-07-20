@@ -97,29 +97,31 @@ def process_customer_message(text_content: str, business_id: str, sender_id: str
     # 2. Multi-Agent Debate
     cx_prompt = f"{context}\n\nCUSTOMER MESSAGE:\n\"{text_content}\"\n\nYou are the Customer Experience (CX) Agent. Your goal is to maximize customer satisfaction and retention. How should we respond?"
     cfo_prompt = f"{context}\n\nCUSTOMER MESSAGE:\n\"{text_content}\"\n\nYou are the Chief Financial Officer (CFO) Agent. Your goal is to minimize risk, reduce costs, and strictly enforce business policies. How should we respond?"
+    ops_prompt = f"{context}\n\nCUSTOMER MESSAGE:\n\"{text_content}\"\n\nYou are the Operations (Ops) Agent. Your goal is to minimize execution friction, manage supply chain realities, and ensure staff can realistically deliver on promises. How should we respond?"
     
     # In a real async environment we would Promise.all these
     try:
         cx_perspective = call_llm(prompt=cx_prompt, system_prompt="You are a CX Agent. Focus on empathy, retention, and satisfaction. Keep it to 2 sentences.")
         cfo_perspective = call_llm(prompt=cfo_prompt, system_prompt="You are a CFO Agent. Focus on policy, cost reduction, and risk mitigation. Keep it to 2 sentences.")
+        ops_perspective = call_llm(prompt=ops_prompt, system_prompt="You are an Ops Agent. Focus on execution friction, logistics, and realistic delivery. Keep it to 2 sentences.")
     except Exception as e:
         logger.error(f"[Decision Engine] Agent debate failed: {e}")
         cx_perspective = "Provide immediate assistance to the customer."
         cfo_perspective = "Ensure no financial commitments are made without owner approval."
+        ops_perspective = "Ensure standard operating procedures are followed."
         
     debate_trace = {
         "cx": cx_perspective,
         "cfo": cfo_perspective,
-        "ops": ""
+        "ops": ops_perspective
     }
     
     # 3. Router Analysis (Takes the debate into account)
     analysis = analyze_intent_and_risk(
-        f"Customer Message: {text_content}\n\nCX Agent Suggestion: {cx_perspective}\n\nCFO Agent Suggestion: {cfo_perspective}", 
+        f"Customer Message: {text_content}\n\nCX Agent Suggestion: {cx_perspective}\n\nCFO Agent Suggestion: {cfo_perspective}\n\nOps Agent Suggestion: {ops_perspective}", 
         context
     )
     decision = str(analysis.get("decision", "ESCALATE")).upper()
-    debate_trace["ops"] = analysis.get("reasoning", "")
     
     print(f"[Decision Engine] Agent Debate Trace: {json.dumps(debate_trace)}")
     print(f"[Decision Engine] Analysis Complete: {analysis}")
@@ -134,7 +136,7 @@ def process_customer_message(text_content: str, business_id: str, sender_id: str
     # 4. Execute Decision
     if decision == "REPLY":
         # Generate the actual reply based on the resolved debate
-        reply_prompt = f"{context}\n\nCustomer: {text_content}\nCX Agent: {cx_perspective}\nCFO Agent: {cfo_perspective}\n\nWrite a short, polite, helpful response acting as the business, taking both agent perspectives into account."
+        reply_prompt = f"{context}\n\nCustomer: {text_content}\nCX Agent: {cx_perspective}\nCFO Agent: {cfo_perspective}\nOps Agent: {ops_perspective}\n\nWrite a short, polite, helpful response acting as the business, taking all agent perspectives into account."
         final_reply = call_llm(prompt=reply_prompt, system_prompt="You are a helpful customer service AI representing the business. Keep it concise.")
         
         result_payload["reply"] = final_reply
@@ -146,7 +148,7 @@ def process_customer_message(text_content: str, business_id: str, sender_id: str
         
     elif decision == "DRAFT":
         # Generate a draft but do NOT send it
-        draft_prompt = f"{context}\n\nCustomer: {text_content}\nCX Agent: {cx_perspective}\nCFO Agent: {cfo_perspective}\n\nDraft a suggested response for the business owner to review. Do not send."
+        draft_prompt = f"{context}\n\nCustomer: {text_content}\nCX Agent: {cx_perspective}\nCFO Agent: {cfo_perspective}\nOps Agent: {ops_perspective}\n\nDraft a suggested response for the business owner to review. Do not send."
         draft_reply = call_llm(prompt=draft_prompt, system_prompt="You are an assistant drafting a reply for your boss. Keep it concise.")
         
         # Save as a draft memory with the debate trace
