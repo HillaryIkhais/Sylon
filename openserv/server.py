@@ -26,6 +26,17 @@ app = FastAPI(title="Morlen OpenServ Webhook", description="FastAPI webhook endp
 
 app.include_router(meta_router)
 
+from fastapi import Request
+from fastapi.responses import JSONResponse
+import traceback
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={"status": "error", "message": "GLOBAL CRASH: " + str(exc), "traceback": traceback.format_exc()}
+    )
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -65,25 +76,27 @@ class ActionApproveRequest(BaseModel):
 
 @app.get("/business/action-items")
 async def get_action_items(business_id: str):
-    # In a real app, business_id would come from the JWT claims via Depends(get_current_user)
-    items = persistence_service.get_action_items(business_id)
-    return {"status": "success", "items": items}
+    try:
+        # In a real app, business_id would come from the JWT claims via Depends(get_current_user)
+        items = persistence_service.get_action_items(business_id)
+        return {"status": "success", "items": items}
+    except Exception as e:
+        import traceback
+        return {"status": "error", "message": str(e), "traceback": traceback.format_exc()}
 
 @app.post("/business/action-items/{memory_id}/approve")
-async def approve_action_item(memory_id: int, req: ActionApproveRequest):
+async def approve_action_item(memory_id: str, req: ActionApproveRequest):
     # Fetch the draft from DB (in production, verify ownership)
-    conn = persistence_service.get_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT business_id, insight FROM business_memories WHERE id = ?", (memory_id,))
-    row = cursor.fetchone()
-    conn.close()
+    with persistence_service.get_connection() as conn:
+        cursor = conn.execute("SELECT business_id, text_content FROM business_memories WHERE memory_id = ?", (memory_id,))
+        row = cursor.fetchone()
     
     if not row:
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Draft not found")
         
-    business_id = row[0]
-    draft_text = row[1]
+    business_id = row["business_id"]
+    draft_text = row["text_content"]
     
     # If the user edited the text in the UI, use that instead
     final_text = req.edited_text if req.edited_text else draft_text
@@ -236,69 +249,74 @@ async def demo_chat_endpoint(request: DemoChatRequest):
     """
     try:
         if request.mode == "onboarding":
-            # Conversational Onboarding Flow
-            # Check if business already exists
             profile = persistence_service.get_business_profile(request.session_id)
+            
+            # Step 1: Initial creation
             if not profile:
-                # First message!
-                persistence_service.upsert_business(request.session_id, name="Pending Demo Business", description="")
+                persistence_service.upsert_business(request.session_id, name="Pending", description="Pending")
                 return {
                     "response": "👋 Welcome to Morlen! I'm your AI Business Operator. To set up your workspace, what is the name of your business?",
                     "status": "onboarding"
                 }
             
-            # Simple stateless onboarding logic based on keywords
-            text = request.text.lower()
-            if "name is" in text or "called" in text or len(text.split()) <= 3:
-                # Assume they provided the name
-                persistence_service.upsert_business(request.session_id, name=request.text, description="A business")
+            # Step 2: Receiving the Name
+            if profile.get("name") == "Pending":
+                persistence_service.upsert_business(request.session_id, name=request.text, description="Pending")
                 return {
                     "response": f"Got it, {request.text}. What kind of products or services do you sell?",
                     "status": "onboarding"
                 }
-            elif "sell" in text or "provide" in text or "we do" in text:
+                
+            # Step 3: Receiving the Description
+            if profile.get("description") == "Pending":
                 persistence_service.upsert_business(request.session_id, name=profile.get("name"), description=request.text)
                 return {
                     "response": "Excellent. I've updated your Business Memory with your product catalog. Do you offer delivery, and if so, what are your rates?",
                     "status": "onboarding"
                 }
-            elif "delivery" in text or "fee" in text or "free" in text or "charge" in text:
-                policies = f"Delivery Policy: {request.text}"
-                with persistence_service.get_connection() as conn:
-                    conn.execute("UPDATE businesses SET policies = ? WHERE id = ?", (policies, request.session_id))
-                return {
-                    "response": "Perfect! Your workspace is ready. ✅\n\nNow, let's switch gears. I am now acting as Morlen answering your customers. You can pretend to be a customer messaging your business right now!",
-                    "status": "ready"
-                }
-            else:
-                return {
-                    "response": "Thanks! Tell me a bit more about your policies, or type 'Done' to finish setup.",
-                    "status": "onboarding"
-                }
+                
+            # Step 4: Receiving the Policies (Final step)
+            policies = f"Delivery Policy: {request.text}"
+            with persistence_service.get_connection() as conn:
+                conn.execute("UPDATE businesses SET policies = ? WHERE business_id = ?", (policies, request.session_id))
+                if hasattr(conn, 'commit'):
+                    conn.commit()
+            return {
+                "response": "Perfect! Your workspace is ready. ✅\n\nNow, let's switch gears. I am now acting as Morlen answering your customers. You can pretend to be a customer messaging your business right now!",
+                "status": "ready"
+            }
                 
         elif request.mode == "customer":
             # Process as a customer messaging the business
             from openserv.decision_engine import process_customer_message
             import uuid
             
+            # Ensure the business row exists (in case onboarding timed out during Render cold start)
+            profile = persistence_service.get_business_profile(request.session_id)
+            if not profile:
+                persistence_service.upsert_business(request.session_id, name="Demo User", description="Demo Account")
+            
             # Generate a random customer ID for this session
             customer_id = f"cust_{request.session_id[-6:]}"
             
-            # process_customer_message expects: text_content, business_id, sender_id, sender_name, channel
-            result = process_customer_message(
-                text_content=request.text,
-                business_id=request.session_id,
-                sender_id=customer_id,
-                sender_name="Web Demo Customer",
-                channel="web"
-            )
-            
-            return {
-                "response": result.get("reply", "No reply generated."),
-                "board_debate": result.get("debate_trace"),
-                "decision": result.get("decision"),
-                "status": "customer"
-            }
+            try:
+                # process_customer_message expects: text_content, business_id, sender_id, sender_name, channel
+                result = process_customer_message(
+                    text_content=request.text,
+                    business_id=request.session_id,
+                    sender_id=customer_id,
+                    sender_name="Web Demo Customer",
+                    channel="web"
+                )
+                return {
+                    "response": result.get("reply", "No reply generated."),
+                    "board_debate": result.get("debate_trace"),
+                    "decision": result.get("decision"),
+                    "status": "customer"
+                }
+            except Exception as e:
+                import traceback
+                return {"status": "error", "error": str(e), "traceback": traceback.format_exc()}
             
     except Exception as e:
         import traceback

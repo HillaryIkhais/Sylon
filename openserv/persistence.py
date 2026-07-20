@@ -17,9 +17,9 @@ class PsycopgWrapper:
     def __init__(self, conn):
         self.conn = conn
     def execute(self, query, vars=None):
-        # We use RealDictCursor so rows behave like sqlite3.Row dictionaries
-        from psycopg2.extras import RealDictCursor
-        cursor = self.conn.cursor(cursor_factory=RealDictCursor)
+        # We use DictCursor so rows behave exactly like sqlite3.Row dictionaries and tuples
+        from psycopg2.extras import DictCursor
+        cursor = self.conn.cursor(cursor_factory=DictCursor)
         # SQLite uses ? for parameters, psycopg2 uses %s. 
         # For a quick hackathon patch, we can replace ? with %s for Postgres.
         query = query.replace("?", "%s")
@@ -108,6 +108,7 @@ class PersistenceService:
                 whatsapp_phone_id TEXT,
                 meta_access_token TEXT,
                 owner_phone TEXT,
+                policies TEXT,
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL
             )
@@ -130,7 +131,7 @@ class PersistenceService:
             """)
 
             # Safe migrations for existing demo data
-            for col in ["whatsapp_phone_id", "meta_access_token", "owner_phone"]:
+            for col in ["whatsapp_phone_id", "meta_access_token", "owner_phone", "policies"]:
                 self._safe_ddl(conn, f"ALTER TABLE businesses ADD COLUMN {col} TEXT")
 
             self._safe_ddl(conn, """
@@ -282,6 +283,8 @@ class PersistenceService:
                     INSERT INTO businesses (business_id, name, description, categories, city, state, location, metadata_json, whatsapp_phone_id, meta_access_token, created_at, updated_at)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, (business_id, name, description, cat_str, city, state, loc_str, meta_str, whatsapp_phone_id, meta_access_token, now, now))
+            if hasattr(conn, 'commit'):
+                conn.commit()
 
     def get_business_profile(self, business_id: str) -> dict:
         """Retrieve the business profile context for the AI Decision Engine"""
@@ -291,13 +294,13 @@ class PersistenceService:
             if row:
                 import json
                 try:
-                    metadata = json.loads(row[3]) if row[3] else {}
+                    metadata = json.loads(row["metadata_json"]) if row["metadata_json"] else {}
                 except:
                     metadata = {}
                 return {
-                    "name": row[0],
-                    "description": row[1],
-                    "categories": row[2],
+                    "name": row["name"],
+                    "description": row["description"],
+                    "categories": row["categories"],
                     "policies": metadata.get("policies", "No specific policies defined.")
                 }
             return None
@@ -424,21 +427,19 @@ class PersistenceService:
             return [dict(r) for r in rows]
     def get_action_items(self, business_id: str) -> list:
         with self.get_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute('''
+            cursor = conn.execute('''
                 SELECT memory_id as id, business_id, text_content as interaction_text, intent as insight, created_at as timestamp, source, reasoning_trace 
                 FROM business_memories 
                 WHERE business_id = ? AND source IN ('draft_reply', 'escalation')
                 ORDER BY created_at DESC
             ''', (business_id,))
-            items = [{"id": row[0], "business_id": row[1], "interaction_text": row[2], "insight": row[3], "timestamp": row[4], "source": row[5], "reasoning_trace": row[6]} for row in cursor.fetchall()]
+            items = [{"id": row["id"], "business_id": row["business_id"], "interaction_text": row["interaction_text"], "insight": row["insight"], "timestamp": str(row["timestamp"]) if row["timestamp"] else None, "source": row["source"], "reasoning_trace": row["reasoning_trace"]} for row in cursor.fetchall()]
             return items
 
     def resolve_action_item(self, memory_id: str):
         with self.get_connection() as conn:
-            cursor = conn.cursor()
             # Mark it as resolved so it doesn't show up in the inbox anymore, but keep the history
-            cursor.execute("UPDATE business_memories SET source = source || '_resolved' WHERE memory_id = ?", (memory_id,))
+            conn.execute("UPDATE business_memories SET source = source || '_resolved' WHERE memory_id = ?", (memory_id,))
             conn.commit()
 
 
