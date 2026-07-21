@@ -4,8 +4,12 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { MessageSquareText, BrainCircuit, FileText, Zap } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import WaitlistModal from "@/components/WaitlistModal";
 
 export default function HowItWorksPage() {
+  const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -140,6 +144,45 @@ export default function HowItWorksPage() {
         </div>
 
       </div>
+
+      {/* Final CTA */}
+      <div className="w-full text-center mt-32 mb-24 px-4 relative z-10">
+        <h2 className="text-3xl md:text-5xl font-bold text-brand-dark dark:text-white mb-6">Ready to see it in action?</h2>
+        <p className="text-lg text-brand-dark/70 dark:text-white/60 mb-10 max-w-xl mx-auto">Join the waitlist today and transform how you make decisions.</p>
+        <button
+          onClick={() => setIsWaitlistOpen(true)}
+          className="text-white bg-brand-brown px-10 py-4 rounded-full font-bold inline-flex items-center justify-center space-x-2 hover:opacity-90 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1"
+        >
+          <span>Join Waitlist</span>
+        </button>
+      </div>
+
+      {/* Main Footer */}
+      <footer className="w-full pb-8 pt-4 px-8 md:px-16 z-50 relative mt-auto border-t border-brand-dark/10 dark:border-white/10">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between text-xs text-brand-dark dark:text-white/70 font-medium">
+          {/* Logo */}
+          <div className="mb-4 md:mb-0">
+            <span className="text-xl font-bold tracking-wider text-brand-brown">MORLEN</span>
+          </div>
+          {/* Footer Links */}
+          <div className="flex space-x-6 mb-4 md:mb-0">
+            <Link href="/pricing" className="hover:text-brand-lightbrown transition-colors">Pricing</Link>
+            <Link href="#" className="hover:text-brand-lightbrown transition-colors">Privacy Policy</Link>
+            <Link href="#" className="hover:text-brand-lightbrown transition-colors">Terms of Service</Link>
+            <Link href="#" className="hover:text-brand-lightbrown transition-colors">Security</Link>
+            <Link href="#" className="hover:text-brand-lightbrown transition-colors">Contact</Link>
+          </div>
+          {/* Copyright */}
+          <div>
+            © 2026 Morlen Behavioral Intelligence. All rights reserved.
+          </div>
+        </div>
+      </footer>
+
+      <WaitlistModal 
+        isOpen={isWaitlistOpen} 
+        onClose={() => setIsWaitlistOpen(false)} 
+      />
     </div>
   );
 }

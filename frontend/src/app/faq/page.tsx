@@ -5,6 +5,8 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
+import WaitlistModal from "@/components/WaitlistModal";
 
 const faqs = [
   {
@@ -31,6 +33,7 @@ const faqs = [
 
 export default function FAQPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const faqRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -50,6 +53,7 @@ export default function FAQPage() {
   }, { scope: containerRef });
 
   return (
+    <>
     <div ref={containerRef} className="min-h-screen pt-32 pb-24 px-4 md:px-8 max-w-4xl mx-auto w-full relative">
       
       {/* Background glow elements */}
@@ -96,7 +100,47 @@ export default function FAQPage() {
           );
         })}
       </div>
+      
+      {/* Final CTA */}
+      <div className="w-full text-center mt-32 mb-8 px-4 relative z-10">
+        <h2 className="text-3xl md:text-5xl font-bold text-brand-dark dark:text-white mb-6">Still have questions?</h2>
+        <p className="text-lg text-brand-dark/70 dark:text-white/60 mb-10 max-w-xl mx-auto">Get early access and see exactly how Morlen fits into your stack.</p>
+        <button
+          onClick={() => setIsWaitlistOpen(true)}
+          className="text-white bg-brand-brown px-10 py-4 rounded-full font-bold inline-flex items-center justify-center space-x-2 hover:opacity-90 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1"
+        >
+          <span>Join Waitlist</span>
+        </button>
+      </div>
 
     </div>
+    
+    {/* Main Footer (Placed outside max-w-4xl container to span full width) */}
+    <footer className="w-full pb-8 pt-4 px-8 md:px-16 z-50 relative mt-auto border-t border-brand-dark/10 dark:border-white/10">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between text-xs text-brand-dark dark:text-white/70 font-medium">
+        {/* Logo */}
+        <div className="mb-4 md:mb-0">
+          <span className="text-xl font-bold tracking-wider text-brand-brown">MORLEN</span>
+        </div>
+        {/* Footer Links */}
+        <div className="flex space-x-6 mb-4 md:mb-0">
+          <Link href="/pricing" className="hover:text-brand-lightbrown transition-colors">Pricing</Link>
+          <Link href="#" className="hover:text-brand-lightbrown transition-colors">Privacy Policy</Link>
+          <Link href="#" className="hover:text-brand-lightbrown transition-colors">Terms of Service</Link>
+          <Link href="#" className="hover:text-brand-lightbrown transition-colors">Security</Link>
+          <Link href="#" className="hover:text-brand-lightbrown transition-colors">Contact</Link>
+        </div>
+        {/* Copyright */}
+        <div>
+          © 2026 Morlen Behavioral Intelligence. All rights reserved.
+        </div>
+      </div>
+    </footer>
+
+    <WaitlistModal 
+      isOpen={isWaitlistOpen} 
+      onClose={() => setIsWaitlistOpen(false)} 
+    />
+    </>
   );
 }
