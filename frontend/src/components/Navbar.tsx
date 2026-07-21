@@ -31,6 +31,12 @@ export default function Navbar() {
             <Link href="/platform" className={`whitespace-nowrap text-brand-dark dark:text-white/90 hover:text-brand-lightbrown transition-colors ${pathname === '/platform' ? 'font-bold !text-brand-brown' : ''}`}>
               Platform
             </Link>
+            <Link href="/how-it-works" className={`whitespace-nowrap text-brand-dark dark:text-white/90 hover:text-brand-lightbrown transition-colors ${pathname === '/how-it-works' ? 'font-bold !text-brand-brown' : ''}`}>
+              How it Works
+            </Link>
+            <Link href="/faq" className={`whitespace-nowrap text-brand-dark dark:text-white/90 hover:text-brand-lightbrown transition-colors ${pathname === '/faq' ? 'font-bold !text-brand-brown' : ''}`}>
+              FAQ
+            </Link>
           </div>
         </div>
 
@@ -58,6 +64,12 @@ export default function Navbar() {
             </Link>
             <Link href="/platform" className={`text-brand-dark dark:text-white/90 ${pathname === '/platform' ? 'text-brand-brown' : ''}`}>
               Platform
+            </Link>
+            <Link href="/how-it-works" className={`text-brand-dark dark:text-white/90 ${pathname === '/how-it-works' ? 'text-brand-brown' : ''}`}>
+              How it Works
+            </Link>
+            <Link href="/faq" className={`text-brand-dark dark:text-white/90 ${pathname === '/faq' ? 'text-brand-brown' : ''}`}>
+              FAQ
             </Link>
           </div>
         </div>
