@@ -9,7 +9,6 @@ import ThemeToggle from "@/components/ThemeToggle";
 import WaitlistModal from "@/components/WaitlistModal";
 import { ConversationProvider } from "@elevenlabs/react";
 import EtherealOrb from "@/components/EtherealOrb";
-import FAQAccordion from "@/components/FAQAccordion";
 
 export default function Home() {
   const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
@@ -192,13 +191,7 @@ export default function Home() {
           </div>
       </main>
 
-      {/* FAQ Section */}
-      <section className="w-full py-24 px-4 relative z-10">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-brand-dark dark:text-white mb-12">Frequently Asked Questions</h2>
-          <FAQAccordion />
-        </div>
-      </section>
+
 
       {/* Main Footer */}
       <footer className="w-full pb-8 pt-4 px-8 md:px-16 z-50 relative mt-auto border-t border-brand-dark/10">
