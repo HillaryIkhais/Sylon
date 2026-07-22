@@ -14,8 +14,8 @@ const faqs = [
     answer: "Morlen sets up instantly. There is nothing complicated to install. You just log in, connect your WhatsApp or Instagram, and Morlen immediately starts analyzing your past chats to learn about your business.",
   },
   {
-    question: "Is my customer data safe?",
-    answer: "Yes, completely safe. We use the same high-level security as major banks. Before Morlen's AI reads anything, it hides personal details like names and phone numbers, so your customers' privacy is always protected.",
+    question: "Is it safe to connect my WhatsApp?",
+    answer: "Yes. Morlen is strictly a one-way mirror. It only looks for business trends—like product requests or complaints. Before the AI even sees a message, all personal details (like names, phone numbers, and addresses) are permanently erased. Your data is never shared, sold, or used to train public AI models.",
   },
   {
     question: "How does Morlen actually help my business?",

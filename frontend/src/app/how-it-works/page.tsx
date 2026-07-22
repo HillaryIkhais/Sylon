@@ -43,10 +43,10 @@ export default function HowItWorksPage() {
 
   const steps = [
     {
-      title: "1. Connect Your Apps",
-      description: "Morlen safely connects to the apps you already use, like WhatsApp and Instagram. It automatically reads customer questions, complaints, and requests in the background so you never have to type them into a spreadsheet manually.",
+      title: "1. Connect Safely & Privately",
+      description: "Morlen connects to your business apps like WhatsApp and Instagram using a secure, read-only connection. It scans for business trends—like product questions or complaints—while automatically ignoring and erasing personal customer details.",
       icon: <MessageSquareText className="w-8 h-8 text-brand-brown" />,
-      metric: "Works quietly in the background",
+      metric: "100% private and read-only",
     },
     {
       title: "2. Understand the Meaning",
