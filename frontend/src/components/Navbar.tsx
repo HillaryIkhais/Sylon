@@ -20,7 +20,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="border-b border-brand-dark/10 bg-white/50 dark:bg-black/20 backdrop-blur-xl px-4 md:px-8 py-3 md:py-4 z-50 sticky top-0 w-full">
+    <nav className="border-b border-brand-dark/10 bg-white/50 dark:bg-[#1a0f0a]/50 backdrop-blur-xl px-4 md:px-8 py-3 md:py-4 z-50 sticky top-0 w-full">
       <div className="max-w-7xl mx-auto w-full flex items-center justify-between gap-4">
         {/* Logo */}
         <Link href="/" className="flex-shrink-0 hover:opacity-80 transition-opacity text-xl md:text-2xl font-bold tracking-wider text-brand-brown">
@@ -92,7 +92,7 @@ export default function Navbar() {
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="absolute top-full left-0 right-0 bg-white/95 dark:bg-black/95 backdrop-blur-xl border-b border-brand-dark/10 shadow-lg md:hidden flex flex-col pt-4 pb-6 px-6 gap-6 z-50">
+        <div className="absolute top-full left-0 right-0 bg-white/95 dark:bg-[#1a0f0a]/95 backdrop-blur-xl border-b border-brand-dark/10 shadow-lg md:hidden flex flex-col pt-4 pb-6 px-6 gap-6 z-50">
           <div className="flex flex-col gap-4 text-lg font-semibold">
             <Link href="/" className={`text-brand-dark dark:text-white/90 ${pathname === '/' ? 'text-brand-brown' : ''}`}>
               Home
