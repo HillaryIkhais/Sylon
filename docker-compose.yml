@@ -24,6 +24,11 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.frontend
+      args:
+        - NEXT_PUBLIC_PRIVY_APP_ID=${NEXT_PUBLIC_PRIVY_APP_ID}
+        - NEXT_PUBLIC_PRIVY_CLIENT_ID=${NEXT_PUBLIC_PRIVY_CLIENT_ID}
+        - NEXT_PUBLIC_SITE_MODE=${NEXT_PUBLIC_SITE_MODE}
+        - NEXT_PUBLIC_ELEVENLABS_AGENT_ID=${NEXT_PUBLIC_ELEVENLABS_AGENT_ID}
     ports:
       - "3000:3000"
     environment:
