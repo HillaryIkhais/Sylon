@@ -92,7 +92,7 @@ export default function Navbar() {
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="absolute top-full left-0 right-0 bg-white/95 dark:bg-[#1a0f0a]/95 backdrop-blur-xl border-b border-brand-dark/10 shadow-lg md:hidden flex flex-col pt-4 pb-6 px-6 gap-6 z-50">
+        <div style={{ backgroundColor: 'var(--menu-bg)' }} className="absolute top-full left-0 right-0 backdrop-blur-xl border-b border-brand-dark/10 shadow-lg md:hidden flex flex-col pt-4 pb-6 px-6 gap-6 z-50">
           <div className="flex flex-col gap-4 text-lg font-semibold">
             <Link href="/" className={`text-brand-dark dark:text-white/90 ${pathname === '/' ? 'text-brand-brown' : ''}`}>
               Home

@@ -19,6 +19,7 @@
     --brand-glow: #ffbd98;
     --bg-base: #ffcba4;
     --bg-glow: radial-gradient(ellipse at 50% 40%, #ffffff 0%, #fff0e6 20%, #ffcba4 60%, #e08e79 100%);
+    --menu-bg: rgba(255, 255, 255, 0.95);
     
     /* Orb specific variables */
     --orb-dome-active: inset 0 0 100px rgba(165,115,101,0.9);
@@ -35,6 +36,7 @@
     --brand-glow: #ff5722;
     --bg-base: #1f1411; /* Warm dark brown */
     --bg-glow: radial-gradient(ellipse at 50% 40%, #3a271f 0%, #261914 40%, #160e0a 100%);
+    --menu-bg: rgba(26, 15, 10, 0.95);
 
     /* Orb specific variables */
     --orb-dome-active: inset 0 0 100px rgba(255,100,50,0.6);
